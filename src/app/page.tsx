@@ -112,7 +112,7 @@ export default function Dashboard() {
           <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Location Node</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--foreground)', marginTop: '2px' }}>
             <Server size={18} color="#3b82f6" />
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', tracking: '0.025em' }}>Utkal Alumina</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', letterSpacing: '0.025em' }}>Utkal Alumina</span>
           </div>
         </div>
 

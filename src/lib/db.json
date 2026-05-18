@@ -1,18 +1,16 @@
 {
-  "lastUpdated": 1779119773177,
+  "lastUpdated": 1779119803175,
   "servers": [
     {
       "id": "srv-smartface",
       "name": "Smartface",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 56,
-      "memory": 59,
+      "cpu": 61,
+      "memory": 56,
       "disk": 61,
       "backupStatus": "failed",
       "history": [
-        44,
-        49,
         49,
         49,
         50,
@@ -30,7 +28,9 @@
         55,
         50,
         52,
-        56
+        56,
+        59,
+        61
       ]
     },
     {
@@ -38,13 +38,11 @@
       "name": "CLMS",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 38,
-      "memory": 75,
+      "cpu": 32,
+      "memory": 73,
       "disk": 72,
       "backupStatus": "successful",
       "history": [
-        50,
-        48,
         46,
         51,
         51,
@@ -62,7 +60,9 @@
         36,
         40,
         41,
-        38
+        38,
+        36,
+        32
       ]
     },
     {
@@ -70,13 +70,11 @@
       "name": "DHCP",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 5,
-      "memory": 40,
+      "cpu": 10,
+      "memory": 41,
       "disk": 36,
       "backupStatus": "failed",
       "history": [
-        29,
-        29,
         26,
         28,
         23,
@@ -94,7 +92,9 @@
         10,
         13,
         8,
-        5
+        5,
+        7,
+        10
       ]
     },
     {
@@ -102,13 +102,11 @@
       "name": "ILMS APP",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 74,
-      "memory": 92,
+      "cpu": 76,
+      "memory": 90,
       "disk": 78,
       "backupStatus": "successful",
       "history": [
-        87,
-        82,
         78,
         80,
         76,
@@ -126,7 +124,9 @@
         81,
         77,
         73,
-        74
+        74,
+        73,
+        76
       ]
     },
     {
@@ -135,12 +135,10 @@
       "location": "Utkal Alumina",
       "status": "degraded",
       "cpu": 58,
-      "memory": 57,
+      "memory": 53,
       "disk": 99,
       "backupStatus": "failed",
       "history": [
-        52,
-        55,
         60,
         57,
         59,
@@ -158,6 +156,8 @@
         69,
         66,
         61,
+        58,
+        54,
         58
       ]
     }
@@ -168,11 +168,9 @@
       "provider": "RJIO",
       "status": "operational",
       "uptime": 99.99,
-      "latency": 37,
-      "utilization": 84,
+      "latency": 33,
+      "utilization": 87,
       "history": [
-        76,
-        80,
         85,
         85,
         85,
@@ -190,7 +188,9 @@
         96,
         90,
         91,
-        84
+        84,
+        90,
+        87
       ]
     },
     {
@@ -198,11 +198,9 @@
       "provider": "RailTel",
       "status": "degraded",
       "uptime": 99.92,
-      "latency": 10,
-      "utilization": 100,
+      "latency": 9,
+      "utilization": 94,
       "history": [
-        91,
-        97,
         100,
         94,
         87,
@@ -220,7 +218,9 @@
         90,
         92,
         97,
-        100
+        100,
+        100,
+        94
       ]
     }
   ],
@@ -255,8 +255,6 @@
     "nodesCount": 6,
     "storageUsage": 91,
     "historyCpu": [
-      55,
-      53,
       51,
       53,
       51,
@@ -274,11 +272,11 @@
       43,
       40,
       38,
-      40
+      40,
+      44,
+      46
     ],
     "historyMem": [
-      76,
-      76,
       75,
       76,
       77,
@@ -296,7 +294,9 @@
       75,
       77,
       78,
-      76
+      76,
+      78,
+      78
     ]
   },
   "symphony": {
