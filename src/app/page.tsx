@@ -106,37 +106,37 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Corporate KPIs */}
+      {/* Corporate KPIs (Enlarged Figures) */}
       <div className="global-stats" style={{ gap: '0.75rem', marginBottom: '0.75rem' }}>
-        <div className="glass-panel stat-box" style={{ padding: '0.5rem 0.875rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.7rem' }}>Location Node</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: 'var(--foreground)' }}>
-            <Server size={15} color="#64748b" />
-            <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>Utkal Alumina</span>
+        <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Location Node</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--foreground)', marginTop: '2px' }}>
+            <Server size={18} color="#3b82f6" />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', tracking: '0.025em' }}>Utkal Alumina</span>
           </div>
         </div>
 
-        <div className="glass-panel stat-box" style={{ padding: '0.5rem 0.875rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.7rem' }}>Avg Core Load</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: 'var(--foreground)' }}>
-            <Cpu size={15} color="#3b82f6" />
-            <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{avgCpu}% CPU / {avgMemory}% RAM</span>
+        <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Avg Core Load</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--foreground)', marginTop: '2px' }}>
+            <Cpu size={18} color="#3b82f6" />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white' }}>{avgCpu}% <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>CPU</span> / {avgMemory}% <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>RAM</span></span>
           </div>
         </div>
 
-        <div className="glass-panel stat-box" style={{ padding: '0.5rem 0.875rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.7rem' }}>Integrations Connected</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: activeSourcesCount > 0 ? '#3b82f6' : '#64748b' }}>
-            <Database size={15} color={activeSourcesCount > 0 ? '#3b82f6' : '#64748b'} />
-            <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>{activeSourcesCount} / 4 Connected</span>
+        <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Integrations Connected</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: activeSourcesCount > 0 ? '#3b82f6' : '#64748b', marginTop: '2px' }}>
+            <Database size={18} color={activeSourcesCount > 0 ? '#3b82f6' : '#64748b'} />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#3b82f6' }}>{activeSourcesCount} / 4 <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Active</span></span>
           </div>
         </div>
 
-        <div className="glass-panel stat-box" style={{ padding: '0.5rem 0.875rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.7rem' }}>System Health Status</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: (serverAlerts + networkAlerts) === 0 ? '#3b82f6' : '#f59e0b' }}>
-            {(serverAlerts + networkAlerts) === 0 ? <ShieldCheck size={15} /> : <AlertTriangle size={15} />}
-            <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+        <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>System Health Status</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: (serverAlerts + networkAlerts) === 0 ? '#10b981' : '#f59e0b', marginTop: '2px' }}>
+            {(serverAlerts + networkAlerts) === 0 ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
+            <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>
               {(serverAlerts + networkAlerts) === 0 ? 'Healthy' : `${serverAlerts + networkAlerts} Warnings`}
             </span>
           </div>
@@ -166,7 +166,17 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.65rem', color: '#3b82f6', fontWeight: 600 }}>SLA {data.symphony.serviceRequestsSla}%</span>
+                    <span style={{ 
+                      fontSize: '0.75rem', 
+                      color: '#3b82f6', 
+                      fontWeight: 800,
+                      background: 'rgba(59, 130, 246, 0.08)',
+                      padding: '0.1rem 0.35rem',
+                      borderRadius: '3px',
+                      border: '1px solid rgba(59, 130, 246, 0.15)'
+                    }}>
+                      SLA {data.symphony.serviceRequestsSla}%
+                    </span>
                     <div className="card-status status-operational" style={{ padding: '0.1rem 0.3rem' }}>
                       <span className="status-dot operational" style={{ width: '4px', height: '4px' }}></span>
                       <span style={{ fontSize: '0.6rem' }}>Active</span>
@@ -174,23 +184,23 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                {/* 2x2 Operations Ticket Grid */}
+                {/* 2x2 Operations Ticket Grid with VERY Large Bold Numbers */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', flex: 1, minHeight: 0, margin: '0.25rem 0' }}>
-                  <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.625rem' }}>Open Incidents</span>
-                    <span className="metric-value" style={{ fontSize: '0.8rem', color: data.symphony.openIncidents > 0 ? '#ef4444' : '#10b981' }}>{data.symphony.openIncidents}</span>
+                  <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Open Incidents</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: data.symphony.openIncidents > 0 ? '#ef4444' : '#10b981' }}>{data.symphony.openIncidents}</span>
                   </div>
-                  <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.625rem' }}>Service Requests</span>
-                    <span className="metric-value" style={{ fontSize: '0.8rem', color: '#e2e8f0' }}>{data.symphony.serviceRequests}</span>
+                  <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Service Requests</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white' }}>{data.symphony.serviceRequests}</span>
                   </div>
-                  <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.625rem' }}>Work Orders</span>
-                    <span className="metric-value" style={{ fontSize: '0.8rem', color: '#e2e8f0' }}>{data.symphony.workOrders}</span>
+                  <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Work Orders</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white' }}>{data.symphony.workOrders}</span>
                   </div>
-                  <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.625rem' }}>Change Requests</span>
-                    <span className="metric-value" style={{ fontSize: '0.8rem', color: '#f59e0b' }}>{data.symphony.changeRequests}</span>
+                  <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Change Requests</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f59e0b' }}>{data.symphony.changeRequests}</span>
                   </div>
                 </div>
               </div>
@@ -201,7 +211,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* B. ISP Status (RJIO & RailTel) */}
+          {/* B. ISP Gateway Status */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, gap: '0.375rem' }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', margin: 0 }}>
               <Network size={14} color="#3b82f6" />
@@ -251,7 +261,7 @@ export default function Dashboard() {
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{server.cpu}%</span>
+                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.cpu}%</span>
                         <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.cpu}%`, height: '100%', background: server.cpu > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
@@ -259,7 +269,7 @@ export default function Dashboard() {
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{server.memory}%</span>
+                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.memory}%</span>
                         <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.memory}%`, height: '100%', background: server.memory > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
@@ -267,7 +277,7 @@ export default function Dashboard() {
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{server.disk}%</span>
+                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.disk}%</span>
                         <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.disk}%`, height: '100%', background: server.disk > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
@@ -298,143 +308,294 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* COLUMN 3: Rest of Integrations (Nutanix, ISMS Oracle APEX, Compliance APEX) */}
+        {/* COLUMN 3: Nutanix, ISMS Oracle APEX, and IT Compliance stacked vertically */}
         <div style={{ flex: '1 1 36%', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0, gap: '0.375rem' }}>
           <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
             <Database size={14} color="#3b82f6" />
             Nutanix & APEX Portal Integrations
           </h2>
+          
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minHeight: 0 }}>
             
-            {/* Nutanix Cluster */}
-            <div style={{ flex: '1 1 50%', display: 'flex', minHeight: 0 }}>
+            {/* Nutanix Cluster (Top, 22% height) */}
+            <div style={{ height: '115px', display: 'flex', minHeight: 0, flexShrink: 0 }}>
               {data.configs.nutanix.connected ? (
-                <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.75rem' }}>
-                  <div className="card-header">
-                    <div className="card-title">
-                      <Server size={15} color="#3b82f6" />
+                <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', gap: '0.25rem' }}>
+                  <div className="card-header" style={{ marginBottom: '1px' }}>
+                    <div className="card-title" style={{ fontSize: '0.8rem' }}>
+                      <Server size={14} color="#3b82f6" />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>Nutanix Cluster</div>
-                        <div style={{ fontSize: '0.6rem', color: '#64748b' }}>CLI SSH Handshake Active</div>
+                        <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>Nutanix Cluster</div>
+                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>CLI SSH Handshake Active</div>
                       </div>
                     </div>
-                    <div className="card-status status-operational" style={{ padding: '0.1rem 0.3rem' }}>
+                    <div className="card-status status-operational" style={{ padding: '0.1rem 0.25rem' }}>
                       <span className="status-dot operational" style={{ width: '4px', height: '4px' }}></span>
-                      <span style={{ fontSize: '0.6rem' }}>Active</span>
+                      <span style={{ fontSize: '0.55rem' }}>Active</span>
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.675rem' }}>
-                    <div className="metric-box" style={{ padding: '0.25rem 0.375rem' }}>
-                      <span className="metric-label">Uptime</span>
-                      <span className="metric-value" style={{ fontSize: '0.725rem' }}>{data.nutanix.uptime.replace(' 12m', '')}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem', fontSize: '0.625rem' }}>
+                    <div className="metric-box" style={{ padding: '0.3rem 0.5rem' }}>
+                      <span className="metric-label" style={{ fontSize: '0.625rem' }}>Uptime</span>
+                      <span className="metric-value" style={{ fontSize: '1.05rem', fontWeight: 800 }}>{data.nutanix.uptime.replace(' 12m', '')}</span>
                     </div>
-                    <div className="metric-box" style={{ padding: '0.25rem 0.375rem' }}>
-                      <span className="metric-label">Hosts</span>
-                      <span className="metric-value" style={{ fontSize: '0.725rem' }}>{data.nutanix.nodesCount} Nodes</span>
+                    <div className="metric-box" style={{ padding: '0.3rem 0.5rem' }}>
+                      <span className="metric-label" style={{ fontSize: '0.625rem' }}>Hosts</span>
+                      <span className="metric-value" style={{ fontSize: '1.05rem', fontWeight: 800 }}>{data.nutanix.nodesCount} Nodes</span>
                     </div>
                   </div>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px', fontSize: '0.675rem' }}>
                       <span style={{ color: '#94a3b8' }}>Storage Pool</span>
-                      <span style={{ fontWeight: 500 }}>{data.nutanix.storageUsage}%</span>
+                      <span style={{ fontWeight: 700, fontSize: '0.775rem', color: 'white' }}>{data.nutanix.storageUsage}%</span>
                     </div>
-                    <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
                       <div style={{ width: `${data.nutanix.storageUsage}%`, height: '100%', background: 'var(--primary)' }}></div>
                     </div>
                   </div>
-                  <div style={{ marginTop: '1px' }}>
-                    <div style={{ fontSize: '0.6rem', color: '#64748b', marginBottom: '2px' }}>CPU Load History (20m)</div>
-                    <UptimeChart data={data.nutanix.historyCpu.map((v, i) => ({ day: `${i}`, uptime: v }))} status="operational" />
-                  </div>
                 </div>
               ) : (
-                <DisconnectCard system="Nutanix CLI" icon={<Server size={18} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
+                <DisconnectCard system="Nutanix CLI" icon={<Server size={15} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
               )}
             </div>
 
-            {/* Row containing ISMS Objectives Portal & IT Compliance APEX side-by-side to save height */}
-            <div style={{ flex: '1 1 50%', display: 'flex', gap: '0.5rem', minHeight: 0 }}>
-              
-              {/* ISMS APEX */}
-              <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-                {data.configs.isms.connected ? (
-                  <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.75rem' }}>
-                    <div className="card-header">
-                      <div className="card-title">
-                        <Database size={15} color="#3b82f6" />
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>ISMS APEX</div>
-                          <div style={{ fontSize: '0.6rem', color: '#64748b' }}>ISO 27001 Metrics</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', fontSize: '0.625rem', marginTop: '0.25rem' }}>
-                      {data.isms.slice(0, 3).map((obj) => (
-                        <div key={obj.id}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px', color: '#e2e8f0' }}>
-                            <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '70px' }}>{obj.name}</span>
-                            <span style={{ fontWeight: 600 }}>{obj.progress}%</span>
-                          </div>
-                          <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                            <div style={{ width: `${obj.progress}%`, height: '100%', background: obj.progress === 100 ? '#10b981' : 'var(--primary)' }}></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <DisconnectCard system="ISMS Oracle APEX" icon={<Database size={18} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
-                )}
-              </div>
-
-              {/* Compliance APEX */}
-              <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-                {data.configs.compliance.connected ? (
-                  <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.75rem' }}>
-                    <div className="card-header">
-                      <div className="card-title">
-                        <Shield size={15} color="#3b82f6" />
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>Compliance</div>
-                          <div style={{ fontSize: '0.6rem', color: '#64748b' }}>Oracle APEX API</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', fontSize: '0.625rem', marginTop: '0.25rem' }}>
+            {/* ISMS APEX Objectives (Middle, 20% height) */}
+            <div style={{ height: '105px', display: 'flex', minHeight: 0, flexShrink: 0 }}>
+              {data.configs.isms.connected ? (
+                <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', justifyContent: 'flex-start', gap: '0.25rem' }}>
+                  <div className="card-header" style={{ marginBottom: '1px' }}>
+                    <div className="card-title" style={{ fontSize: '0.8rem' }}>
+                      <Database size={14} color="#3b82f6" />
                       <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px' }}>
-                          <span style={{ color: '#94a3b8' }}>OS Patches</span>
-                          <span style={{ fontWeight: 600, color: 'white' }}>{data.compliance.workstationsPatched}%</span>
-                        </div>
-                        <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                          <div style={{ width: `${data.compliance.workstationsPatched}%`, height: '100%', background: 'var(--primary)' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px' }}>
-                          <span style={{ color: '#94a3b8' }}>Antivirus Active</span>
-                          <span style={{ fontWeight: 600, color: 'white' }}>{data.compliance.antivirusActive}%</span>
-                        </div>
-                        <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                          <div style={{ width: `${data.compliance.antivirusActive}%`, height: '100%', background: '#10b981' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px' }}>
-                          <span style={{ color: '#94a3b8' }}>DLP Enforced</span>
-                          <span style={{ fontWeight: 600, color: 'white' }}>{data.compliance.dlpEnabled}%</span>
-                        </div>
-                        <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                          <div style={{ width: `${data.compliance.dlpEnabled}%`, height: '100%', background: 'var(--primary)' }}></div>
-                        </div>
+                        <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>ISMS APEX</div>
+                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>ISO 27001 Objectives</div>
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <DisconnectCard system="IT Compliance APEX" icon={<Shield size={18} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
-                )}
-              </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.625rem', flex: 1, alignItems: 'center' }}>
+                    {data.isms.slice(0, 4).map((obj) => (
+                      <div key={obj.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100px', fontSize: '0.575rem' }}>{obj.name}</span>
+                          <span style={{ fontWeight: 700, fontSize: '0.725rem', color: 'white' }}>{obj.progress}%</span>
+                        </div>
+                        <div style={{ height: '2.5px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.25px', overflow: 'hidden' }}>
+                          <div style={{ width: `${obj.progress}%`, height: '100%', background: obj.progress === 100 ? '#10b981' : 'var(--primary)' }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <DisconnectCard system="ISMS Oracle APEX" icon={<Database size={15} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
+              )}
+            </div>
 
+            {/* IT Compliance Card (Bottom, stacked, full width) */}
+            <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+              {data.configs.compliance.connected ? (
+                <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.625rem 0.875rem', gap: '0.5rem', justifyContent: 'flex-start' }}>
+                  
+                  {/* Header (with ENLARGED dynamic Average score badge) */}
+                  <div className="card-header" style={{ marginBottom: '1px', flexShrink: 0 }}>
+                    <div className="card-title" style={{ fontSize: '0.85rem' }}>
+                      <Shield size={16} color="#3b82f6" />
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>IT Compliance</div>
+                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>Oracle APEX Compliance Portal</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        fontSize: '0.9rem',
+                        fontWeight: 800,
+                        color: '#10b981',
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(16, 185, 129, 0.25)',
+                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.1)'
+                      }}>
+                        Average Compliance: {data.compliance.endpointAverage}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Body divided side-by-side */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '1rem', flex: 1, minHeight: 0 }}>
+                    
+                    {/* Left Sub-Column: Server Compliance + Large KPI Ring */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', justifyContent: 'center' }}>
+                      
+                      {/* Server Compliance (Enlarged) */}
+                      <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '0.4rem 0.5rem', borderRadius: '6px' }}>
+                        <div style={{ fontSize: '0.625rem', color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px' }}>
+                          Server Compliance
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', marginBottom: '2px' }}>
+                              <span style={{ color: '#94a3b8' }}>OS Compliance</span>
+                              <span style={{ fontWeight: 700, color: 'white', fontSize: '0.75rem' }}>{data.compliance.serverOs}%</span>
+                            </div>
+                            <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.serverOs}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', marginBottom: '2px' }}>
+                              <span style={{ color: '#94a3b8' }}>Patch Compliance</span>
+                              <span style={{ fontWeight: 700, color: 'white', fontSize: '0.75rem' }}>{data.compliance.serverPatch}%</span>
+                            </div>
+                            <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.serverPatch}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Unified Average Badge box */}
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'radial-gradient(circle at center, rgba(37, 99, 235, 0.05) 0%, transparent 70%)',
+                        padding: '0.5rem',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.02)',
+                        textAlign: 'center'
+                      }}>
+                        <ShieldCheck size={24} color="#10b981" style={{ marginBottom: '2px' }} />
+                        <span style={{ fontSize: '0.55rem', color: '#94a3b8', textTransform: 'uppercase' }}>Security Index</span>
+                        <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#10b981', marginTop: '1px', letterSpacing: '0.05em' }}>SECURE</span>
+                      </div>
+                    </div>
+
+                    {/* Right Sub-Column: Endpoint Compliance single column list of 11 parameters */}
+                    <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                      <div style={{ fontSize: '0.625rem', color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px', flexShrink: 0 }}>
+                        Endpoint Compliance Parameters (Single Column List)
+                      </div>
+                      
+                      {/* Highly-visible, clean list table */}
+                      <div style={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.25rem',
+                        paddingRight: '2px'
+                      }} className="custom-scroll">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>CrowdStrike Client</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointCsClient}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsClient}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>CrowdStrike Patch</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointCsPatch}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsPatch}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Intune Client</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointIntuneClient}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntuneClient}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Intune Patch</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointIntunePatch}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntunePatch}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>ClearPass Agent</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointClearpass}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointClearpass}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Supported OS</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointSupportedOs}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSupportedOs}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>SAM Agent</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointSamAgent}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSamAgent}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>HSD Compliance</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointHsd}%`, height: '100%', background: '#10b981' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: '#10b981', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointHsd}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Domain Compliance</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointDomain}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointDomain}%</span>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>BitLocker Active</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointBitlocker}%`, height: '100%', background: 'var(--primary)' }}></div>
+                            </div>
+                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointBitlocker}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              ) : (
+                <DisconnectCard system="IT Compliance APEX" icon={<Shield size={18} color="#64748b" />} onConnect={() => setIsConfigOpen(true)} />
+              )}
             </div>
 
           </div>
@@ -486,6 +647,19 @@ export default function Dashboard() {
         .table-row-hover:hover {
           background: rgba(255,255,255,0.015);
         }
+        .custom-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 2px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
       `}} />
     </main>
   );
@@ -524,7 +698,8 @@ function DisconnectCard({ system, icon, onConnect }: DisconnectCardProps) {
       textAlign: 'center',
       borderStyle: 'dashed',
       borderColor: 'rgba(255,255,255,0.08)',
-      height: '100%'
+      height: '100%',
+      width: '100%'
     }}>
       <div style={{
         background: 'rgba(255,255,255,0.02)',

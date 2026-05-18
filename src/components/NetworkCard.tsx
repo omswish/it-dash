@@ -41,25 +41,25 @@ export default function NetworkCard({ id, provider, status, uptime, latency, uti
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.725rem' }}>
-        <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'column' }}>
-          <span className="metric-label">Latency</span>
-          <span className="metric-value" style={{ fontSize: '0.8rem' }}>{latency} ms</span>
+        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column' }}>
+          <span className="metric-label" style={{ fontSize: '0.625rem' }}>Latency</span>
+          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800 }}>{latency} ms</span>
         </div>
-        <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'column' }}>
-          <span className="metric-label">Uptime SLA</span>
-          <span className="metric-value" style={{ fontSize: '0.8rem' }}>{uptime}%</span>
+        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column' }}>
+          <span className="metric-label" style={{ fontSize: '0.625rem' }}>Uptime SLA</span>
+          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800 }}>{uptime}%</span>
         </div>
       </div>
 
       <div style={{ marginTop: '2px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', fontSize: '0.675rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', fontSize: '0.7rem' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#94a3b8' }}>
             <Activity size={10} /> Bandwidth Utilization
           </span>
-          <span style={{ fontWeight: 500 }}>{utilization}%</span>
+          <span style={{ fontWeight: 700, fontSize: '0.825rem', color: 'white' }}>{utilization}%</span>
         </div>
-        <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-          <div style={{ width: `${utilization}%`, height: '100%', background: 'var(--primary)', borderRadius: '1.5px', transition: 'width 0.5s ease-out' }}></div>
+        <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ width: `${utilization}%`, height: '100%', background: 'var(--primary)', borderRadius: '2px', transition: 'width 0.5s ease-out' }}></div>
         </div>
       </div>
 

@@ -56,9 +56,19 @@ export interface IsmsObjective {
 }
 
 export interface ComplianceMetrics {
-  workstationsPatched: number;
-  antivirusActive: number;
-  dlpEnabled: number;
+  serverOs: number;
+  serverPatch: number;
+  endpointCsClient: number;
+  endpointCsPatch: number;
+  endpointIntuneClient: number;
+  endpointIntunePatch: number;
+  endpointClearpass: number;
+  endpointSupportedOs: number;
+  endpointSamAgent: number;
+  endpointHsd: number;
+  endpointDomain: number;
+  endpointBitlocker: number;
+  endpointAverage: number;
 }
 
 export interface DbSchema {
@@ -188,9 +198,19 @@ function generateInitialData(): DbSchema {
       { id: 'isms-inc', name: 'Incident Response Drills', progress: 50, target: 100 }
     ],
     compliance: {
-      workstationsPatched: 94,
-      antivirusActive: 98,
-      dlpEnabled: 96
+      serverOs: 96,
+      serverPatch: 94,
+      endpointCsClient: 98,
+      endpointCsPatch: 96,
+      endpointIntuneClient: 97,
+      endpointIntunePatch: 95,
+      endpointClearpass: 99,
+      endpointSupportedOs: 98,
+      endpointSamAgent: 94,
+      endpointHsd: 100,
+      endpointDomain: 99,
+      endpointBitlocker: 97,
+      endpointAverage: 97.4
     }
   };
 }
@@ -349,11 +369,39 @@ function autoSeed(db: DbSchema): DbSchema {
   let updatedCompliance = { ...db.compliance };
   if (db.configs.compliance.connected) {
     const rand = Math.random();
-    if (rand > 0.9) {
+    if (rand > 0.85) {
+      let serverOs = Math.max(85, Math.min(100, db.compliance.serverOs + (Math.random() > 0.5 ? 1 : -1)));
+      let serverPatch = Math.max(85, Math.min(100, db.compliance.serverPatch + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointCsClient = Math.max(90, Math.min(100, db.compliance.endpointCsClient + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointCsPatch = Math.max(90, Math.min(100, db.compliance.endpointCsPatch + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointIntuneClient = Math.max(90, Math.min(100, db.compliance.endpointIntuneClient + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointIntunePatch = Math.max(90, Math.min(100, db.compliance.endpointIntunePatch + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointClearpass = Math.max(90, Math.min(100, db.compliance.endpointClearpass + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointSupportedOs = Math.max(90, Math.min(100, db.compliance.endpointSupportedOs + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointSamAgent = Math.max(90, Math.min(100, db.compliance.endpointSamAgent + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointHsd = Math.max(90, Math.min(100, db.compliance.endpointHsd + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointDomain = Math.max(90, Math.min(100, db.compliance.endpointDomain + (Math.random() > 0.5 ? 1 : -1)));
+      let endpointBitlocker = Math.max(90, Math.min(100, db.compliance.endpointBitlocker + (Math.random() > 0.5 ? 1 : -1)));
+      
+      let sum = serverOs + serverPatch + endpointCsClient + endpointCsPatch + endpointIntuneClient + 
+                endpointIntunePatch + endpointClearpass + endpointSupportedOs + endpointSamAgent + 
+                endpointHsd + endpointDomain + endpointBitlocker;
+      let endpointAverage = Math.round((sum / 12) * 10) / 10;
+
       updatedCompliance = {
-        workstationsPatched: Math.max(85, Math.min(100, db.compliance.workstationsPatched + (Math.random() > 0.5 ? 1 : -1))),
-        antivirusActive: Math.max(90, Math.min(100, db.compliance.antivirusActive + (Math.random() > 0.5 ? 1 : -1))),
-        dlpEnabled: Math.max(90, Math.min(100, db.compliance.dlpEnabled + (Math.random() > 0.5 ? 1 : -1)))
+        serverOs,
+        serverPatch,
+        endpointCsClient,
+        endpointCsPatch,
+        endpointIntuneClient,
+        endpointIntunePatch,
+        endpointClearpass,
+        endpointSupportedOs,
+        endpointSamAgent,
+        endpointHsd,
+        endpointDomain,
+        endpointBitlocker,
+        endpointAverage
       };
     }
   }
