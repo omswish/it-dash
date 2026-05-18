@@ -144,7 +144,7 @@ function generateInitialData(): DbSchema {
     networks: [
       {
         id: 'net-rjio',
-        provider: 'RJIO Business Fiber',
+        provider: 'RJIO',
         status: 'operational',
         uptime: 99.99,
         latency: 8,
@@ -153,7 +153,7 @@ function generateInitialData(): DbSchema {
       },
       {
         id: 'net-railtel',
-        provider: 'RailTel Enterprise Broadband',
+        provider: 'RailTel',
         status: 'operational',
         uptime: 99.92,
         latency: 18,

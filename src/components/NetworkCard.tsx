@@ -25,46 +25,46 @@ export default function NetworkCard({ id, provider, status, uptime, latency, uti
   }));
 
   return (
-    <div className="glass-panel provider-card">
-      <div className="card-header">
+    <div className="glass-panel provider-card" style={{ width: '100%', padding: '0.625rem 0.75rem' }}>
+      <div className="card-header" style={{ marginBottom: '4px' }}>
         <div className="card-title">
           {getIcon()}
           <div>
-            <div style={{ fontWeight: 600 }}>{provider}</div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>ISP Gateway Connection</div>
+            <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{provider}</div>
+            <div style={{ fontSize: '0.6rem', color: '#64748b', marginTop: '1px' }}>ISP Gateway Connection</div>
           </div>
         </div>
-        <div className={`card-status status-${status}`}>
-          <span className={`status-dot ${status}`}></span>
-          <span style={{ fontSize: '0.75rem', textTransform: 'capitalize' }}>{status}</span>
+        <div className={`card-status status-${status}`} style={{ padding: '0.1rem 0.3rem' }}>
+          <span className={`status-dot ${status}`} style={{ width: '4px', height: '4px' }}></span>
+          <span style={{ fontSize: '0.6rem', textTransform: 'capitalize' }}>{status}</span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.875rem' }}>
-        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.03)' }}>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginBottom: '4px' }}>Latency</div>
-          <div style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--foreground)' }}>{latency} ms</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.725rem' }}>
+        <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'column' }}>
+          <span className="metric-label">Latency</span>
+          <span className="metric-value" style={{ fontSize: '0.8rem' }}>{latency} ms</span>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.03)' }}>
-          <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginBottom: '4px' }}>Uptime SLA</div>
-          <div style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--foreground)' }}>{uptime}%</div>
+        <div className="metric-box" style={{ padding: '0.2rem 0.375rem', display: 'flex', flexDirection: 'column' }}>
+          <span className="metric-label">Uptime SLA</span>
+          <span className="metric-value" style={{ fontSize: '0.8rem' }}>{uptime}%</span>
         </div>
       </div>
 
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.875rem' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#94a3b8' }}>
-            <Activity size={14} /> Bandwidth Utilization
+      <div style={{ marginTop: '2px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', fontSize: '0.675rem' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#94a3b8' }}>
+            <Activity size={10} /> Bandwidth Utilization
           </span>
           <span style={{ fontWeight: 500 }}>{utilization}%</span>
         </div>
-        <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ width: `${utilization}%`, height: '100%', background: 'var(--primary)', borderRadius: '3px', transition: 'width 0.5s ease-out' }}></div>
+        <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+          <div style={{ width: `${utilization}%`, height: '100%', background: 'var(--primary)', borderRadius: '1.5px', transition: 'width 0.5s ease-out' }}></div>
         </div>
       </div>
 
-      <div style={{ marginTop: '0.5rem' }}>
-        <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '8px' }}>Bandwidth Load Trend (20m)</div>
+      <div style={{ marginTop: '2px' }}>
+        <div style={{ fontSize: '0.6rem', color: '#64748b', marginBottom: '2px' }}>Bandwidth Load Trend (20m)</div>
         <UptimeChart data={chartData} status={status} />
       </div>
     </div>
