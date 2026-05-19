@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { system, endpoint, username, authMethod, connected } = body;
+    const { system, endpoint, username, authMethod, connected, secret } = body;
     
     if (!system || !['nutanix', 'symphony', 'isms', 'compliance'].includes(system)) {
       return NextResponse.json({ error: 'Invalid system specified' }, { status: 400 });
@@ -29,7 +29,8 @@ export async function POST(request: Request) {
       connected: connected !== undefined ? connected : true,
       endpoint: endpoint || '',
       username: username || '',
-      authMethod: authMethod || 'API Key'
+      authMethod: authMethod || 'API Key',
+      secret: secret || ''
     };
     
     // update timestamp

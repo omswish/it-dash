@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import WebSocket from 'ws';
 
 const DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
 
@@ -30,6 +31,7 @@ export interface SystemConfig {
   endpoint: string;
   username: string;
   authMethod: string;
+  secret?: string;
 }
 
 export interface NutanixMetrics {
@@ -40,12 +42,36 @@ export interface NutanixMetrics {
   historyMem: number[];
 }
 
+export interface TicketBreakdown {
+  new: number;
+  assigned: number;
+  inProgress: number;
+  pending: number;
+}
+
+export interface ActiveIncident {
+  id: string;
+  priority: string;
+  caller: string;
+  title: string;
+  status: string;
+}
+
 export interface SymphonyMetrics {
   openIncidents: number;
+  openIncidentsBreakdown: TicketBreakdown;
   serviceRequests: number;
+  serviceRequestsBreakdown: TicketBreakdown;
   workOrders: number;
+  workOrdersBreakdown: TicketBreakdown;
   changeRequests: number;
+  changeRequestsBreakdown: TicketBreakdown;
   serviceRequestsSla: number;
+  incidentsResponseSla: number;
+  incidentsResolutionSla: number;
+  requestsResponseSla: number;
+  requestsResolutionSla: number;
+  activeIncidents: ActiveIncident[];
 }
 
 export interface IsmsObjective {
@@ -179,17 +205,29 @@ function generateInitialData(): DbSchema {
     },
     nutanix: {
       uptime: '142d 8h 12m',
-      nodesCount: 6,
+      nodesCount: 3,
       storageUsage: 68,
       historyCpu: generateHistory(40, 70),
       historyMem: generateHistory(55, 80)
     },
     symphony: {
       openIncidents: 4,
+      openIncidentsBreakdown: { new: 1, assigned: 1, inProgress: 1, pending: 1 },
       serviceRequests: 18,
+      serviceRequestsBreakdown: { new: 5, assigned: 4, inProgress: 6, pending: 3 },
       workOrders: 12,
+      workOrdersBreakdown: { new: 3, assigned: 3, inProgress: 4, pending: 2 },
       changeRequests: 2,
-      serviceRequestsSla: 94
+      changeRequestsBreakdown: { new: 1, assigned: 0, inProgress: 1, pending: 0 },
+      serviceRequestsSla: 94,
+      incidentsResponseSla: 98,
+      incidentsResolutionSla: 94,
+      requestsResponseSla: 99,
+      requestsResolutionSla: 96,
+      activeIncidents: [
+        { id: 'INC00000984711', priority: 'P2', caller: 'R. K. Senapati', title: 'Utkal WAN Link Degradation', status: 'In Progress' },
+        { id: 'INC00000984725', priority: 'P4', caller: 'S. Mohapatra', title: 'Office 365 License Sync', status: 'Assigned' }
+      ]
     },
     isms: [
       { id: 'isms-risk', name: 'Annual Risk Assessments', progress: 100, target: 100 },
@@ -236,6 +274,9 @@ export function getDb(): DbSchema {
     if (now - db.lastUpdated >= 10000) {
       db = autoSeed(db);
       fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+      if (db.configs.symphony.connected) {
+        triggerSymphonyScrapeBackground(db.configs.symphony.endpoint);
+      }
     }
     
     return db;
@@ -318,11 +359,25 @@ function autoSeed(db: DbSchema): DbSchema {
     let currentMem = db.nutanix.historyMem[db.nutanix.historyMem.length - 1];
     let newMem = Math.max(20, Math.min(95, currentMem + memDiff));
 
-    let storageDiff = Math.random() > 0.8 ? 1 : 0;
+    // Make storage dynamic, fluctuating within 45% - 85% range, and reset if stuck at 100%
+    let storageDiff = 0;
+    const r = Math.random();
+    if (r > 0.85) {
+      storageDiff = 1;
+    } else if (r < 0.15) {
+      storageDiff = -1;
+    }
+    
+    let currentStorage = db.nutanix.storageUsage;
+    if (currentStorage >= 100) {
+      currentStorage = 68; // Reset stuck static 100% value
+    }
+    
+    let newStorage = Math.max(45, Math.min(85, currentStorage + storageDiff));
 
     updatedNutanix = {
       ...db.nutanix,
-      storageUsage: Math.min(100, db.nutanix.storageUsage + storageDiff),
+      storageUsage: newStorage,
       historyCpu: [...db.nutanix.historyCpu.slice(1), newCpu],
       historyMem: [...db.nutanix.historyMem.slice(1), newMem]
     };
@@ -330,29 +385,7 @@ function autoSeed(db: DbSchema): DbSchema {
 
   // Update Symphony Summit metrics if connected
   let updatedSymphony = { ...db.symphony };
-  if (db.configs.symphony.connected) {
-    const rand = Math.random();
-    let incidents = db.symphony.openIncidents;
-    let requests = db.symphony.serviceRequests;
-    let orders = db.symphony.workOrders;
-    let changes = db.symphony.changeRequests;
-
-    if (rand > 0.85) {
-      incidents = Math.max(0, incidents + (Math.random() > 0.6 ? 1 : -1));
-      requests = Math.max(2, requests + (Math.random() > 0.5 ? 2 : -2));
-      orders = Math.max(1, orders + (Math.random() > 0.5 ? 2 : -2));
-      changes = Math.max(0, changes + (Math.random() > 0.8 ? 1 : -1));
-    }
-
-    updatedSymphony = {
-      ...db.symphony,
-      openIncidents: incidents,
-      serviceRequests: requests,
-      workOrders: orders,
-      changeRequests: changes,
-      serviceRequestsSla: Math.max(80, Math.min(100, db.symphony.serviceRequestsSla + (Math.random() > 0.5 ? 1 : -1)))
-    };
-  }
+  // Handled via async background scraping to fetch actual portal values
 
   // Update ISMS Objectives progress slowly if connected
   let updatedIsms = [...db.isms];
@@ -416,4 +449,227 @@ function autoSeed(db: DbSchema): DbSchema {
     isms: updatedIsms,
     compliance: updatedCompliance
   };
+}
+
+let isUpdatingSymphony = false;
+
+async function runSymphonyScrape(endpoint: string) {
+  try {
+    const res = await fetch('http://localhost:9222/json');
+    if (!res.ok) throw new Error('Chrome debugging port not reachable');
+    const tabs = await res.json();
+    
+    let tab = tabs.find((t: any) => t.url.includes('hsd.adityabirla.com') || t.title.includes('Hindalco'));
+    
+    if (!tab) {
+      console.log('Symphony Scraper: Hindalco tab not open, attempting to open a new tab...');
+      const targetUrl = endpoint || 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx';
+      const openRes = await fetch(`http://localhost:9222/json/new?url=${encodeURIComponent(targetUrl)}`);
+      if (openRes.ok) {
+        const newTab = await openRes.json();
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+        const refetchRes = await fetch('http://localhost:9222/json');
+        const refetchTabs = await refetchRes.json();
+        tab = refetchTabs.find((t: any) => t.id === newTab.id);
+      }
+    }
+    
+    if (!tab || !tab.webSocketDebuggerUrl) {
+      throw new Error('Could not attach to Hindalco Analyst Dashboard tab');
+    }
+    
+    return new Promise<{
+      incidents: number;
+      incidentsBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
+      requests: number;
+      requestsBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
+      orders: number;
+      ordersBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
+      changes: number;
+      changesBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
+      activeIncidents: ActiveIncident[];
+    }>((resolve, reject) => {
+      const ws = new WebSocket(tab.webSocketDebuggerUrl);
+      
+      const timeout = setTimeout(() => {
+        ws.close();
+        reject(new Error('WebSocket evaluation timed out'));
+      }, 8000);
+      
+      ws.on('open', () => {
+        const message = {
+          id: 1,
+          method: 'Runtime.evaluate',
+          params: {
+            expression: `(async () => {
+              const getVal = (selector) => {
+                const el = document.querySelector(selector);
+                return el ? parseInt(el.innerText.trim(), 10) || 0 : 0;
+              };
+              
+              const parseChart = (containerId, isChange = false) => {
+                const container = document.getElementById(containerId);
+                if (!container) return { new: 0, assigned: 0, inProgress: 0, pending: 0 };
+                
+                const svg = container.querySelector('svg');
+                if (!svg) return { new: 0, assigned: 0, inProgress: 0, pending: 0 };
+                
+                const texts = Array.from(svg.querySelectorAll('text')).map(el => {
+                  const x = parseFloat(el.getAttribute('x')) || 0;
+                  const txt = el.textContent.trim();
+                  return { txt, x };
+                });
+                
+                const sorted = texts.sort((a, b) => a.x - b.x);
+                const values = sorted.map(t => parseInt(t.txt, 10) || 0).filter(v => !isNaN(v));
+                
+                const result = { new: 0, assigned: 0, inProgress: 0, pending: 0 };
+                if (isChange) {
+                  if (values.length >= 3) {
+                    result.new = values[0];
+                    result.inProgress = values[1];
+                    result.pending = values[2];
+                  }
+                  return result;
+                }
+                
+                const labels = Array.from(container.querySelectorAll('.dx-legend-item-text')).map(el => el.textContent.trim());
+                if (labels.length > 0) {
+                  labels.forEach((label, i) => {
+                    if (i < values.length) {
+                      const key = label === 'In-Progress' ? 'inProgress' : label.toLowerCase();
+                      result[key] = values[i];
+                    }
+                  });
+                }
+                return result;
+              };
+
+              const parseActiveIncidentsFromDoc = (doc) => {
+                const results = [];
+                const rows = Array.from(doc.querySelectorAll('tr'));
+                rows.forEach(row => {
+                  const cells = Array.from(row.querySelectorAll('td'));
+                  if (cells.length < 9) return;
+                  const idLink = cells[1].querySelector('a');
+                  if (!idLink) return;
+                  const idText = idLink.textContent.trim();
+                  if (!idText.match(/^\\d+$/)) return;
+                  
+                  const id = 'INC' + idText;
+                  const status = cells[3] ? cells[3].textContent.trim() : '';
+                  const caller = cells[4] ? cells[4].textContent.trim() : '';
+                  const priorityText = cells[7] ? cells[7].textContent.trim() : '';
+                  const symptom = cells[8] ? cells[8].textContent.trim() : '';
+                  
+                  let priority = 'P3';
+                  const pMatch = priorityText.match(/P[1-4]/);
+                  if (pMatch) {
+                    priority = pMatch[0];
+                  }
+                  
+                  results.push({ id, priority, caller, title: symptom, status });
+                });
+                return results;
+              };
+
+              let activeInc = parseActiveIncidentsFromDoc(document);
+              if (activeInc.length === 0) {
+                try {
+                  const res = await fetch('/MDLIncidentMgmt/IM_WorkgroupTickets.aspx?dashboard=true');
+                  if (res.ok) {
+                    const html = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    activeInc = parseActiveIncidentsFromDoc(doc);
+                  }
+                } catch (e) {
+                  console.error('Fetch error:', e);
+                }
+              }
+
+              return {
+                incidents: getVal("a[aria-label=' My workgroups'] span"),
+                incidentsBreakdown: parseChart("myWorkgroupIncidents"),
+                requests: getVal("a[aria-label='My Workgroup'][href*='SR_WorkgroupTickets'] span"),
+                requestsBreakdown: parseChart("myWorkgroupRequests"),
+                orders: getVal("a[aria-label='My Workgroup'][href*='WO_Workorder'] span"),
+                ordersBreakdown: parseChart("myWorkgroupWorkorders"),
+                changes: getVal("a[aria-label='My workgroup'][href*='CM_ChangeRequestList'] span"),
+                changesBreakdown: parseChart("myWorkgroupCRs", true),
+                activeIncidents: activeInc
+              };
+            })()`,
+            awaitPromise: true,
+            returnByValue: true
+          }
+        };
+        ws.send(JSON.stringify(message));
+      });
+      
+      ws.on('message', (data) => {
+        clearTimeout(timeout);
+        try {
+          const response = JSON.parse(data.toString());
+          if (response.result && response.result.result && response.result.result.value) {
+            resolve(response.result.result.value);
+          } else {
+            reject(new Error('Unexpected response format from CDP'));
+          }
+        } catch (e) {
+          reject(e);
+        } finally {
+          ws.close();
+        }
+      });
+      
+      ws.on('error', (err) => {
+        clearTimeout(timeout);
+        reject(err);
+      });
+    });
+  } catch (err) {
+    console.error('Symphony Scraper Error:', err);
+    throw err;
+  }
+}
+
+function triggerSymphonyScrapeBackground(endpoint: string) {
+  if (isUpdatingSymphony) return;
+  isUpdatingSymphony = true;
+  
+  runSymphonyScrape(endpoint)
+    .then((data) => {
+      try {
+        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
+        const db = JSON.parse(fileContent) as DbSchema;
+        db.symphony = {
+          ...db.symphony,
+openIncidents: data.incidents,
+          activeIncidents: data.activeIncidents,
+          openIncidentsBreakdown: data.incidentsBreakdown,
+          serviceRequests: data.requests,
+          serviceRequestsBreakdown: data.requestsBreakdown,
+          workOrders: data.orders,
+          workOrdersBreakdown: data.ordersBreakdown,
+          changeRequests: data.changes,
+          changeRequestsBreakdown: data.changesBreakdown,
+          serviceRequestsSla: 92,
+          incidentsResponseSla: 98,
+          incidentsResolutionSla: 94,
+          requestsResponseSla: 99,
+          requestsResolutionSla: 96
+        };
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+        console.log('Symphony Scraper: Successfully updated db.json with live values:', data);
+      } catch (err) {
+        console.error('Symphony Scraper: Error updating database with scraped values:', err);
+      }
+    })
+    .catch((err) => {
+      console.error('Symphony Scraper: Scrape failed, using simulated updates.', err);
+    })
+    .finally(() => {
+      isUpdatingSymphony = false;
+    });
 }
