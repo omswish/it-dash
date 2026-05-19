@@ -93,7 +93,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.7)',
+      backgroundColor: 'rgba(15, 23, 42, 0.4)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       justifyContent: 'center',
@@ -107,8 +107,9 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
-        background: '#0e131f'
+        border: '1px solid rgba(234, 88, 12, 0.2)',
+        background: '#fffdf9',
+        boxShadow: '0 10px 30px rgba(120, 110, 90, 0.15)'
       }}>
         {/* Header */}
         <div style={{
@@ -116,21 +117,21 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid rgba(255,255,255,0.06)'
+          borderBottom: '1px solid rgba(234, 88, 12, 0.12)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Settings size={22} color="var(--primary)" />
-            <span style={{ fontSize: '1.25rem', fontWeight: 600 }}>Configure Integration Sources</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>Configure Integration Sources</span>
           </div>
           <button onClick={onClose} style={{
             background: 'none',
             border: 'none',
-            color: '#94a3b8',
+            color: '#64748b',
             cursor: 'pointer',
             padding: '4px',
             borderRadius: '4px',
             transition: 'color 0.2s'
-          }} onMouseOver={(e) => e.currentTarget.style.color = 'white'} onMouseOut={(e) => e.currentTarget.style.color = '#94a3b8'}>
+          }} onMouseOver={(e) => e.currentTarget.style.color = '#0f172a'} onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}>
             <X size={20} />
           </button>
         </div>
@@ -140,12 +141,12 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           {/* Left Navigation */}
           <div style={{
             width: '240px',
-            borderRight: '1px solid rgba(255,255,255,0.06)',
+            borderRight: '1px solid rgba(234, 88, 12, 0.12)',
             padding: '1rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '0.5rem',
-            background: 'rgba(0,0,0,0.15)'
+            background: '#f8f6ec'
           }}>
             <button 
               onClick={() => { setActiveTab('nutanix'); setTestResult(null); }}
@@ -182,16 +183,16 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           </div>
 
           {/* Right Inputs Content */}
-          <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#ffffff' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                   {activeTab === 'nutanix' && 'Nutanix CLI Hypervisor Access'}
                   {activeTab === 'symphony' && 'Symphony Summit Service API'}
                   {activeTab === 'isms' && 'ISMS Objectives Portal (Oracle APEX)'}
                   {activeTab === 'compliance' && 'IT Compliance Engine (Oracle APEX)'}
                 </h3>
-                <p style={{ fontSize: '0.825rem', color: '#64748b' }}>
+                <p style={{ fontSize: '0.825rem', color: '#475569', lineHeight: 1.3 }}>
                   {activeTab === 'nutanix' && 'Establish SSH connection to Nutanix Acropolis hypervisor to retrieve system utilization.'}
                   {activeTab === 'symphony' && 'Provide endpoint credentials to Summit ITSM suite to retrieve incident and SLA lists.'}
                   {activeTab === 'isms' && 'Establish connection with Oracle APEX ISMS Objectives repository via secured REST endpoints.'}
@@ -201,7 +202,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
 
               {/* Endpoint Address */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.825rem', color: '#94a3b8', fontWeight: 500 }}>
+                <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
                   {activeTab === 'nutanix' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
                 </label>
                 <input 
@@ -215,7 +216,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               {/* Username & Creds */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.825rem', color: '#94a3b8', fontWeight: 500 }}>
+                  <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
                     {activeTab === 'nutanix' ? 'CLI SSH Username' : 'Client ID / User'}
                   </label>
                   <input 
@@ -226,7 +227,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '0.825rem', color: '#94a3b8', fontWeight: 500 }}>
+                  <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
                     {activeTab === 'nutanix' ? 'SSH Private Key / Password' : 'Client Secret Key / Token'}
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -248,31 +249,31 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
+              borderTop: '1px solid rgba(234, 88, 12, 0.12)',
               paddingTop: '1.5rem',
               marginTop: '1rem'
             }}>
               <div>
                 {testing && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#3b82f6', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0d9488', fontSize: '0.875rem', fontWeight: 600 }}>
                     <Loader2 size={16} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
                     <span>Verifying Secure Access Handshake...</span>
                   </div>
                 )}
                 {testResult === 'success' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 600 }}>
                     <Check size={16} />
                     <span>Connection Established Successfully!</span>
                   </div>
                 )}
                 {testResult === 'failed' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', fontSize: '0.875rem', fontWeight: 600 }}>
                     <AlertCircle size={16} />
                     <span>Handshake Failed. Verify Endpoint Credentials.</span>
                   </div>
                 )}
                 {!testing && !testResult && configs[activeTab].connected && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#3b82f6', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0d9488', fontSize: '0.875rem', fontWeight: 600 }}>
                     <Check size={16} />
                     <span>Connected ({form[activeTab].method})</span>
                   </div>
@@ -309,11 +310,11 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           to { opacity: 1; transform: scale(1); }
         }
         .config-input {
-          background: rgba(0,0,0,0.25);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #faf9f5;
+          border: 1px solid rgba(234, 88, 12, 0.25);
           border-radius: 6px;
           padding: 0.625rem 0.875rem;
-          color: white;
+          color: #0f172a;
           font-family: inherit;
           font-size: 0.875rem;
           width: 100%;
@@ -322,6 +323,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
         }
         .config-input:focus {
           border-color: var(--primary);
+          background: #ffffff;
         }
         .connected-badge {
           width: 6px;
@@ -337,7 +339,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           color: white;
           padding: 0.5rem 1.25rem;
           border-radius: 6px;
-          font-weight: 500;
+          font-weight: 600;
           font-size: 0.875rem;
           cursor: pointer;
           transition: filter 0.2s;
@@ -350,18 +352,18 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
           cursor: not-allowed;
         }
         .btn-danger {
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid rgba(239, 68, 68, 0.2);
-          color: #ef4444;
+          background: rgba(190, 18, 60, 0.08);
+          border: 1px solid rgba(190, 18, 60, 0.2);
+          color: var(--danger);
           padding: 0.5rem 1.25rem;
           border-radius: 6px;
-          font-weight: 500;
+          font-weight: 600;
           font-size: 0.875rem;
           cursor: pointer;
           transition: background 0.2s;
         }
         .btn-danger:hover {
-          background: rgba(239, 68, 68, 0.2);
+          background: rgba(190, 18, 60, 0.15);
         }
         .spin {
           animation: spin 1s linear infinite;
@@ -381,11 +383,11 @@ function getTabStyle(active: boolean): React.CSSProperties {
     gap: '0.75rem',
     width: '100%',
     padding: '0.75rem 1rem',
-    background: active ? 'rgba(37, 99, 235, 0.15)' : 'none',
+    background: active ? 'rgba(234, 88, 12, 0.12)' : 'none',
     border: '1px solid',
-    borderColor: active ? 'rgba(37, 99, 235, 0.3)' : 'transparent',
+    borderColor: active ? 'rgba(234, 88, 12, 0.25)' : 'transparent',
     borderRadius: '8px',
-    color: active ? 'white' : '#94a3b8',
+    color: active ? '#c2410c' : '#475569',
     fontFamily: 'inherit',
     fontSize: '0.875rem',
     fontWeight: active ? 600 : 500,

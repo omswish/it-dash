@@ -37,10 +37,10 @@ export default function Dashboard() {
 
   if (loading && !data) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#94a3b8', background: '#0b0f19' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#334155', background: '#f8f6ec' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <RefreshCw size={48} style={{ animation: 'spin 1s linear infinite', color: '#3b82f6' }} />
-          <p>Initializing Utkal Alumina NOC Panel...</p>
+          <RefreshCw size={48} style={{ animation: 'spin 1s linear infinite', color: '#c2410c' }} />
+          <p style={{ fontWeight: 600 }}>Initializing Utkal Alumina NOC Panel...</p>
         </div>
       </div>
     );
@@ -66,39 +66,39 @@ export default function Dashboard() {
     <main className="layout-container">
       {/* Header */}
       <header className="header" style={{ marginBottom: '0.625rem' }}>
-        <Server size={28} color="#3b82f6" />
+        <Server size={28} color="var(--primary)" />
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontSize: '1.875rem', lineHeight: 1 }}>
             Utkal Alumina IT Dashboard
           </h1>
-          <p style={{ fontSize: '0.725rem', color: '#64748b', marginTop: '1px' }}>Enterprise IT Infrastructure & Gateway Monitoring — NOC Widescreen Console</p>
+          <p style={{ fontSize: '0.725rem', color: '#475569', marginTop: '1px', fontWeight: 500 }}>Enterprise IT Infrastructure & Gateway Monitoring — NOC Widescreen Console</p>
         </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#94a3b8' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.725rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.04)' }}>
-            <span style={{ width: '4px', height: '4px', background: '#3b82f6', borderRadius: '50%', display: 'inline-block', animation: 'pulse 10s infinite' }}></span>
-            <span>10s Sync</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#475569' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.725rem', background: 'rgba(234, 88, 12, 0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(234, 88, 12, 0.15)' }}>
+            <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%', display: 'inline-block', animation: 'pulse 10s infinite' }}></span>
+            <span style={{ fontWeight: 600 }}>10s Sync</span>
           </div>
-          <span style={{ fontSize: '0.75rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>
             Sync: {lastUpdated?.toLocaleTimeString()}
           </span>
           <button 
             onClick={() => setIsConfigOpen(true)}
             style={{
-              background: 'rgba(37, 99, 235, 0.1)',
-              border: '1px solid rgba(37, 99, 235, 0.25)',
+              background: 'rgba(234, 88, 12, 0.08)',
+              border: '1px solid rgba(234, 88, 12, 0.25)',
               padding: '0.3rem 0.625rem',
               borderRadius: '6px',
-              color: '#3b82f6',
+              color: '#c2410c',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '0.375rem',
               transition: 'all 0.2s',
               fontSize: '0.75rem',
-              fontWeight: 500
+              fontWeight: 600
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(37, 99, 235, 0.2)'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(37, 99, 235, 0.1)'; }}
+            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(234, 88, 12, 0.15)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(234, 88, 12, 0.08)'; }}
           >
             <Settings size={12} />
             Configure Sources
@@ -109,32 +109,32 @@ export default function Dashboard() {
       {/* Corporate KPIs (Enlarged Figures) */}
       <div className="global-stats" style={{ gap: '0.75rem', marginBottom: '0.75rem' }}>
         <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Location Node</span>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Location Node</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--foreground)', marginTop: '2px' }}>
-            <Server size={18} color="#3b82f6" />
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', letterSpacing: '0.025em' }}>Utkal Alumina</span>
+            <Server size={18} color="var(--primary)" />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', letterSpacing: '0.025em' }}>Utkal Alumina</span>
           </div>
         </div>
 
         <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Avg Core Load</span>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Avg Core Load</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--foreground)', marginTop: '2px' }}>
-            <Cpu size={18} color="#3b82f6" />
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white' }}>{avgCpu}% <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>CPU</span> / {avgMemory}% <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>RAM</span></span>
+            <Cpu size={18} color="var(--secondary)" />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{avgCpu}% <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 600 }}>CPU</span> / {avgMemory}% <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 600 }}>RAM</span></span>
           </div>
         </div>
 
         <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>Integrations Connected</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: activeSourcesCount > 0 ? '#3b82f6' : '#64748b', marginTop: '2px' }}>
-            <Database size={18} color={activeSourcesCount > 0 ? '#3b82f6' : '#64748b'} />
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#3b82f6' }}>{activeSourcesCount} / 4 <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Active</span></span>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Integrations Connected</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: activeSourcesCount > 0 ? 'var(--primary)' : '#64748b', marginTop: '2px' }}>
+            <Database size={18} color={activeSourcesCount > 0 ? 'var(--primary)' : '#64748b'} />
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary)' }}>{activeSourcesCount} / 4 <span style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 600 }}>Active</span></span>
           </div>
         </div>
 
         <div className="glass-panel stat-box" style={{ padding: '0.625rem 1rem' }}>
-          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 500 }}>System Health Status</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: (serverAlerts + networkAlerts) === 0 ? '#10b981' : '#f59e0b', marginTop: '2px' }}>
+          <span className="stat-label" style={{ fontSize: '0.75rem', fontWeight: 600 }}>System Health Status</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: (serverAlerts + networkAlerts) === 0 ? 'var(--success)' : 'var(--warning)', marginTop: '2px' }}>
             {(serverAlerts + networkAlerts) === 0 ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
             <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>
               {(serverAlerts + networkAlerts) === 0 ? 'Healthy' : `${serverAlerts + networkAlerts} Warnings`}
@@ -152,28 +152,28 @@ export default function Dashboard() {
           {/* A. Symphony Summit Card */}
           <div style={{ flexShrink: 0 }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem' }}>
-              <Radio size={14} color="#3b82f6" />
+              <Radio size={14} color="var(--primary)" />
               Symphony Summit Service Desk
             </h2>
             {data.configs.symphony.connected ? (
               <div className="glass-panel provider-card" style={{ height: '145px', padding: '0.625rem 0.75rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div className="card-header" style={{ marginBottom: '2px' }}>
                   <div className="card-title">
-                    <Radio size={15} color="#3b82f6" />
+                    <Radio size={15} color="var(--primary)" />
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>Summit ITSM</div>
-                      <div style={{ fontSize: '0.6rem', color: '#64748b' }}>Operations Queues</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0f172a' }}>Summit ITSM</div>
+                      <div style={{ fontSize: '0.6rem', color: '#475569', fontWeight: 500 }}>Operations Queues</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ 
                       fontSize: '0.75rem', 
-                      color: '#3b82f6', 
+                      color: 'var(--secondary)', 
                       fontWeight: 800,
-                      background: 'rgba(59, 130, 246, 0.08)',
+                      background: 'rgba(13, 148, 136, 0.08)',
                       padding: '0.1rem 0.35rem',
                       borderRadius: '3px',
-                      border: '1px solid rgba(59, 130, 246, 0.15)'
+                      border: '1px solid rgba(13, 148, 136, 0.18)'
                     }}>
                       SLA {data.symphony.serviceRequestsSla}%
                     </span>
@@ -187,20 +187,20 @@ export default function Dashboard() {
                 {/* 2x2 Operations Ticket Grid with VERY Large Bold Numbers */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', flex: 1, minHeight: 0, margin: '0.25rem 0' }}>
                   <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Open Incidents</span>
-                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: data.symphony.openIncidents > 0 ? '#ef4444' : '#10b981' }}>{data.symphony.openIncidents}</span>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 600 }}>Open Incidents</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: data.symphony.openIncidents > 0 ? 'var(--danger)' : 'var(--success)' }}>{data.symphony.openIncidents}</span>
                   </div>
                   <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Service Requests</span>
-                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white' }}>{data.symphony.serviceRequests}</span>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 600 }}>Service Requests</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>{data.symphony.serviceRequests}</span>
                   </div>
                   <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Work Orders</span>
-                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white' }}>{data.symphony.workOrders}</span>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 600 }}>Work Orders</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>{data.symphony.workOrders}</span>
                   </div>
                   <div className="metric-box" style={{ padding: '0.4rem 0.5rem', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 500 }}>Change Requests</span>
-                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f59e0b' }}>{data.symphony.changeRequests}</span>
+                    <span className="metric-label" style={{ fontSize: '0.675rem', fontWeight: 600 }}>Change Requests</span>
+                    <span className="metric-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--warning)' }}>{data.symphony.changeRequests}</span>
                   </div>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function Dashboard() {
           {/* B. ISP Gateway Status */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, gap: '0.375rem' }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', margin: 0 }}>
-              <Network size={14} color="#3b82f6" />
+              <Network size={14} color="var(--primary)" />
               ISP Gateway Status
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minHeight: 0 }}>
@@ -231,26 +231,26 @@ export default function Dashboard() {
         {/* COLUMN 2: Local Server Clusters (Smartface, CLMS, DHCP, ILMS APP, ILMS DB) */}
         <div style={{ flex: '1 1 34%', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
           <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-            <Server size={14} color="#3b82f6" />
+            <Server size={14} color="var(--primary)" />
             Utkal Alumina Server Nodes
           </h2>
-          <div className="glass-panel" style={{ flex: 1, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="glass-panel" style={{ flex: 1, overflow: 'hidden', border: '1px solid var(--card-border)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.725rem' }}>
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#94a3b8' }}>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>Node</th>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>Status</th>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>CPU</th>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>RAM</th>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>Disk</th>
-                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 600 }}>Backup</th>
+                <tr style={{ background: 'rgba(234, 88, 12, 0.04)', borderBottom: '1px solid rgba(234, 88, 12, 0.1)', color: '#475569' }}>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>Node</th>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>Status</th>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>CPU</th>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>RAM</th>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>Disk</th>
+                  <th style={{ padding: '0.5rem 0.625rem', fontWeight: 700 }}>Backup</th>
                 </tr>
               </thead>
               <tbody>
                 {data.servers.map((server) => (
-                  <tr key={server.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }} className="table-row-hover">
-                    <td style={{ padding: '0.55rem 0.625rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Server size={11} color="#3b82f6" />
+                  <tr key={server.id} style={{ borderBottom: '1px solid rgba(234, 88, 12, 0.06)', transition: 'background 0.2s' }} className="table-row-hover">
+                    <td style={{ padding: '0.55rem 0.625rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Server size={11} color="var(--primary)" />
                       {server.name}
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
@@ -261,24 +261,24 @@ export default function Dashboard() {
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.cpu}%</span>
-                        <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                        <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.8rem' }}>{server.cpu}%</span>
+                        <div style={{ width: '40px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.cpu}%`, height: '100%', background: server.cpu > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
                       </div>
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.memory}%</span>
-                        <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                        <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.8rem' }}>{server.memory}%</span>
+                        <div style={{ width: '40px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.memory}%`, height: '100%', background: server.memory > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
                       </div>
                     </td>
                     <td style={{ padding: '0.55rem 0.625rem' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <span style={{ fontWeight: 800, color: '#e2e8f0', fontSize: '0.8rem' }}>{server.disk}%</span>
-                        <div style={{ width: '40px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                        <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.8rem' }}>{server.disk}%</span>
+                        <div style={{ width: '40px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
                           <div style={{ width: `${server.disk}%`, height: '100%', background: server.disk > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
                         </div>
                       </div>
@@ -289,13 +289,13 @@ export default function Dashboard() {
                         alignItems: 'center',
                         gap: '2px',
                         fontSize: '0.625rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         padding: '0.1rem 0.35rem',
                         borderRadius: '3px',
-                        background: server.backupStatus === 'successful' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                        background: server.backupStatus === 'successful' ? 'rgba(15, 118, 110, 0.08)' : 'rgba(190, 18, 60, 0.08)',
                         border: '1px solid',
-                        borderColor: server.backupStatus === 'successful' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                        color: server.backupStatus === 'successful' ? '#10b981' : '#ef4444'
+                        borderColor: server.backupStatus === 'successful' ? 'rgba(15, 118, 110, 0.2)' : 'rgba(190, 18, 60, 0.2)',
+                        color: server.backupStatus === 'successful' ? 'var(--success)' : 'var(--danger)'
                       }}>
                         {server.backupStatus === 'successful' ? <Check size={10} /> : <X size={10} />}
                         {server.backupStatus === 'successful' ? 'Success' : 'Failed'}
@@ -311,7 +311,7 @@ export default function Dashboard() {
         {/* COLUMN 3: Nutanix, ISMS Oracle APEX, and IT Compliance stacked vertically */}
         <div style={{ flex: '1 1 36%', display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0, gap: '0.375rem' }}>
           <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-            <Database size={14} color="#3b82f6" />
+            <Database size={14} color="var(--primary)" />
             Nutanix & APEX Portal Integrations
           </h2>
           
@@ -323,10 +323,10 @@ export default function Dashboard() {
                 <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', gap: '0.25rem' }}>
                   <div className="card-header" style={{ marginBottom: '1px' }}>
                     <div className="card-title" style={{ fontSize: '0.8rem' }}>
-                      <Server size={14} color="#3b82f6" />
+                      <Server size={14} color="var(--primary)" />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>Nutanix Cluster</div>
-                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>CLI SSH Handshake Active</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#0f172a' }}>Nutanix Cluster</div>
+                        <div style={{ fontSize: '0.55rem', color: '#475569', fontWeight: 500 }}>CLI SSH Handshake Active</div>
                       </div>
                     </div>
                     <div className="card-status status-operational" style={{ padding: '0.1rem 0.25rem' }}>
@@ -345,11 +345,11 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px', fontSize: '0.675rem' }}>
-                      <span style={{ color: '#94a3b8' }}>Storage Pool</span>
-                      <span style={{ fontWeight: 700, fontSize: '0.775rem', color: 'white' }}>{data.nutanix.storageUsage}%</span>
+                    <div style={{ display: 'flex', justifycontent: 'space-between', marginBottom: '1px', fontSize: '0.675rem' }}>
+                      <span style={{ color: '#475569', fontWeight: 600 }}>Storage Pool</span>
+                      <span style={{ fontWeight: 800, fontSize: '0.775rem', color: '#0f172a', float: 'right' }}>{data.nutanix.storageUsage}%</span>
                     </div>
-                    <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{ height: '5px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '2.5px', overflow: 'hidden', clear: 'both' }}>
                       <div style={{ width: `${data.nutanix.storageUsage}%`, height: '100%', background: 'var(--primary)' }}></div>
                     </div>
                   </div>
@@ -365,22 +365,22 @@ export default function Dashboard() {
                 <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', justifyContent: 'flex-start', gap: '0.25rem' }}>
                   <div className="card-header" style={{ marginBottom: '1px' }}>
                     <div className="card-title" style={{ fontSize: '0.8rem' }}>
-                      <Database size={14} color="#3b82f6" />
+                      <Database size={14} color="var(--primary)" />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>ISMS APEX</div>
-                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>ISO 27001 Objectives</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#0f172a' }}>ISMS APEX</div>
+                        <div style={{ fontSize: '0.55rem', color: '#475569', fontWeight: 500 }}>ISO 27001 Objectives</div>
                       </div>
                     </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.625rem', flex: 1, alignItems: 'center' }}>
                     {data.isms.slice(0, 4).map((obj) => (
                       <div key={obj.id} style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e2e8f0' }}>
-                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100px', fontSize: '0.575rem' }}>{obj.name}</span>
-                          <span style={{ fontWeight: 700, fontSize: '0.725rem', color: 'white' }}>{obj.progress}%</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0f172a' }}>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100px', fontSize: '0.575rem', color: '#475569', fontWeight: 600 }}>{obj.name}</span>
+                          <span style={{ fontWeight: 800, fontSize: '0.725rem', color: '#0f172a' }}>{obj.progress}%</span>
                         </div>
-                        <div style={{ height: '2.5px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.25px', overflow: 'hidden' }}>
-                          <div style={{ width: `${obj.progress}%`, height: '100%', background: obj.progress === 100 ? '#10b981' : 'var(--primary)' }}></div>
+                        <div style={{ height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                          <div style={{ width: `${obj.progress}%`, height: '100%', background: obj.progress === 100 ? 'var(--success)' : 'var(--primary)' }}></div>
                         </div>
                       </div>
                     ))}
@@ -399,22 +399,22 @@ export default function Dashboard() {
                   {/* Header (with ENLARGED dynamic Average score badge) */}
                   <div className="card-header" style={{ marginBottom: '1px', flexShrink: 0 }}>
                     <div className="card-title" style={{ fontSize: '0.85rem' }}>
-                      <Shield size={16} color="#3b82f6" />
+                      <Shield size={16} color="var(--primary)" />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>IT Compliance</div>
-                        <div style={{ fontSize: '0.55rem', color: '#64748b' }}>Oracle APEX Compliance Portal</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0f172a' }}>IT Compliance</div>
+                        <div style={{ fontSize: '0.55rem', color: '#475569', fontWeight: 500 }}>Oracle APEX Compliance Portal</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{
                         fontSize: '0.9rem',
                         fontWeight: 800,
-                        color: '#10b981',
-                        background: 'rgba(16, 185, 129, 0.1)',
+                        color: 'var(--success)',
+                        background: 'rgba(15, 118, 110, 0.08)',
                         padding: '0.2rem 0.5rem',
                         borderRadius: '4px',
-                        border: '1px solid rgba(16, 185, 129, 0.25)',
-                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.1)'
+                        border: '1px solid rgba(15, 118, 110, 0.25)',
+                        boxShadow: '0 0 10px rgba(15, 118, 110, 0.06)'
                       }}>
                         Average Compliance: {data.compliance.endpointAverage}%
                       </span>
@@ -428,26 +428,26 @@ export default function Dashboard() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', justifyContent: 'center' }}>
                       
                       {/* Server Compliance (Enlarged) */}
-                      <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: '0.4rem 0.5rem', borderRadius: '6px' }}>
-                        <div style={{ fontSize: '0.625rem', color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px' }}>
+                      <div style={{ background: 'rgba(234, 88, 12, 0.03)', border: '1px solid rgba(234, 88, 12, 0.08)', padding: '0.4rem 0.5rem', borderRadius: '6px' }}>
+                        <div style={{ fontSize: '0.625rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px' }}>
                           Server Compliance
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', marginBottom: '2px' }}>
-                              <span style={{ color: '#94a3b8' }}>OS Compliance</span>
-                              <span style={{ fontWeight: 700, color: 'white', fontSize: '0.75rem' }}>{data.compliance.serverOs}%</span>
+                              <span style={{ color: '#475569', fontWeight: 600 }}>OS Compliance</span>
+                              <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.75rem' }}>{data.compliance.serverOs}%</span>
                             </div>
-                            <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.serverOs}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
                           </div>
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', marginBottom: '2px' }}>
-                              <span style={{ color: '#94a3b8' }}>Patch Compliance</span>
-                              <span style={{ fontWeight: 700, color: 'white', fontSize: '0.75rem' }}>{data.compliance.serverPatch}%</span>
+                              <span style={{ color: '#475569', fontWeight: 600 }}>Patch Compliance</span>
+                              <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.75rem' }}>{data.compliance.serverPatch}%</span>
                             </div>
-                            <div style={{ height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.serverPatch}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
                           </div>
@@ -460,21 +460,21 @@ export default function Dashboard() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'radial-gradient(circle at center, rgba(37, 99, 235, 0.05) 0%, transparent 70%)',
+                        background: 'rgba(15, 118, 110, 0.03)',
                         padding: '0.5rem',
                         borderRadius: '6px',
-                        border: '1px solid rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(15, 118, 110, 0.1)',
                         textAlign: 'center'
                       }}>
-                        <ShieldCheck size={24} color="#10b981" style={{ marginBottom: '2px' }} />
-                        <span style={{ fontSize: '0.55rem', color: '#94a3b8', textTransform: 'uppercase' }}>Security Index</span>
-                        <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#10b981', marginTop: '1px', letterSpacing: '0.05em' }}>SECURE</span>
+                        <ShieldCheck size={24} color="var(--success)" style={{ marginBottom: '2px' }} />
+                        <span style={{ fontSize: '0.55rem', color: '#475569', fontWeight: 700, textTransform: 'uppercase' }}>Security Index</span>
+                        <span style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--success)', marginTop: '1px', letterSpacing: '0.05em' }}>SECURE</span>
                       </div>
                     </div>
 
                     {/* Right Sub-Column: Endpoint Compliance single column list of 11 parameters */}
                     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-                      <div style={{ fontSize: '0.625rem', color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px', flexShrink: 0 }}>
+                      <div style={{ fontSize: '0.625rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.025em', marginBottom: '4px', flexShrink: 0 }}>
                         Endpoint Compliance Parameters (Single Column List)
                       </div>
                       
@@ -487,103 +487,103 @@ export default function Dashboard() {
                         gap: '0.25rem',
                         paddingRight: '2px'
                       }} className="custom-scroll">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>CrowdStrike Client</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>CrowdStrike Client</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointCsClient}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsClient}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsClient}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>CrowdStrike Patch</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>CrowdStrike Patch</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointCsPatch}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsPatch}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointCsPatch}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Intune Client</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>Intune Client</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointIntuneClient}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntuneClient}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntuneClient}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Intune Patch</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>Intune Patch</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointIntunePatch}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntunePatch}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointIntunePatch}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>ClearPass Agent</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>ClearPass Agent</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointClearpass}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointClearpass}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointClearpass}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Supported OS</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>Supported OS</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointSupportedOs}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSupportedOs}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSupportedOs}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>SAM Agent</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>SAM Agent</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointSamAgent}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSamAgent}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointSamAgent}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>HSD Compliance</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>HSD Compliance</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.compliance.endpointHsd}%`, height: '100%', background: '#10b981' }}></div>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${data.compliance.endpointHsd}%`, height: '100%', background: 'var(--success)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: '#10b981', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointHsd}%</span>
+                            <span style={{ fontWeight: 800, color: 'var(--success)', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointHsd}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>Domain Compliance</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>Domain Compliance</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointDomain}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointDomain}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointDomain}%</span>
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(255,255,255,0.02)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
-                          <span style={{ color: '#cbd5e1', fontWeight: 500 }}>BitLocker Active</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.625rem', background: 'rgba(234, 88, 12, 0.03)', padding: '0.2rem 0.4rem', borderRadius: '4px' }}>
+                          <span style={{ color: '#334155', fontWeight: 600 }}>BitLocker Active</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, justifyContent: 'flex-end', marginLeft: '1rem' }}>
-                            <div style={{ width: '60px', height: '3px', background: 'rgba(255,255,255,0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
+                            <div style={{ width: '60px', height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
                               <div style={{ width: `${data.compliance.endpointBitlocker}%`, height: '100%', background: 'var(--primary)' }}></div>
                             </div>
-                            <span style={{ fontWeight: 700, color: 'white', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointBitlocker}%</span>
+                            <span style={{ fontWeight: 800, color: '#0f172a', minWidth: '22px', textAlign: 'right', fontSize: '0.675rem' }}>{data.compliance.endpointBitlocker}%</span>
                           </div>
                         </div>
                       </div>
@@ -618,34 +618,34 @@ export default function Dashboard() {
         }
         .section-title {
           font-size: 0.95rem; 
-          font-weight: 600; 
-          color: #f8fafc; 
+          font-weight: 700; 
+          color: #1e293b; 
           margin-bottom: 0.375rem; 
-          border-bottom: 1px solid rgba(255,255,255,0.05); 
+          border-bottom: 1px solid rgba(234, 88, 12, 0.15); 
           padding-bottom: 0.2rem; 
           display: flex; 
           align-items: center; 
           gap: 0.375rem;
         }
         .metric-box {
-          background: rgba(255,255,255,0.02); 
+          background: rgba(234, 88, 12, 0.03); 
           border-radius: 4px; 
-          border: 1px solid rgba(255,255,255,0.03);
+          border: 1px solid rgba(234, 88, 12, 0.08);
           display: flex;
           flex-direction: column;
           gap: 1px;
         }
         .metric-label {
-          color: #94a3b8; 
+          color: #475569; 
           font-size: 0.55rem;
         }
         .metric-value {
           font-size: 0.775rem; 
-          font-weight: 600; 
+          font-weight: 700; 
           color: var(--foreground);
         }
         .table-row-hover:hover {
-          background: rgba(255,255,255,0.015);
+          background: rgba(234, 88, 12, 0.025);
         }
         .custom-scroll::-webkit-scrollbar {
           width: 4px;
@@ -654,11 +654,11 @@ export default function Dashboard() {
           background: transparent;
         }
         .custom-scroll::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(234, 88, 12, 0.12);
           border-radius: 2px;
         }
         .custom-scroll::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(234, 88, 12, 0.2);
         }
       `}} />
     </main>
@@ -675,11 +675,11 @@ function getStatusBadgeStyle(status: string): React.CSSProperties {
     padding: '0.1rem 0.35rem',
     borderRadius: '3px',
     fontSize: '0.625rem',
-    fontWeight: 500,
-    background: isOk ? 'rgba(59, 130, 246, 0.08)' : isDegraded ? 'rgba(245, 158, 11, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+    fontWeight: 600,
+    background: isOk ? 'rgba(13, 148, 136, 0.08)' : isDegraded ? 'rgba(234, 88, 12, 0.08)' : 'rgba(190, 18, 60, 0.08)',
     border: '1px solid',
-    borderColor: isOk ? 'rgba(59, 130, 246, 0.2)' : isDegraded ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-    color: isOk ? '#3b82f6' : isDegraded ? '#f59e0b' : '#ef4444'
+    borderColor: isOk ? 'rgba(13, 148, 136, 0.2)' : isDegraded ? 'rgba(234, 88, 12, 0.2)' : 'rgba(190, 18, 60, 0.2)',
+    color: isOk ? 'var(--success)' : isDegraded ? 'var(--warning)' : 'var(--danger)'
   };
 }
 
@@ -697,44 +697,45 @@ function DisconnectCard({ system, icon, onConnect }: DisconnectCardProps) {
       padding: '0.5rem',
       textAlign: 'center',
       borderStyle: 'dashed',
-      borderColor: 'rgba(255,255,255,0.08)',
+      borderColor: 'rgba(234, 88, 12, 0.18)',
+      background: 'rgba(234, 88, 12, 0.01)',
       height: '100%',
       width: '100%'
     }}>
       <div style={{
-        background: 'rgba(255,255,255,0.02)',
+        background: 'rgba(234, 88, 12, 0.04)',
         padding: '0.25rem',
         borderRadius: '50%',
         marginBottom: '0.2rem',
-        border: '1px solid rgba(255,255,255,0.04)',
+        border: '1px solid rgba(234, 88, 12, 0.08)',
         display: 'inline-flex'
       }}>
         {icon}
       </div>
       <div>
-        <h4 style={{ fontSize: '0.75rem', fontWeight: 600, color: '#f8fafc', marginBottom: '1px' }}>{system}</h4>
-        <p style={{ fontSize: '0.55rem', color: '#64748b', maxWidth: '120px', margin: '0 auto 0.25rem', lineHeight: 1.2 }}>
+        <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '1px' }}>{system}</h4>
+        <p style={{ fontSize: '0.55rem', color: '#475569', maxWidth: '120px', margin: '0 auto 0.25rem', lineHeight: 1.2 }}>
           Credentials required.
         </p>
       </div>
       <button 
         onClick={onConnect}
         style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(234, 88, 12, 0.06)',
+          border: '1px solid rgba(234, 88, 12, 0.18)',
           padding: '0.2rem 0.4rem',
           borderRadius: '4px',
-          color: '#e2e8f0',
+          color: '#c2410c',
           cursor: 'pointer',
           fontSize: '0.625rem',
-          fontWeight: 500,
+          fontWeight: 600,
           display: 'flex',
           alignItems: 'center',
           gap: '2px',
           transition: 'all 0.2s'
         }}
-        onMouseOver={(e) => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.borderColor = 'transparent'; }}
-        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+        onMouseOver={(e) => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.borderColor = 'transparent'; }}
+        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(234, 88, 12, 0.06)'; e.currentTarget.style.color = '#c2410c'; e.currentTarget.style.borderColor = 'rgba(234, 88, 12, 0.18)'; }}
       >
         <span>Connect</span>
         <ChevronRight size={8} />

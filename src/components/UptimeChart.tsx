@@ -30,14 +30,15 @@ export default function UptimeChart({ data, status }: UptimeChartProps) {
           <XAxis dataKey="day" hide />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: 'rgba(9, 11, 14, 0.95)', 
-              borderColor: 'rgba(255,255,255,0.08)',
+              backgroundColor: '#fffdf9', 
+              borderColor: 'rgba(234, 88, 12, 0.25)',
               borderRadius: '8px',
-              color: '#f1f5f9'
+              color: '#0f172a',
+              boxShadow: '0 4px 12px rgba(120, 110, 90, 0.15)'
             }}
-            itemStyle={{ color: '#f1f5f9' }}
+            itemStyle={{ color: '#0f172a', fontWeight: 600 }}
             formatter={(value: any) => [`${value}%`, 'Uptime']}
-            labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+            labelStyle={{ color: '#475569', fontWeight: 500, marginBottom: '4px' }}
           />
           <Area 
             type="monotone" 

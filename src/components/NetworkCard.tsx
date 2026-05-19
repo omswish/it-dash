@@ -41,25 +41,25 @@ export default function NetworkCard({ id, provider, status, uptime, latency, uti
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.375rem', fontSize: '0.725rem' }}>
-        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column' }}>
-          <span className="metric-label" style={{ fontSize: '0.625rem' }}>Latency</span>
-          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800 }}>{latency} ms</span>
+        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column', background: 'rgba(234, 88, 12, 0.03)', border: '1px solid rgba(234, 88, 12, 0.08)' }}>
+          <span className="metric-label" style={{ fontSize: '0.625rem', color: '#475569', fontWeight: 600 }}>Latency</span>
+          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{latency} ms</span>
         </div>
-        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column' }}>
-          <span className="metric-label" style={{ fontSize: '0.625rem' }}>Uptime SLA</span>
-          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800 }}>{uptime}%</span>
+        <div className="metric-box" style={{ padding: '0.35rem 0.5rem', display: 'flex', flexDirection: 'column', background: 'rgba(234, 88, 12, 0.03)', border: '1px solid rgba(234, 88, 12, 0.08)' }}>
+          <span className="metric-label" style={{ fontSize: '0.625rem', color: '#475569', fontWeight: 600 }}>Uptime SLA</span>
+          <span className="metric-value" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{uptime}%</span>
         </div>
       </div>
 
       <div style={{ marginTop: '2px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', fontSize: '0.7rem' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#94a3b8' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#475569', fontWeight: 500 }}>
             <Activity size={10} /> Bandwidth Utilization
           </span>
-          <span style={{ fontWeight: 700, fontSize: '0.825rem', color: 'white' }}>{utilization}%</span>
+          <span style={{ fontWeight: 800, fontSize: '0.825rem', color: '#0f172a' }}>{utilization}%</span>
         </div>
-        <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-          <div style={{ width: `${utilization}%`, height: '100%', background: 'var(--primary)', borderRadius: '2px', transition: 'width 0.5s ease-out' }}></div>
+        <div style={{ height: '5px', background: 'rgba(15, 23, 42, 0.06)', borderRadius: '2.5px', overflow: 'hidden' }}>
+          <div style={{ width: `${utilization}%`, height: '100%', background: 'linear-gradient(to right, #ea580c, #c2410c)', borderRadius: '2.5px', transition: 'width 0.5s ease-out' }}></div>
         </div>
       </div>
 
