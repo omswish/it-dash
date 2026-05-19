@@ -345,7 +345,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div>
-                    <div style={{ display: 'flex', justifycontent: 'space-between', marginBottom: '1px', fontSize: '0.675rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1px', fontSize: '0.675rem' }}>
                       <span style={{ color: '#475569', fontWeight: 600 }}>Storage Pool</span>
                       <span style={{ fontWeight: 800, fontSize: '0.775rem', color: '#0f172a', float: 'right' }}>{data.nutanix.storageUsage}%</span>
                     </div>
