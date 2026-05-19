@@ -183,7 +183,11 @@ export default function Dashboard() {
   const avgMemory = Math.round(data.servers.reduce((acc, s) => acc + s.memory, 0) / totalServers);
 
   // Group connected sources count (excluding ISMS APEX since it is removed)
-  const activeSourcesCount = [data.configs.nutanix, data.configs.symphony, data.configs.compliance].filter(c => c.connected).length;
+  const activeSourcesCount = [
+    data.configs.nutanix,
+    data.configs.symphony,
+    data.configs.solarwinds
+  ].filter(c => c && c.connected).length;
 
   const n2Color = avgCpu > 75 ? '#be123c' : avgCpu > 50 ? '#ea580c' : '#22c55e';
   const n3Color = serverAlerts > 1 ? '#be123c' : serverAlerts > 0 ? '#ea580c' : '#22c55e';
@@ -334,14 +338,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Grid Rearrangement Layout: Top Half & Bottom Half rows */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, overflow: 'hidden', minHeight: 0 }}>
+      {/* Main Grid: Left Column (2/3) and Right Column (1/3) */}
+      <div style={{ display: 'flex', gap: '0.75rem', flex: 1, overflow: 'hidden', minHeight: 0 }}>
         
-        {/* ROW 1: Top Half of Screen (Hindalco Service Desk Left 2/3, Server Nodes Right 1/3) */}
-        <div style={{ display: 'flex', gap: '0.75rem', height: '350px', flexShrink: 0, minHeight: 0 }}>
+        {/* LEFT COLUMN: Service Desk & ISP Gateways */}
+        <div style={{ flex: '1 1 66%', display: 'flex', flexDirection: 'column', gap: '0.5rem', minHeight: 0 }}>
           
-          {/* 1. Hindalco Service Desk Card (2/3) */}
-          <div style={{ flex: '1 1 66%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          {/* 1. Hindalco Service Desk Card */}
+          <div style={{ height: '350px', display: 'flex', flexDirection: 'column', minHeight: 0, flexShrink: 0 }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
               <Radio size={14} color="var(--primary)" />
               Hindalco Service Desk
@@ -498,9 +502,29 @@ export default function Dashboard() {
               <DisconnectCard system="Hindalco ITSM" icon={<Radio size={16} color="var(--secondary)" />} onConnect={() => setIsConfigOpen(true)} />
             )}
           </div>
- 
-          {/* 2. Utkal Alumina Server Nodes (1/3) */}
-          <div style={{ flex: '1 1 34%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+
+          {/* 2. ISP Gateway Status Card */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
+              <Network size={14} color="var(--primary)" />
+              ISP Gateway Status (Side-by-Side)
+            </h2>
+            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0 }}>
+              {data.networks.map((net) => (
+                <div key={net.id} style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+                  <NetworkCard {...net} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        {/* RIGHT COLUMN: Server Nodes & Printer Cartridge Stock */}
+        <div style={{ flex: '1 1 34%', display: 'flex', flexDirection: 'column', gap: '0.5rem', minHeight: 0 }}>
+          
+          {/* 1. Utkal Alumina Server Nodes */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
               <Server size={14} color="var(--primary)" />
               Utkal Alumina Server Nodes
@@ -595,130 +619,9 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ROW 2: Bottom Half of Screen (ISP Gateways Left 2/3, Compliance + Cartridges Right 1/3 stacked) */}
-        <div style={{ display: 'flex', gap: '0.75rem', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          
-          {/* A. ISP Gateway Status (2/3) */}
-          <div style={{ flex: '1 1 66%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-              <Network size={14} color="var(--primary)" />
-              ISP Gateway Status (Side-by-Side)
-            </h2>
-            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0 }}>
-              {data.networks.map((net) => (
-                <div key={net.id} style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-                  <NetworkCard {...net} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* B. Stacked compliance/cartridge right column (1/3) */}
-          <div style={{ flex: '1 1 34%', display: 'flex', flexDirection: 'column', gap: '0.5rem', minHeight: 0 }}>
-             {/* IT Compliance Card */}
-             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-               <h2 className="section-title" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', flexShrink: 0 }}>
-                 <Shield size={13} color="var(--primary)" />
-                 IT Compliance Portal
-               </h2>
-               {data.configs.compliance.connected ? (
-                 <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', gap: '0.25rem', justifyContent: 'flex-start', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                   <div className="card-header" style={{ marginBottom: '1px', flexShrink: 0 }}>
-                     <div className="card-title" style={{ fontSize: '0.75rem' }}>
-                       <Shield size={14} color="var(--primary)" />
-                       <div>
-                         <div style={{ fontWeight: 800, fontSize: '0.75rem', color: 'var(--foreground)' }}>Oracle APEX</div>
-                         <div style={{ fontSize: '0.55rem', color: 'var(--secondary)', fontWeight: 600 }}>Compliance Summary</div>
-                       </div>
-                     </div>
-                     <span style={{
-                       fontSize: '0.75rem',
-                       fontWeight: 800,
-                       color: 'var(--success)',
-                       background: 'rgba(71, 85, 105, 0.06)',
-                       padding: '0.1rem 0.35rem',
-                       borderRadius: '4px',
-                       border: '1px solid rgba(71, 85, 105, 0.15)',
-                       fontFamily: 'var(--font-heading)'
-                     }}>
-                       Avg: {data.compliance.endpointAverage}%
-                     </span>
-                   </div>
-
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '0.625rem', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-                     {/* OS / Patch Compliance */}
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', justifyContent: 'center' }}>
-                       <div style={{ background: 'rgba(var(--primary-rgb), 0.02)', border: '1px solid rgba(var(--primary-rgb), 0.06)', padding: '0.3rem', borderRadius: '4px' }}>
-                         <div style={{ fontSize: '0.55rem', color: 'var(--primary)', fontWeight: 800, fontFamily: 'var(--font-heading)', textTransform: 'uppercase', marginBottom: '2px' }}>Server</div>
-                         <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                           <div>
-                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.575rem', marginBottom: '1px' }}>
-                               <span style={{ color: 'var(--secondary)', fontWeight: 700 }}>OS Comp</span>
-                               <span style={{ fontWeight: 800, color: 'var(--foreground)' }}>{data.compliance.serverOs}%</span>
-                             </div>
-                             <div style={{ height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                               <div style={{ width: `${data.compliance.serverOs}%`, height: '100%', background: 'var(--primary)' }}></div>
-                             </div>
-                           </div>
-                           <div>
-                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.575rem', marginBottom: '1px' }}>
-                               <span style={{ color: 'var(--secondary)', fontWeight: 700 }}>Patch Comp</span>
-                               <span style={{ fontWeight: 800, color: 'var(--foreground)' }}>{data.compliance.serverPatch}%</span>
-                             </div>
-                             <div style={{ height: '3px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1.5px', overflow: 'hidden' }}>
-                               <div style={{ width: `${data.compliance.serverPatch}%`, height: '100%', background: 'var(--primary)' }}></div>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
-
-                       <div style={{ background: 'rgba(71, 85, 105, 0.03)', padding: '0.3rem', borderRadius: '4px', border: '1px solid rgba(71, 85, 105, 0.08)', textAlign: 'center' }}>
-                         <span style={{ fontSize: '0.5rem', color: 'var(--secondary)', fontWeight: 800, textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>Security Index</span>
-                         <div style={{ fontSize: '0.9rem', fontWeight: 900, color: 'var(--success)', fontFamily: 'var(--font-heading)' }}>SECURE</div>
-                       </div>
-                     </div>
-
-                     {/* Single Column Endpoints Scroll */}
-                     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-                       <div style={{ fontSize: '0.55rem', color: 'var(--primary)', fontWeight: 800, fontFamily: 'var(--font-heading)', textTransform: 'uppercase', marginBottom: '2px', flexShrink: 0 }}>Endpoints List</div>
-                       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.2rem', paddingRight: '2px' }} className="custom-scroll">
-                         
-                         {[
-                           { label: 'CrowdStrike Client', val: data.compliance.endpointCsClient },
-                           { label: 'CrowdStrike Patch', val: data.compliance.endpointCsPatch },
-                           { label: 'Intune Client', val: data.compliance.endpointIntuneClient },
-                           { label: 'Intune Patch', val: data.compliance.endpointIntunePatch },
-                           { label: 'ClearPass Agent', val: data.compliance.endpointClearpass },
-                           { label: 'Supported OS', val: data.compliance.endpointSupportedOs },
-                           { label: 'SAM Agent', val: data.compliance.endpointSamAgent },
-                           { label: 'HSD Compliance', val: data.compliance.endpointHsd },
-                           { label: 'Domain Compliance', val: data.compliance.endpointDomain },
-                           { label: 'BitLocker Active', val: data.compliance.endpointBitlocker }
-                         ].map((item, idx) => (
-                           <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.575rem', background: 'rgba(var(--primary-rgb), 0.02)', padding: '0.15rem 0.35rem', borderRadius: '3px' }}>
-                             <span style={{ color: '#334155', fontWeight: 700 }}>{item.label}</span>
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                               <div style={{ width: '40px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                 <div style={{ width: `${item.val}%`, height: '100%', background: 'var(--primary)' }}></div>
-                               </div>
-                               <span style={{ fontWeight: 800, color: 'var(--foreground)', minWidth: '18px', textAlign: 'right' }}>{item.val}%</span>
-                             </div>
-                           </div>
-                         ))}
-
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-               ) : (
-                 <DisconnectCard system="IT Compliance APEX" icon={<Shield size={15} color="var(--secondary)" />} onConnect={() => setIsConfigOpen(true)} />
-               )}
-             </div>
 
              {/* Printer Cartridge Stock Card */}
-             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+             <div style={{ height: '220px', display: 'flex', flexDirection: 'column', minHeight: 0, flexShrink: 0 }}>
                <h2 className="section-title" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', flexShrink: 0 }}>
                  <Database size={13} color="var(--primary)" />
                  Cartridge Stock
@@ -808,8 +711,6 @@ export default function Dashboard() {
            </div>
 
         </div>
-
-      </div>
 
       {/* Dynamic Stateful 7D Server CPU History Tooltip Popover */}
       {hoveredServer && (

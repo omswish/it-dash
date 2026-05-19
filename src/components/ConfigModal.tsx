@@ -9,13 +9,12 @@ interface ConfigModalProps {
   configs: {
     nutanix: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
     symphony: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
-    isms: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
-    compliance: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
+    solarwinds?: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
   };
   onSave: () => void;
 }
 
-type TabType = 'nutanix' | 'symphony' | 'isms' | 'compliance';
+type TabType = 'nutanix' | 'symphony' | 'solarwinds';
 
 export default function ConfigModal({ isOpen, onClose, configs, onSave }: ConfigModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('nutanix');
@@ -26,8 +25,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
   const [form, setForm] = useState({
     nutanix: { endpoint: configs.nutanix.endpoint || '10.20.40.12', username: configs.nutanix.username || 'nutanix_admin', secret: configs.nutanix.secret || '', method: configs.nutanix.authMethod || 'SSH Key' },
     symphony: { endpoint: configs.symphony.endpoint || 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx', username: configs.symphony.username || 'symphony_agent', secret: configs.symphony.secret || '', method: configs.symphony.authMethod || 'SAML SSO (Chrome Session)' },
-    isms: { endpoint: configs.isms.endpoint || 'https://apex.internal/ords/isms', username: configs.isms.username || 'apex_oauth', secret: configs.isms.secret || '', method: configs.isms.authMethod || 'OAuth Client' },
-    compliance: { endpoint: configs.compliance.endpoint || 'https://apex.internal/ords/compliance', username: configs.compliance.username || 'apex_compliance', secret: configs.compliance.secret || '', method: configs.compliance.authMethod || 'OAuth Client' },
+    solarwinds: { endpoint: configs.solarwinds?.endpoint || '10.100.1.50:17774', username: configs.solarwinds?.username || 'svc_noc_dashboard', secret: configs.solarwinds?.secret || '', method: configs.solarwinds?.authMethod || 'Basic Authentication' },
   });
 
   if (!isOpen) return null;
@@ -166,12 +164,12 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               {configs.symphony.connected && <span className="connected-badge"></span>}
             </button>
             <button 
-              onClick={() => { setActiveTab('compliance'); setTestResult(null); }}
-              style={getTabStyle(activeTab === 'compliance')}
+              onClick={() => { setActiveTab('solarwinds'); setTestResult(null); }}
+              style={getTabStyle(activeTab === 'solarwinds')}
             >
-              <Shield size={16} />
-              <span>IT Compliance (APEX)</span>
-              {configs.compliance.connected && <span className="connected-badge"></span>}
+              <Server size={16} />
+              <span>SolarWinds Orion API</span>
+              {configs.solarwinds?.connected && <span className="connected-badge"></span>}
             </button>
           </div>
 
@@ -182,19 +180,19 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                 <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
                   {activeTab === 'nutanix' && 'Nutanix CLI Hypervisor Access'}
                   {activeTab === 'symphony' && 'Symphony Summit Service API'}
-                  {activeTab === 'compliance' && 'IT Compliance Engine (Oracle APEX)'}
+                  {activeTab === 'solarwinds' && 'SolarWinds Orion API Client'}
                 </h3>
                 <p style={{ fontSize: '0.825rem', color: 'var(--secondary)', lineHeight: 1.3 }}>
                   {activeTab === 'nutanix' && 'Establish SSH connection to Nutanix Acropolis hypervisor to retrieve system utilization.'}
                   {activeTab === 'symphony' && 'Provide endpoint credentials to Summit ITSM suite to retrieve incident and SLA lists.'}
-                  {activeTab === 'compliance' && 'Connect to Oracle APEX client compliance suite to sync workstation and AV patch scores.'}
+                  {activeTab === 'solarwinds' && 'Connect to SWIS REST API to fetch live server utilization and WAN/ISP interface bandwidth.'}
                 </p>
               </div>
 
               {/* Endpoint Address */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                  {activeTab === 'nutanix' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
+                  {activeTab === 'nutanix' || activeTab === 'solarwinds' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
                 </label>
                 <input 
                   type="text" 
@@ -228,10 +226,10 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                       <option value="REST API Key">REST API Key</option>
                     </>
                   )}
-                  {activeTab === 'compliance' && (
+
+                  {activeTab === 'solarwinds' && (
                     <>
-                      <option value="OAuth Client">OAuth Client</option>
-                      <option value="Basic Auth">Basic Auth</option>
+                      <option value="Basic Authentication">Basic Authentication</option>
                     </>
                   )}
                 </select>
@@ -241,7 +239,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                    {activeTab === 'nutanix' ? 'CLI SSH Username' : 'Client ID / User'}
+                    {activeTab === 'nutanix' ? 'CLI SSH Username' : activeTab === 'solarwinds' ? 'Orion User Account' : 'Client ID / User'}
                   </label>
                   <input 
                     type="text" 
@@ -252,7 +250,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                    {activeTab === 'nutanix' ? 'SSH Private Key / Password' : 'Client Secret Key / Token'}
+                    {activeTab === 'nutanix' ? 'SSH Private Key / Password' : activeTab === 'solarwinds' ? 'Account Password' : 'Client Secret Key / Token'}
                   </label>
                   <div style={{ position: 'relative' }}>
                     <input 
@@ -296,7 +294,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                     <span>Handshake Failed. Verify Endpoint Credentials.</span>
                   </div>
                 )}
-                {!testing && !testResult && configs[activeTab].connected && (
+                {!testing && !testResult && configs[activeTab]?.connected && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Check size={16} />
                     <span>Connected ({form[activeTab].method})</span>
@@ -305,7 +303,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                {configs[activeTab].connected ? (
+                {configs[activeTab]?.connected ? (
                   <button 
                     onClick={() => handleDisconnect(activeTab)}
                     disabled={testing}

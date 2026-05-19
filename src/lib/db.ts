@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
+import { getSolarWindsServers, getSolarWindsISPInterfaces } from './solarwinds';
 
 const DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
 
@@ -74,28 +75,7 @@ export interface SymphonyMetrics {
   activeIncidents: ActiveIncident[];
 }
 
-export interface IsmsObjective {
-  id: string;
-  name: string;
-  progress: number;
-  target: number;
-}
 
-export interface ComplianceMetrics {
-  serverOs: number;
-  serverPatch: number;
-  endpointCsClient: number;
-  endpointCsPatch: number;
-  endpointIntuneClient: number;
-  endpointIntunePatch: number;
-  endpointClearpass: number;
-  endpointSupportedOs: number;
-  endpointSamAgent: number;
-  endpointHsd: number;
-  endpointDomain: number;
-  endpointBitlocker: number;
-  endpointAverage: number;
-}
 
 export interface DbSchema {
   lastUpdated: number;
@@ -104,13 +84,10 @@ export interface DbSchema {
   configs: {
     nutanix: SystemConfig;
     symphony: SystemConfig;
-    isms: SystemConfig;
-    compliance: SystemConfig;
+    solarwinds?: SystemConfig;
   };
   nutanix: NutanixMetrics;
   symphony: SymphonyMetrics;
-  isms: IsmsObjective[];
-  compliance: ComplianceMetrics;
 }
 
 function generateInitialData(): DbSchema {
@@ -175,6 +152,171 @@ function generateInitialData(): DbSchema {
         disk: 91,
         backupStatus: 'failed',
         history: generateHistory(20, 50),
+      },
+      {
+        id: 'srv-ad-01',
+        name: 'AD Primary',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 15,
+        memory: 40,
+        disk: 35,
+        backupStatus: 'successful',
+        history: generateHistory(10, 25),
+      },
+      {
+        id: 'srv-ad-02',
+        name: 'AD Backup',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 12,
+        memory: 35,
+        disk: 30,
+        backupStatus: 'successful',
+        history: generateHistory(8, 20),
+      },
+      {
+        id: 'srv-mail',
+        name: 'Exchange Mail',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 45,
+        memory: 82,
+        disk: 75,
+        backupStatus: 'successful',
+        history: generateHistory(40, 60),
+      },
+      {
+        id: 'srv-sap-app',
+        name: 'SAP App',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 58,
+        memory: 79,
+        disk: 68,
+        backupStatus: 'successful',
+        history: generateHistory(50, 70),
+      },
+      {
+        id: 'srv-sap-db',
+        name: 'SAP DB',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 64,
+        memory: 88,
+        disk: 82,
+        backupStatus: 'successful',
+        history: generateHistory(55, 80),
+      },
+      {
+        id: 'srv-utility',
+        name: 'Utility Gateway',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 22,
+        memory: 45,
+        disk: 40,
+        backupStatus: 'successful',
+        history: generateHistory(15, 35),
+      },
+      {
+        id: 'srv-fileshare',
+        name: 'File Share',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 28,
+        memory: 55,
+        disk: 85,
+        backupStatus: 'successful',
+        history: generateHistory(20, 40),
+      },
+      {
+        id: 'srv-print',
+        name: 'Print Server',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 10,
+        memory: 28,
+        disk: 30,
+        backupStatus: 'successful',
+        history: generateHistory(5, 20),
+      },
+      {
+        id: 'srv-security',
+        name: 'Endpoint Security',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 35,
+        memory: 60,
+        disk: 50,
+        backupStatus: 'successful',
+        history: generateHistory(25, 45),
+      },
+      {
+        id: 'srv-apex-db',
+        name: 'Oracle APEX DB',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 40,
+        memory: 70,
+        disk: 65,
+        backupStatus: 'successful',
+        history: generateHistory(30, 55),
+      },
+      {
+        id: 'srv-cctv-01',
+        name: 'CCTV Monitor 01',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 70,
+        memory: 75,
+        disk: 88,
+        backupStatus: 'successful',
+        history: generateHistory(65, 80),
+      },
+      {
+        id: 'srv-cctv-02',
+        name: 'CCTV Monitor 02',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 68,
+        memory: 72,
+        disk: 85,
+        backupStatus: 'successful',
+        history: generateHistory(60, 75),
+      },
+      {
+        id: 'srv-weighbridge',
+        name: 'Weighbridge Host',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 15,
+        memory: 32,
+        disk: 28,
+        backupStatus: 'successful',
+        history: generateHistory(10, 25),
+      },
+      {
+        id: 'srv-plm',
+        name: 'PLM Server',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 30,
+        memory: 50,
+        disk: 45,
+        backupStatus: 'successful',
+        history: generateHistory(20, 40),
+      },
+      {
+        id: 'srv-backup-repo',
+        name: 'Backup Repo',
+        location: 'Utkal Alumina',
+        status: 'operational',
+        cpu: 8,
+        memory: 20,
+        disk: 92,
+        backupStatus: 'successful',
+        history: generateHistory(5, 15),
       }
     ],
     networks: [
@@ -200,8 +342,7 @@ function generateInitialData(): DbSchema {
     configs: {
       nutanix: { connected: false, endpoint: '', username: '', authMethod: 'SSH Key' },
       symphony: { connected: false, endpoint: '', username: '', authMethod: 'API Key' },
-      isms: { connected: false, endpoint: '', username: '', authMethod: 'OAuth Client' },
-      compliance: { connected: false, endpoint: '', username: '', authMethod: 'OAuth Client' }
+      solarwinds: { connected: false, endpoint: '', username: '', authMethod: 'Basic Authentication' }
     },
     nutanix: {
       uptime: '142d 8h 12m',
@@ -228,27 +369,6 @@ function generateInitialData(): DbSchema {
         { id: 'INC00000984711', priority: 'P2', caller: 'R. K. Senapati', title: 'Utkal WAN Link Degradation', status: 'In Progress' },
         { id: 'INC00000984725', priority: 'P4', caller: 'S. Mohapatra', title: 'Office 365 License Sync', status: 'Assigned' }
       ]
-    },
-    isms: [
-      { id: 'isms-risk', name: 'Annual Risk Assessments', progress: 100, target: 100 },
-      { id: 'isms-train', name: 'Staff Security Awareness', progress: 85, target: 100 },
-      { id: 'isms-audit', name: 'Internal Audit Resolved', progress: 90, target: 100 },
-      { id: 'isms-inc', name: 'Incident Response Drills', progress: 50, target: 100 }
-    ],
-    compliance: {
-      serverOs: 96,
-      serverPatch: 94,
-      endpointCsClient: 98,
-      endpointCsPatch: 96,
-      endpointIntuneClient: 97,
-      endpointIntunePatch: 95,
-      endpointClearpass: 99,
-      endpointSupportedOs: 98,
-      endpointSamAgent: 94,
-      endpointHsd: 100,
-      endpointDomain: 99,
-      endpointBitlocker: 97,
-      endpointAverage: 97.4
     }
   };
 }
@@ -277,6 +397,9 @@ export function getDb(): DbSchema {
       if (db.configs.symphony.connected) {
         triggerSymphonyScrapeBackground(db.configs.symphony.endpoint);
       }
+      if (db.configs.solarwinds && db.configs.solarwinds.connected) {
+        triggerSolarWindsSyncBackground(db.configs.solarwinds.endpoint, db.configs.solarwinds.username, db.configs.solarwinds.secret || '');
+      }
     }
     
     return db;
@@ -297,56 +420,62 @@ export function writeDb(db: DbSchema) {
 function autoSeed(db: DbSchema): DbSchema {
   const now = Date.now();
   
+  const isSolarWindsConnected = db.configs.solarwinds?.connected ?? false;
+
   // Update servers
-  const updatedServers = db.servers.map((server) => {
-    let cpuDiff = Math.floor(Math.random() * 11) - 5;
-    let newCpu = Math.max(5, Math.min(99, server.cpu + cpuDiff));
-    let memDiff = Math.floor(Math.random() * 7) - 3;
-    let newMem = Math.max(10, Math.min(99, server.memory + memDiff));
-    let newDisk = server.disk;
-    if (Math.random() > 0.9) newDisk = Math.min(100, server.disk + 1);
-    
-    let newStatus = server.status;
-    if (Math.random() > 0.98) {
-      newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
-    }
+  const updatedServers = isSolarWindsConnected
+    ? db.servers
+    : db.servers.map((server) => {
+        let cpuDiff = Math.floor(Math.random() * 11) - 5;
+        let newCpu = Math.max(5, Math.min(99, server.cpu + cpuDiff));
+        let memDiff = Math.floor(Math.random() * 7) - 3;
+        let newMem = Math.max(10, Math.min(99, server.memory + memDiff));
+        let newDisk = server.disk;
+        if (Math.random() > 0.9) newDisk = Math.min(100, server.disk + 1);
+        
+        let newStatus = server.status;
+        if (Math.random() > 0.98) {
+          newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
+        }
 
-    let newBackup = server.backupStatus;
-    if (Math.random() > 0.95) {
-      newBackup = newBackup === 'successful' ? 'failed' : 'successful';
-    }
+        let newBackup = server.backupStatus;
+        if (Math.random() > 0.95) {
+          newBackup = newBackup === 'successful' ? 'failed' : 'successful';
+        }
 
-    return {
-      ...server,
-      cpu: newCpu,
-      memory: newMem,
-      disk: newDisk,
-      status: newStatus,
-      backupStatus: newBackup,
-      history: [...server.history.slice(1), newCpu],
-    };
-  });
+        return {
+          ...server,
+          cpu: newCpu,
+          memory: newMem,
+          disk: newDisk,
+          status: newStatus,
+          backupStatus: newBackup,
+          history: [...server.history.slice(1), newCpu],
+        };
+      });
 
   // Update networks
-  const updatedNetworks = db.networks.map((net) => {
-    let utilDiff = Math.floor(Math.random() * 15) - 7;
-    let newUtil = Math.max(5, Math.min(100, net.utilization + utilDiff));
-    let latDiff = Math.floor(Math.random() * 5) - 2;
-    let newLat = Math.max(2, Math.min(100, net.latency + latDiff));
-    
-    let newStatus = net.status;
-    if (Math.random() > 0.98) {
-      newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
-    }
+  const updatedNetworks = isSolarWindsConnected
+    ? db.networks
+    : db.networks.map((net) => {
+        let utilDiff = Math.floor(Math.random() * 15) - 7;
+        let newUtil = Math.max(5, Math.min(100, net.utilization + utilDiff));
+        let latDiff = Math.floor(Math.random() * 5) - 2;
+        let newLat = Math.max(2, Math.min(100, net.latency + latDiff));
+        
+        let newStatus = net.status;
+        if (Math.random() > 0.98) {
+          newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
+        }
 
-    return {
-      ...net,
-      utilization: newUtil,
-      latency: newLat,
-      status: newStatus,
-      history: [...net.history.slice(1), newUtil],
-    };
-  });
+        return {
+          ...net,
+          utilization: newUtil,
+          latency: newLat,
+          status: newStatus,
+          history: [...net.history.slice(1), newUtil],
+        };
+      });
 
   // Update Nutanix metrics if connected
   let updatedNutanix = { ...db.nutanix };
@@ -387,57 +516,7 @@ function autoSeed(db: DbSchema): DbSchema {
   let updatedSymphony = { ...db.symphony };
   // Handled via async background scraping to fetch actual portal values
 
-  // Update ISMS Objectives progress slowly if connected
-  let updatedIsms = [...db.isms];
-  if (db.configs.isms.connected) {
-    updatedIsms = db.isms.map((obj) => {
-      if (obj.progress < obj.target && Math.random() > 0.9) {
-        return { ...obj, progress: Math.min(obj.target, obj.progress + 1) };
-      }
-      return obj;
-    });
-  }
 
-  // Update Compliance metrics if connected
-  let updatedCompliance = { ...db.compliance };
-  if (db.configs.compliance.connected) {
-    const rand = Math.random();
-    if (rand > 0.85) {
-      let serverOs = Math.max(85, Math.min(100, db.compliance.serverOs + (Math.random() > 0.5 ? 1 : -1)));
-      let serverPatch = Math.max(85, Math.min(100, db.compliance.serverPatch + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointCsClient = Math.max(90, Math.min(100, db.compliance.endpointCsClient + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointCsPatch = Math.max(90, Math.min(100, db.compliance.endpointCsPatch + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointIntuneClient = Math.max(90, Math.min(100, db.compliance.endpointIntuneClient + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointIntunePatch = Math.max(90, Math.min(100, db.compliance.endpointIntunePatch + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointClearpass = Math.max(90, Math.min(100, db.compliance.endpointClearpass + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointSupportedOs = Math.max(90, Math.min(100, db.compliance.endpointSupportedOs + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointSamAgent = Math.max(90, Math.min(100, db.compliance.endpointSamAgent + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointHsd = Math.max(90, Math.min(100, db.compliance.endpointHsd + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointDomain = Math.max(90, Math.min(100, db.compliance.endpointDomain + (Math.random() > 0.5 ? 1 : -1)));
-      let endpointBitlocker = Math.max(90, Math.min(100, db.compliance.endpointBitlocker + (Math.random() > 0.5 ? 1 : -1)));
-      
-      let sum = serverOs + serverPatch + endpointCsClient + endpointCsPatch + endpointIntuneClient + 
-                endpointIntunePatch + endpointClearpass + endpointSupportedOs + endpointSamAgent + 
-                endpointHsd + endpointDomain + endpointBitlocker;
-      let endpointAverage = Math.round((sum / 12) * 10) / 10;
-
-      updatedCompliance = {
-        serverOs,
-        serverPatch,
-        endpointCsClient,
-        endpointCsPatch,
-        endpointIntuneClient,
-        endpointIntunePatch,
-        endpointClearpass,
-        endpointSupportedOs,
-        endpointSamAgent,
-        endpointHsd,
-        endpointDomain,
-        endpointBitlocker,
-        endpointAverage
-      };
-    }
-  }
 
   return {
     lastUpdated: now,
@@ -445,9 +524,7 @@ function autoSeed(db: DbSchema): DbSchema {
     networks: updatedNetworks,
     configs: db.configs,
     nutanix: updatedNutanix,
-    symphony: updatedSymphony,
-    isms: updatedIsms,
-    compliance: updatedCompliance
+    symphony: updatedSymphony
   };
 }
 
@@ -702,5 +779,65 @@ openIncidents: data.incidents,
     })
     .finally(() => {
       isUpdatingSymphony = false;
+    });
+}
+
+let isUpdatingSolarWinds = false;
+
+async function runSolarWindsSync(endpoint: string, username: string, secret: string) {
+  const servers = await getSolarWindsServers(endpoint, username, secret);
+  const interfaces = await getSolarWindsISPInterfaces(endpoint, username, secret);
+  return { servers, interfaces };
+}
+
+function triggerSolarWindsSyncBackground(endpoint: string, username: string, secret: string) {
+  if (isUpdatingSolarWinds) return;
+  isUpdatingSolarWinds = true;
+
+  runSolarWindsSync(endpoint, username, secret)
+    .then((data) => {
+      try {
+        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
+        const db = JSON.parse(fileContent) as DbSchema;
+
+        // Map SolarWinds Servers to local schema
+        db.servers = data.servers.map((srv, idx) => ({
+          id: `sw-srv-${idx}`,
+          name: srv.NodeName,
+          location: 'SolarWinds Node',
+          status: srv.Status === 'Up' || srv.Status === '1' || srv.Status.toLowerCase() === 'up' ? 'operational' : 'down',
+          cpu: Math.round(srv.CPUPercent || 0),
+          memory: Math.round(srv.MemoryPercent || 0),
+          disk: 50,
+          backupStatus: 'successful',
+          history: Array.from({ length: 20 }, () => Math.floor(Math.random() * 20 + 40))
+        }));
+
+        // Map SolarWinds Interfaces to local Network/ISP status schema
+        db.networks = data.interfaces.map((inf, idx) => ({
+          id: `sw-net-${idx}`,
+          provider: inf.InterfaceName.includes('Tata') ? 'Tata' 
+                  : inf.InterfaceName.includes('Airtel') ? 'Airtel' 
+                  : inf.InterfaceName.includes('Jio') || inf.InterfaceName.includes('RJIO') ? 'RJIO' 
+                  : inf.InterfaceName.includes('RailTel') ? 'RailTel' 
+                  : inf.InterfaceName.substring(0, 15),
+          status: inf.InterfaceStatus === 'Up' || inf.InterfaceStatus === '1' || inf.InterfaceStatus.toLowerCase() === 'up' ? 'operational' : 'down',
+          uptime: 99.9,
+          latency: 12,
+          utilization: Math.round(((inf.InSpeed + inf.OutSpeed) / 2) / 1000000) || 50,
+          history: Array.from({ length: 20 }, () => Math.floor(Math.random() * 30 + 40))
+        }));
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+        console.log('SolarWinds Sync: Successfully updated db.json with live values.');
+      } catch (err) {
+        console.error('SolarWinds Sync: Error updating database with sync values:', err);
+      }
+    })
+    .catch((err) => {
+      console.error('SolarWinds Sync failed:', err);
+    })
+    .finally(() => {
+      isUpdatingSolarWinds = false;
     });
 }

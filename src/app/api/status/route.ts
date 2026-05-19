@@ -18,14 +18,14 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { system, endpoint, username, authMethod, connected, secret } = body;
     
-    if (!system || !['nutanix', 'symphony', 'isms', 'compliance'].includes(system)) {
+    if (!system || !['nutanix', 'symphony', 'solarwinds'].includes(system)) {
       return NextResponse.json({ error: 'Invalid system specified' }, { status: 400 });
     }
 
     const db = getDb();
     
     // Simulate testing connection delay or just save directly
-    db.configs[system as 'nutanix' | 'symphony' | 'isms' | 'compliance'] = {
+    db.configs[system as 'nutanix' | 'symphony' | 'solarwinds'] = {
       connected: connected !== undefined ? connected : true,
       endpoint: endpoint || '',
       username: username || '',
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     
     writeDb(db);
     
-    return NextResponse.json({ success: true, config: db.configs[system as 'nutanix' | 'symphony' | 'isms' | 'compliance'] });
+    return NextResponse.json({ success: true, config: db.configs[system as 'nutanix' | 'symphony' | 'solarwinds'] });
   } catch (error) {
     console.error('API POST Error:', error);
     return NextResponse.json({ error: 'Failed to save configuration' }, { status: 500 });
