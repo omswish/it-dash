@@ -559,6 +559,7 @@ function autoSeed(db: DbSchema): DbSchema {
 }
 
 let isUpdatingSymphony = false;
+let lastTabOpenTime = 0;
 
 async function runSymphonyScrape(endpoint: string) {
   try {
@@ -569,7 +570,14 @@ async function runSymphonyScrape(endpoint: string) {
     let tab = tabs.find((t) => t.url.includes('hsd.adityabirla.com') || t.title.includes('Hindalco'));
     
     if (!tab) {
+      const now = Date.now();
+      if (now - lastTabOpenTime < 300000) {
+        console.log('Symphony Scraper: Hindalco tab not open, but skipping tab open to prevent flooding.');
+        throw new Error('Hindalco tab not open (tab open rate limited)');
+      }
+      
       console.log('Symphony Scraper: Hindalco tab not open, attempting to open a new tab...');
+      lastTabOpenTime = now;
       const targetUrl = endpoint || 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx';
       const openRes = await fetch(`http://localhost:9222/json/new?url=${encodeURIComponent(targetUrl)}`, { method: 'PUT' });
       if (openRes.ok) {
