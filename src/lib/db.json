@@ -1,17 +1,16 @@
 {
-  "lastUpdated": 1779210290257,
+  "lastUpdated": 1779210300258,
   "servers": [
     {
       "id": "srv-smartface",
       "name": "Smartface",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 97,
-      "memory": 23,
+      "cpu": 99,
+      "memory": 24,
       "disk": 56,
       "backupStatus": "successful",
       "history": [
-        99,
         97,
         98,
         96,
@@ -30,7 +29,8 @@
         93,
         98,
         99,
-        97
+        97,
+        99
       ]
     },
     {
@@ -39,11 +39,10 @@
       "location": "Utkal Alumina",
       "status": "degraded",
       "cpu": 78,
-      "memory": 53,
+      "memory": 56,
       "disk": 75,
       "backupStatus": "successful",
       "history": [
-        81,
         85,
         80,
         77,
@@ -62,6 +61,7 @@
         84,
         87,
         83,
+        78,
         78
       ]
     },
@@ -70,12 +70,11 @@
       "name": "DHCP",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 49,
-      "memory": 20,
+      "cpu": 50,
+      "memory": 21,
       "disk": 37,
       "backupStatus": "successful",
       "history": [
-        48,
         45,
         50,
         48,
@@ -94,7 +93,8 @@
         41,
         44,
         44,
-        49
+        49,
+        50
       ]
     },
     {
@@ -102,12 +102,11 @@
       "name": "ILMS APP",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 50,
+      "cpu": 47,
       "memory": 99,
       "disk": 79,
       "backupStatus": "successful",
       "history": [
-        61,
         63,
         60,
         56,
@@ -126,7 +125,8 @@
         46,
         48,
         51,
-        50
+        50,
+        47
       ]
     },
     {
@@ -134,12 +134,11 @@
       "name": "ILMS DB",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 55,
-      "memory": 52,
+      "cpu": 59,
+      "memory": 53,
       "disk": 100,
       "backupStatus": "successful",
       "history": [
-        87,
         92,
         89,
         84,
@@ -158,7 +157,8 @@
         62,
         57,
         55,
-        55
+        55,
+        59
       ]
     },
     {
@@ -166,12 +166,11 @@
       "name": "AD Primary",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 63,
-      "memory": 28,
-      "disk": 55,
+      "cpu": 68,
+      "memory": 31,
+      "disk": 56,
       "backupStatus": "failed",
       "history": [
-        68,
         71,
         76,
         73,
@@ -190,7 +189,8 @@
         70,
         68,
         67,
-        63
+        63,
+        68
       ]
     },
     {
@@ -198,12 +198,11 @@
       "name": "AD Backup",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 10,
-      "memory": 32,
+      "cpu": 12,
+      "memory": 33,
       "disk": 47,
       "backupStatus": "successful",
       "history": [
-        8,
         7,
         5,
         5,
@@ -222,7 +221,8 @@
         5,
         9,
         11,
-        10
+        10,
+        12
       ]
     },
     {
@@ -230,12 +230,11 @@
       "name": "Exchange Mail",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 7,
-      "memory": 89,
+      "cpu": 10,
+      "memory": 92,
       "disk": 85,
       "backupStatus": "successful",
       "history": [
-        14,
         16,
         11,
         11,
@@ -254,7 +253,8 @@
         5,
         5,
         10,
-        7
+        7,
+        10
       ]
     },
     {
@@ -262,12 +262,11 @@
       "name": "SAP App",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 7,
+      "cpu": 8,
       "memory": 43,
       "disk": 87,
       "backupStatus": "failed",
       "history": [
-        11,
         16,
         18,
         13,
@@ -286,7 +285,8 @@
         5,
         5,
         7,
-        7
+        7,
+        8
       ]
     },
     {
@@ -294,12 +294,11 @@
       "name": "SAP DB",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 62,
-      "memory": 86,
+      "cpu": 60,
+      "memory": 88,
       "disk": 94,
       "backupStatus": "successful",
       "history": [
-        59,
         62,
         61,
         64,
@@ -318,7 +317,8 @@
         65,
         62,
         66,
-        62
+        62,
+        60
       ]
     },
     {
@@ -326,12 +326,11 @@
       "name": "Utility Gateway",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 31,
-      "memory": 68,
-      "disk": 50,
+      "cpu": 32,
+      "memory": 66,
+      "disk": 51,
       "backupStatus": "failed",
       "history": [
-        13,
         11,
         13,
         15,
@@ -350,7 +349,8 @@
         23,
         24,
         27,
-        31
+        31,
+        32
       ]
     },
     {
@@ -358,12 +358,11 @@
       "name": "File Share",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 18,
-      "memory": 85,
+      "cpu": 22,
+      "memory": 84,
       "disk": 98,
       "backupStatus": "successful",
       "history": [
-        18,
         21,
         17,
         22,
@@ -382,7 +381,8 @@
         25,
         21,
         23,
-        18
+        18,
+        22
       ]
     },
     {
@@ -390,12 +390,11 @@
       "name": "Print Server",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 10,
-      "memory": 50,
+      "cpu": 15,
+      "memory": 51,
       "disk": 46,
       "backupStatus": "successful",
       "history": [
-        10,
         15,
         16,
         19,
@@ -414,7 +413,8 @@
         8,
         7,
         7,
-        10
+        10,
+        15
       ]
     },
     {
@@ -422,12 +422,11 @@
       "name": "Endpoint Security",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 29,
-      "memory": 82,
+      "cpu": 28,
+      "memory": 84,
       "disk": 70,
       "backupStatus": "failed",
       "history": [
-        18,
         14,
         17,
         13,
@@ -446,7 +445,8 @@
         29,
         34,
         33,
-        29
+        29,
+        28
       ]
     },
     {
@@ -454,12 +454,11 @@
       "name": "Oracle APEX DB",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 23,
+      "cpu": 22,
       "memory": 52,
       "disk": 85,
       "backupStatus": "successful",
       "history": [
-        51,
         48,
         45,
         41,
@@ -478,7 +477,8 @@
         23,
         21,
         26,
-        23
+        23,
+        22
       ]
     },
     {
@@ -486,12 +486,11 @@
       "name": "CCTV Monitor 01",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 83,
-      "memory": 70,
+      "cpu": 85,
+      "memory": 68,
       "disk": 98,
       "backupStatus": "failed",
       "history": [
-        77,
         74,
         77,
         73,
@@ -510,7 +509,8 @@
         83,
         81,
         84,
-        83
+        83,
+        85
       ]
     },
     {
@@ -518,12 +518,11 @@
       "name": "CCTV Monitor 02",
       "location": "Utkal Alumina",
       "status": "operational",
-      "cpu": 72,
-      "memory": 53,
+      "cpu": 76,
+      "memory": 50,
       "disk": 91,
       "backupStatus": "failed",
       "history": [
-        99,
         97,
         99,
         98,
@@ -542,7 +541,8 @@
         76,
         76,
         72,
-        72
+        72,
+        76
       ]
     },
     {
@@ -551,11 +551,10 @@
       "location": "Utkal Alumina",
       "status": "degraded",
       "cpu": 5,
-      "memory": 40,
+      "memory": 39,
       "disk": 38,
       "backupStatus": "successful",
       "history": [
-        8,
         6,
         11,
         7,
@@ -574,6 +573,7 @@
         6,
         5,
         5,
+        5,
         5
       ]
     },
@@ -582,12 +582,11 @@
       "name": "PLM Server",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 84,
-      "memory": 25,
+      "cpu": 81,
+      "memory": 24,
       "disk": 60,
       "backupStatus": "failed",
       "history": [
-        99,
         99,
         99,
         99,
@@ -606,7 +605,8 @@
         94,
         94,
         89,
-        84
+        84,
+        81
       ]
     },
     {
@@ -614,12 +614,11 @@
       "name": "Backup Repo",
       "location": "Utkal Alumina",
       "status": "degraded",
-      "cpu": 16,
+      "cpu": 19,
       "memory": 15,
       "disk": 100,
       "backupStatus": "successful",
       "history": [
-        23,
         18,
         19,
         15,
@@ -638,7 +637,8 @@
         13,
         15,
         13,
-        16
+        16,
+        19
       ]
     }
   ],
@@ -648,10 +648,9 @@
       "provider": "RJIO",
       "status": "operational",
       "uptime": 99.99,
-      "latency": 5,
-      "utilization": 63,
+      "latency": 6,
+      "utilization": 67,
       "history": [
-        80,
         73,
         80,
         73,
@@ -670,7 +669,8 @@
         70,
         67,
         69,
-        63
+        63,
+        67
       ]
     },
     {
@@ -678,10 +678,9 @@
       "provider": "RailTel",
       "status": "degraded",
       "uptime": 99.92,
-      "latency": 10,
-      "utilization": 79,
+      "latency": 12,
+      "utilization": 73,
       "history": [
-        85,
         78,
         74,
         76,
@@ -700,7 +699,8 @@
         83,
         83,
         82,
-        79
+        79,
+        73
       ]
     }
   ],
