@@ -11,11 +11,12 @@ interface TrafficData {
 interface UptimeChartProps {
   data: TrafficData[];
   status: 'operational' | 'degraded' | 'down';
+  strokeColor?: string;
 }
 
-export default function UptimeChart({ data, status }: UptimeChartProps) {
-  // Rx is primary dark orange
-  const rxColor = '#c2410c';
+export default function UptimeChart({ data, status, strokeColor }: UptimeChartProps) {
+  // Rx is dynamic based on status and provider theme
+  const rxColor = strokeColor || '#c2410c';
   // Tx is secondary slate/charcoal grey
   const txColor = '#475569';
 
@@ -37,7 +38,7 @@ export default function UptimeChart({ data, status }: UptimeChartProps) {
           <Tooltip 
             contentStyle={{ 
               backgroundColor: '#fffdf9', 
-              borderColor: 'rgba(234, 88, 12, 0.25)',
+              borderColor: rxColor,
               borderRadius: '6px',
               color: '#0f172a',
               fontSize: '0.625rem',

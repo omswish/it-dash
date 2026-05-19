@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import NetworkCard from '@/components/NetworkCard';
 import ConfigModal from '@/components/ConfigModal';
-import { ServerData, NetworkData, DbSchema } from '@/lib/db';
+import { ServerData, DbSchema } from '@/lib/db';
 import { 
-  Activity, ShieldCheck, AlertTriangle, RefreshCw, Cpu, Server, Network, 
-  Settings, Key, ChevronRight, Database, Shield, Radio, Check, X, Info
+  ShieldCheck, AlertTriangle, RefreshCw, Cpu, Server, Network, 
+  Settings, Key, ChevronRight, Database, Radio, Check, X, Info
 } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, XAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, Tooltip } from 'recharts';
 
 
 
@@ -134,10 +134,24 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [isCartridgeModalOpen, setIsCartridgeModalOpen] = useState(false);
+  const [time, setTime] = useState(new Date());
 
   // Stateful server hover sparkline popover
   const [hoveredServer, setHoveredServer] = useState<ServerData | null>(null);
   const [popoverCoords, setPopoverCoords] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const { todayStr, oneWeekLater } = useMemo(() => {
+    const t = new Date();
+    const today = t.toISOString().split('T')[0];
+    const future = new Date(t.getTime() + 7 * 24 * 3600 * 1000).toISOString().split('T')[0];
+    return { todayStr: today, oneWeekLater: future };
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -153,7 +167,9 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchData();
+    Promise.resolve().then(() => {
+      fetchData();
+    });
     const interval = setInterval(fetchData, 10000); // 10s auto sync
     return () => clearInterval(interval);
   }, []);
@@ -172,7 +188,6 @@ export default function Dashboard() {
   if (!data) return null;
 
   const totalServers = data.servers.length;
-  const operationalServers = data.servers.filter(s => s.status === 'operational').length;
   const serverAlerts = data.servers.filter(s => s.status !== 'operational' || s.backupStatus === 'failed').length;
 
   const totalNetworks = data.networks.length;
@@ -193,11 +208,25 @@ export default function Dashboard() {
   const n3Color = serverAlerts > 1 ? '#be123c' : serverAlerts > 0 ? '#ea580c' : '#22c55e';
 
   // Printer Cartridge Stock Local Parameters
-  const cartridgeInventory = [
+  const cartridgeInventory = data.cartridges || [
     { type: '88A', current: 85, target: 100, label: 'HP LaserJet 88A' },
     { type: '12A', current: 34, target: 50, label: 'HP LaserJet 12A' },
     { type: '378A', current: 28, target: 40, label: 'Premium 378A Color' },
   ];
+
+  const cartridgeAlertsCount = cartridgeInventory.filter(item => item.current < item.target * 0.8).length;
+
+  const upcomingRequests = (data.onboardingRequests || []).filter(req => {
+    return req.date >= todayStr && req.date <= oneWeekLater;
+  });
+
+  const sec = time.getSeconds();
+  const min = time.getMinutes();
+  const hr = time.getHours();
+
+  const secAngle = sec * 6; // 360 / 60
+  const minAngle = min * 6 + sec * 0.1;
+  const hrAngle = (hr % 12) * 30 + min * 0.5;
 
   return (
     <main className="layout-container">
@@ -619,98 +648,194 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-             {/* Printer Cartridge Stock Card */}
-             <div style={{ height: '220px', display: 'flex', flexDirection: 'column', minHeight: 0, flexShrink: 0 }}>
-               <h2 className="section-title" style={{ fontSize: '0.875rem', marginBottom: '0.25rem', flexShrink: 0 }}>
-                 <Database size={13} color="var(--primary)" />
-                 Cartridge Stock
-               </h2>
-               <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.625rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 0 }}>
-                 <div className="card-header" style={{ marginBottom: '2px', flexShrink: 0 }}>
-                   <div className="card-title" style={{ fontSize: '0.75rem' }}>
-                     <Database size={14} color="var(--primary)" />
-                     <div>
-                       <div style={{ fontWeight: 800, fontSize: '0.75rem', color: 'var(--foreground)' }}>Printer Cartridges</div>
-                       <div style={{ fontSize: '0.55rem', color: 'var(--secondary)', fontWeight: 600 }}>NOC Consumables Stock</div>
-                     </div>
-                   </div>
-                 </div>
-
-                 {/* Cartridge Levels list */}
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, justifyContent: 'center' }}>
-                   {cartridgeInventory.map((cart) => {
-                     const pct = Math.round((cart.current / cart.target) * 100);
-                     const isShortage = pct < 80;
-                     
-                     // Color codes for shortage threshold 80%
-                     let barColor = 'var(--secondary)'; // grey above 80%
-                     let badgeColor = 'rgba(71, 85, 105, 0.06)';
-                     let badgeTextColor = 'var(--secondary)';
-                     let statusLabel = 'Adequate';
-
-                     if (isShortage) {
-                       // low stock gets orange/red
-                       if (pct < 70) {
-                         barColor = 'var(--danger)'; // red for critical low
-                         badgeColor = 'rgba(185, 28, 28, 0.06)';
-                         badgeTextColor = 'var(--danger)';
-                         statusLabel = 'Low Stock';
-                       } else {
-                         barColor = 'var(--primary)'; // dark orange for standard warning
-                         badgeColor = 'rgba(var(--primary-rgb), 0.06)';
-                         badgeTextColor = 'var(--primary)';
-                         statusLabel = 'Shortage';
-                       }
-                     }
-
-                     return (
-                       <div key={cart.type} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.625rem' }}>
-                           <div>
-                             <span style={{ fontWeight: 800, color: 'var(--foreground)', marginRight: '4px' }}>Type {cart.type}</span>
-                             <span style={{ fontSize: '0.55rem', color: 'var(--secondary)' }}>({cart.label})</span>
-                           </div>
-                           <span style={{
-                             fontSize: '0.55rem',
-                             fontWeight: 800,
-                             padding: '0.05rem 0.25rem',
-                             borderRadius: '3px',
-                             background: badgeColor,
-                             border: `1px solid ${isShortage ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(71, 85, 105, 0.15)'}`,
-                             color: badgeTextColor
-                           }}>
-                             {statusLabel}: {cart.current}/{cart.target} ({pct}%)
-                           </span>
-                         </div>
-                         <div style={{ height: '5px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '2.5px', overflow: 'hidden' }}>
-                           <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: '2.5px', transition: 'width 0.5s ease-out' }}></div>
-                         </div>
-                       </div>
-                     );
-                   })}
-                 </div>
-
-                 {/* Threshold indicator */}
-                 <div style={{
-                   background: 'rgba(var(--primary-rgb), 0.03)',
-                   border: '1px solid rgba(var(--primary-rgb), 0.1)',
-                   padding: '0.25rem',
-                   borderRadius: '4px',
-                   textAlign: 'center',
-                   fontSize: '0.55rem',
-                   color: 'var(--primary)',
-                   fontWeight: 700,
-                   flexShrink: 0,
-                   marginTop: '2px'
-                 }}>
-                   Shortage alert threshold configured at 80% capacity
-                 </div>
-                </div>
-              </div>
-           </div>
+            </div>
 
         </div>
+
+      {/* Bottom Bar: Notifications, Stock Alerts, HR Requests, Analog Clock */}
+      <footer className="glass-panel" style={{
+        flexShrink: 0,
+        height: '64px',
+        marginTop: '0.5rem',
+        padding: '0.4rem 1rem',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: '#fffdf9',
+        border: '1px solid rgba(var(--primary-rgb), 0.22)',
+        gap: '1rem',
+        overflow: 'hidden'
+      }}>
+        {/* Left Section: Notifications & Alerts */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.725rem', borderRight: '1px solid rgba(100, 116, 139, 0.15)', paddingRight: '1rem' }}>
+            <span style={{ fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.025em' }}>NOC Console Feed:</span>
+            <span style={{ color: 'var(--foreground)', fontWeight: 600 }}>
+              {activeSourcesCount === 3 ? 'All integrations active' : `${3 - activeSourcesCount} systems offline`}
+            </span>
+          </div>
+          
+          {/* Cartridge Stock Alert Indicator Button */}
+          <button 
+            onClick={() => setIsCartridgeModalOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: cartridgeAlertsCount > 0 ? 'rgba(239, 68, 68, 0.06)' : 'rgba(13, 148, 136, 0.06)',
+              border: `1px solid ${cartridgeAlertsCount > 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(13, 148, 136, 0.2)'}`,
+              padding: '0.25rem 0.55rem',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              color: cartridgeAlertsCount > 0 ? 'var(--danger)' : '#0d9488',
+              fontSize: '0.7rem',
+              fontWeight: 800,
+              fontFamily: 'var(--font-heading)',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; }}
+          >
+            <Database size={12} />
+            <span>
+              {cartridgeAlertsCount > 0 ? `${cartridgeAlertsCount} Stock Shortages` : 'Stock Levels: Normal'}
+            </span>
+          </button>
+        </div>
+
+        {/* Middle Section: Onboarding/Offboarding Requests */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', overflowX: 'auto', padding: '0 0.5rem' }} className="custom-scroll">
+          <span style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', flexShrink: 0 }}>HR Requests (7D):</span>
+          {upcomingRequests.length === 0 ? (
+            <span style={{ fontSize: '0.675rem', color: 'var(--secondary)', fontStyle: 'italic' }}>No onboarding/offboarding requests in next 7 days</span>
+          ) : (
+            upcomingRequests.map(req => {
+              const isToday = req.date === todayStr;
+              return (
+                <div 
+                  key={req.id} 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '4px',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    background: isToday ? 'rgba(239, 68, 68, 0.03)' : 'rgba(100, 116, 139, 0.03)',
+                    border: `1.5px solid ${isToday ? '#ef4444' : 'rgba(100, 116, 139, 0.15)'}`,
+                    boxShadow: isToday ? '0 0 6px rgba(239, 68, 68, 0.15)' : 'none',
+                    color: isToday ? 'var(--danger)' : 'var(--foreground)',
+                    flexShrink: 0
+                  }}
+                >
+                  <span style={{ textTransform: 'uppercase', fontSize: '0.55rem', fontWeight: 800, padding: '1px 3px', borderRadius: '3px', background: req.type === 'onboarding' ? 'rgba(13, 148, 136, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: req.type === 'onboarding' ? '#0d9488' : '#ef4444' }}>
+                    {req.type}
+                  </span>
+                  <span>{req.employeeName}</span>
+                  <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>({req.department})</span>
+                  <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>{isToday ? 'TODAY' : req.date}</span>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Right Section: Date, Time & Analog Clock */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '0.6rem', fontWeight: 700, color: 'var(--secondary)' }}>
+            <span>{time.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--foreground)', fontFamily: 'var(--font-heading)' }}>{time.toLocaleTimeString()}</span>
+          </div>
+          {/* SVG Clock */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <svg width="40" height="40" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="#fffdf9" stroke="var(--primary)" strokeWidth="5" />
+              {/* ticks */}
+              {[...Array(12)].map((_, i) => {
+                const angle = (i * 30 * Math.PI) / 180;
+                const x1 = 50 + 38 * Math.sin(angle);
+                const y1 = 50 - 38 * Math.cos(angle);
+                const x2 = 50 + 43 * Math.sin(angle);
+                const y2 = 50 - 43 * Math.cos(angle);
+                return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--primary)" strokeWidth="3" strokeLinecap="round" />;
+              })}
+              {/* Hour hand */}
+              <line x1="50" y1="50" x2={50 + 22 * Math.sin((hrAngle * Math.PI) / 180)} y2={50 - 22 * Math.cos((hrAngle * Math.PI) / 180)} stroke="var(--foreground)" strokeWidth="6" strokeLinecap="round" />
+              {/* Minute hand */}
+              <line x1="50" y1="50" x2={50 + 32 * Math.sin((minAngle * Math.PI) / 180)} y2={50 - 32 * Math.cos((minAngle * Math.PI) / 180)} stroke="var(--secondary)" strokeWidth="4" strokeLinecap="round" />
+              {/* Second hand */}
+              <line x1="50" y1="50" x2={50 + 38 * Math.sin((secAngle * Math.PI) / 180)} y2={50 - 38 * Math.cos((secAngle * Math.PI) / 180)} stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" />
+              {/* center dot */}
+              <circle cx="50" cy="50" r="3.5" fill="var(--foreground)" />
+            </svg>
+          </div>
+        </div>
+      </footer>
+
+      {/* Cartridge Levels Dialog Modal */}
+      {isCartridgeModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.4)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div className="glass-panel" style={{
+            width: '600px',
+            padding: '1.5rem',
+            background: '#fffdf9',
+            border: '1px solid rgba(var(--primary-rgb), 0.2)',
+            boxShadow: '0 10px 30px rgba(120, 110, 90, 0.15)',
+            borderRadius: '10px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(100,116,139,0.1)', paddingBottom: '0.5rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Database size={18} color="var(--primary)" />
+                Consumables Inventory Stock Levels
+              </h3>
+              <button onClick={() => setIsCartridgeModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--secondary)' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ height: '240px', width: '100%', marginBottom: '1.25rem' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cartridgeInventory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="type" tick={{ fill: 'var(--foreground)', fontSize: '0.65rem', fontWeight: 700 }} />
+                  <YAxis tick={{ fill: 'var(--foreground)', fontSize: '0.65rem', fontWeight: 700 }} />
+                  <Tooltip contentStyle={{ background: '#fffdf9', borderRadius: '6px', fontSize: '0.7rem' }} />
+                  <Bar dataKey="current" name="Current Stock" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="target" name="Target Level" fill="rgba(100, 116, 139, 0.2)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {cartridgeInventory.map((item) => {
+                const pct = Math.round((item.current / item.target) * 100);
+                return (
+                  <div key={item.type} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0.625rem', background: pct < 80 ? 'rgba(239, 68, 68, 0.05)' : 'rgba(100, 116, 139, 0.03)', border: `1px solid ${pct < 80 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(100, 116, 139, 0.08)'}`, borderRadius: '4px' }}>
+                    <span style={{ fontWeight: 700 }}>Type {item.type} ({item.label})</span>
+                    <span style={{ fontWeight: 800, color: pct < 80 ? 'var(--danger)' : 'var(--success)' }}>
+                      {item.current} / {item.target} ({pct}%)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dynamic Stateful 7D Server CPU History Tooltip Popover */}
       {hoveredServer && (

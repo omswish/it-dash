@@ -77,6 +77,21 @@ export interface SymphonyMetrics {
 
 
 
+export interface CartridgeItem {
+  type: string;
+  current: number;
+  target: number;
+  label: string;
+}
+
+export interface OnboardingRequest {
+  id: string;
+  type: 'onboarding' | 'offboarding';
+  employeeName: string;
+  department: string;
+  date: string; // YYYY-MM-DD
+}
+
 export interface DbSchema {
   lastUpdated: number;
   servers: ServerData[];
@@ -88,6 +103,8 @@ export interface DbSchema {
   };
   nutanix: NutanixMetrics;
   symphony: SymphonyMetrics;
+  cartridges?: CartridgeItem[];
+  onboardingRequests?: OnboardingRequest[];
 }
 
 function generateInitialData(): DbSchema {
@@ -369,7 +386,18 @@ function generateInitialData(): DbSchema {
         { id: 'INC00000984711', priority: 'P2', caller: 'R. K. Senapati', title: 'Utkal WAN Link Degradation', status: 'In Progress' },
         { id: 'INC00000984725', priority: 'P4', caller: 'S. Mohapatra', title: 'Office 365 License Sync', status: 'Assigned' }
       ]
-    }
+    },
+    cartridges: [
+      { type: '88A', current: 85, target: 100, label: 'HP LaserJet 88A' },
+      { type: '12A', current: 34, target: 50, label: 'HP LaserJet 12A' },
+      { type: '378A', current: 28, target: 40, label: 'Premium 378A Color' }
+    ],
+    onboardingRequests: [
+      { id: 'REQ-OB-01', type: 'onboarding', employeeName: 'Amit Kumar', department: 'Digital Transformation', date: new Date().toISOString().split('T')[0] },
+      { id: 'REQ-OB-02', type: 'onboarding', employeeName: 'Priya Sharma', department: 'HR Shared Services', date: new Date(Date.now() + 2 * 24 * 3600 * 1000).toISOString().split('T')[0] },
+      { id: 'REQ-OF-01', type: 'offboarding', employeeName: 'Rajesh Patel', department: 'Finance & Accounts', date: new Date(Date.now() + 5 * 24 * 3600 * 1000).toISOString().split('T')[0] },
+      { id: 'REQ-OB-03', type: 'onboarding', employeeName: 'Suresh Naidu', department: 'Operations', date: new Date(Date.now() + 6 * 24 * 3600 * 1000).toISOString().split('T')[0] }
+    ]
   };
 }
 
@@ -426,10 +454,10 @@ function autoSeed(db: DbSchema): DbSchema {
   const updatedServers = isSolarWindsConnected
     ? db.servers
     : db.servers.map((server) => {
-        let cpuDiff = Math.floor(Math.random() * 11) - 5;
-        let newCpu = Math.max(5, Math.min(99, server.cpu + cpuDiff));
-        let memDiff = Math.floor(Math.random() * 7) - 3;
-        let newMem = Math.max(10, Math.min(99, server.memory + memDiff));
+        const cpuDiff = Math.floor(Math.random() * 11) - 5;
+        const newCpu = Math.max(5, Math.min(99, server.cpu + cpuDiff));
+        const memDiff = Math.floor(Math.random() * 7) - 3;
+        const newMem = Math.max(10, Math.min(99, server.memory + memDiff));
         let newDisk = server.disk;
         if (Math.random() > 0.9) newDisk = Math.min(100, server.disk + 1);
         
@@ -458,10 +486,10 @@ function autoSeed(db: DbSchema): DbSchema {
   const updatedNetworks = isSolarWindsConnected
     ? db.networks
     : db.networks.map((net) => {
-        let utilDiff = Math.floor(Math.random() * 15) - 7;
-        let newUtil = Math.max(5, Math.min(100, net.utilization + utilDiff));
-        let latDiff = Math.floor(Math.random() * 5) - 2;
-        let newLat = Math.max(2, Math.min(100, net.latency + latDiff));
+        const utilDiff = Math.floor(Math.random() * 15) - 7;
+        const newUtil = Math.max(5, Math.min(100, net.utilization + utilDiff));
+        const latDiff = Math.floor(Math.random() * 5) - 2;
+        const newLat = Math.max(2, Math.min(100, net.latency + latDiff));
         
         let newStatus = net.status;
         if (Math.random() > 0.98) {
@@ -480,13 +508,13 @@ function autoSeed(db: DbSchema): DbSchema {
   // Update Nutanix metrics if connected
   let updatedNutanix = { ...db.nutanix };
   if (db.configs.nutanix.connected) {
-    let cpuDiff = Math.floor(Math.random() * 9) - 4;
-    let currentCpu = db.nutanix.historyCpu[db.nutanix.historyCpu.length - 1];
-    let newCpu = Math.max(10, Math.min(95, currentCpu + cpuDiff));
+    const cpuDiff = Math.floor(Math.random() * 9) - 4;
+    const currentCpu = db.nutanix.historyCpu[db.nutanix.historyCpu.length - 1];
+    const newCpu = Math.max(10, Math.min(95, currentCpu + cpuDiff));
 
-    let memDiff = Math.floor(Math.random() * 5) - 2;
-    let currentMem = db.nutanix.historyMem[db.nutanix.historyMem.length - 1];
-    let newMem = Math.max(20, Math.min(95, currentMem + memDiff));
+    const memDiff = Math.floor(Math.random() * 5) - 2;
+    const currentMem = db.nutanix.historyMem[db.nutanix.historyMem.length - 1];
+    const newMem = Math.max(20, Math.min(95, currentMem + memDiff));
 
     // Make storage dynamic, fluctuating within 45% - 85% range, and reset if stuck at 100%
     let storageDiff = 0;
@@ -502,7 +530,7 @@ function autoSeed(db: DbSchema): DbSchema {
       currentStorage = 68; // Reset stuck static 100% value
     }
     
-    let newStorage = Math.max(45, Math.min(85, currentStorage + storageDiff));
+    const newStorage = Math.max(45, Math.min(85, currentStorage + storageDiff));
 
     updatedNutanix = {
       ...db.nutanix,
@@ -513,7 +541,7 @@ function autoSeed(db: DbSchema): DbSchema {
   }
 
   // Update Symphony Summit metrics if connected
-  let updatedSymphony = { ...db.symphony };
+  const updatedSymphony = { ...db.symphony };
   // Handled via async background scraping to fetch actual portal values
 
 
@@ -524,7 +552,9 @@ function autoSeed(db: DbSchema): DbSchema {
     networks: updatedNetworks,
     configs: db.configs,
     nutanix: updatedNutanix,
-    symphony: updatedSymphony
+    symphony: updatedSymphony,
+    cartridges: db.cartridges,
+    onboardingRequests: db.onboardingRequests
   };
 }
 
@@ -534,9 +564,9 @@ async function runSymphonyScrape(endpoint: string) {
   try {
     const res = await fetch('http://localhost:9222/json');
     if (!res.ok) throw new Error('Chrome debugging port not reachable');
-    const tabs = await res.json();
+    const tabs = (await res.json()) as Array<{ id: string; url: string; title: string; webSocketDebuggerUrl?: string }>;
     
-    let tab = tabs.find((t: any) => t.url.includes('hsd.adityabirla.com') || t.title.includes('Hindalco'));
+    let tab = tabs.find((t) => t.url.includes('hsd.adityabirla.com') || t.title.includes('Hindalco'));
     
     if (!tab) {
       console.log('Symphony Scraper: Hindalco tab not open, attempting to open a new tab...');
@@ -546,8 +576,8 @@ async function runSymphonyScrape(endpoint: string) {
         const newTab = await openRes.json();
         await new Promise((resolve) => setTimeout(resolve, 4000));
         const refetchRes = await fetch('http://localhost:9222/json');
-        const refetchTabs = await refetchRes.json();
-        tab = refetchTabs.find((t: any) => t.id === newTab.id);
+        const refetchTabs = (await refetchRes.json()) as Array<{ id: string; url: string; title: string; webSocketDebuggerUrl?: string }>;
+        tab = refetchTabs.find((t) => t.id === newTab.id);
       }
     }
     
@@ -566,7 +596,7 @@ async function runSymphonyScrape(endpoint: string) {
       changesBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
       activeIncidents: ActiveIncident[];
     }>((resolve, reject) => {
-      const ws = new WebSocket(tab.webSocketDebuggerUrl);
+      const ws = new WebSocket(tab.webSocketDebuggerUrl!);
       
       const timeout = setTimeout(() => {
         ws.close();

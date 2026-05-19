@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { Shield, Settings, Server, Radio, Database, Key, Check, Loader2, AlertCircle, X } from 'lucide-react';
+import { Settings, Server, Radio, Database, Key, Check, Loader2, AlertCircle, X, Upload } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ interface ConfigModalProps {
   onSave: () => void;
 }
 
-type TabType = 'nutanix' | 'symphony' | 'solarwinds';
+type TabType = 'nutanix' | 'symphony' | 'solarwinds' | 'inventory';
 
 export default function ConfigModal({ isOpen, onClose, configs, onSave }: ConfigModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('nutanix');
@@ -30,7 +31,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
 
   if (!isOpen) return null;
 
-  const handleTestConnection = async (system: TabType) => {
+  const handleTestConnection = async (system: 'nutanix' | 'symphony' | 'solarwinds') => {
     setTesting(true);
     setTestResult(null);
     
@@ -64,7 +65,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
     }
   };
 
-  const handleDisconnect = async (system: TabType) => {
+  const handleDisconnect = async (system: 'nutanix' | 'symphony' | 'solarwinds') => {
     setTesting(true);
     setTestResult(null);
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -171,100 +172,218 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               <span>SolarWinds Orion API</span>
               {configs.solarwinds?.connected && <span className="connected-badge"></span>}
             </button>
+            <button 
+              onClick={() => { setActiveTab('inventory'); setTestResult(null); }}
+              style={getTabStyle(activeTab === 'inventory')}
+            >
+              <Database size={16} />
+              <span>Cartridge Stock Excel</span>
+            </button>
           </div>
 
           {/* Right Inputs Content */}
           <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#ffffff' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
-                  {activeTab === 'nutanix' && 'Nutanix CLI Hypervisor Access'}
-                  {activeTab === 'symphony' && 'Symphony Summit Service API'}
-                  {activeTab === 'solarwinds' && 'SolarWinds Orion API Client'}
-                </h3>
-                <p style={{ fontSize: '0.825rem', color: 'var(--secondary)', lineHeight: 1.3 }}>
-                  {activeTab === 'nutanix' && 'Establish SSH connection to Nutanix Acropolis hypervisor to retrieve system utilization.'}
-                  {activeTab === 'symphony' && 'Provide endpoint credentials to Summit ITSM suite to retrieve incident and SLA lists.'}
-                  {activeTab === 'solarwinds' && 'Connect to SWIS REST API to fetch live server utilization and WAN/ISP interface bandwidth.'}
-                </p>
-              </div>
+            {activeTab !== 'inventory' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
+                    {activeTab === 'nutanix' && 'Nutanix CLI Hypervisor Access'}
+                    {activeTab === 'symphony' && 'Symphony Summit Service API'}
+                    {activeTab === 'solarwinds' && 'SolarWinds Orion API Client'}
+                  </h3>
+                  <p style={{ fontSize: '0.825rem', color: 'var(--secondary)', lineHeight: 1.3 }}>
+                    {activeTab === 'nutanix' && 'Establish SSH connection to Nutanix Acropolis hypervisor to retrieve system utilization.'}
+                    {activeTab === 'symphony' && 'Provide endpoint credentials to Summit ITSM suite to retrieve incident and SLA lists.'}
+                    {activeTab === 'solarwinds' && 'Connect to SWIS REST API to fetch live server utilization and WAN/ISP interface bandwidth.'}
+                  </p>
+                </div>
 
-              {/* Endpoint Address */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                  {activeTab === 'nutanix' || activeTab === 'solarwinds' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
-                </label>
-                <input 
-                  type="text" 
-                  value={form[activeTab].endpoint}
-                  onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], endpoint: e.target.value }})}
-                  className="config-input" 
-                />
-              </div>
-
-              {/* Authentication Method Dropdown */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                  Authentication Method
-                </label>
-                <select 
-                  value={form[activeTab].method}
-                  onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], method: e.target.value }})}
-                  className="config-input"
-                  style={{ background: '#faf9f5' }}
-                >
-                  {activeTab === 'nutanix' && (
-                    <>
-                      <option value="SSH Key">SSH Key</option>
-                      <option value="Password">Password</option>
-                    </>
-                  )}
-                  {activeTab === 'symphony' && (
-                    <>
-                      <option value="SAML SSO (Chrome Session)">SAML SSO (Chrome Session)</option>
-                      <option value="Basic Authentication">Basic Authentication</option>
-                      <option value="REST API Key">REST API Key</option>
-                    </>
-                  )}
-
-                  {activeTab === 'solarwinds' && (
-                    <>
-                      <option value="Basic Authentication">Basic Authentication</option>
-                    </>
-                  )}
-                </select>
-              </div>
-
-              {/* Username & Creds */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem' }}>
+                {/* Endpoint Address */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                    {activeTab === 'nutanix' ? 'CLI SSH Username' : activeTab === 'solarwinds' ? 'Orion User Account' : 'Client ID / User'}
+                    {activeTab === 'nutanix' || activeTab === 'solarwinds' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
                   </label>
                   <input 
                     type="text" 
-                    value={form[activeTab].username}
-                    onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], username: e.target.value }})}
+                    value={form[activeTab].endpoint}
+                    onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], endpoint: e.target.value }})}
                     className="config-input" 
                   />
                 </div>
+
+                {/* Authentication Method Dropdown */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                    {activeTab === 'nutanix' ? 'SSH Private Key / Password' : activeTab === 'solarwinds' ? 'Account Password' : 'Client Secret Key / Token'}
+                    Authentication Method
                   </label>
-                  <div style={{ position: 'relative' }}>
+                  <select 
+                    value={form[activeTab].method}
+                    onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], method: e.target.value }})}
+                    className="config-input"
+                    style={{ background: '#faf9f5' }}
+                  >
+                    {activeTab === 'nutanix' && (
+                      <>
+                        <option value="SSH Key">SSH Key</option>
+                        <option value="Password">Password</option>
+                      </>
+                    )}
+                    {activeTab === 'symphony' && (
+                      <>
+                        <option value="SAML SSO (Chrome Session)">SAML SSO (Chrome Session)</option>
+                        <option value="Basic Authentication">Basic Authentication</option>
+                        <option value="REST API Key">REST API Key</option>
+                      </>
+                    )}
+
+                    {activeTab === 'solarwinds' && (
+                      <>
+                        <option value="Basic Authentication">Basic Authentication</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                {/* Username & Creds */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
+                      {activeTab === 'nutanix' ? 'CLI SSH Username' : activeTab === 'solarwinds' ? 'Orion User Account' : 'Client ID / User'}
+                    </label>
                     <input 
-                      type="password" 
-                      value={form[activeTab].secret}
-                      onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], secret: e.target.value }})}
+                      type="text" 
+                      value={form[activeTab].username}
+                      onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], username: e.target.value }})}
                       className="config-input" 
-                      style={{ paddingRight: '2.5rem' }}
                     />
-                    <Key size={14} style={{ position: 'absolute', right: '12px', top: '12px', color: 'var(--secondary)' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
+                      {activeTab === 'nutanix' ? 'SSH Private Key / Password' : activeTab === 'solarwinds' ? 'Account Password' : 'Client Secret Key / Token'}
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input 
+                        type="password" 
+                        value={form[activeTab].secret}
+                        onChange={(e) => setForm({ ...form, [activeTab]: { ...form[activeTab], secret: e.target.value }})}
+                        className="config-input" 
+                        style={{ paddingRight: '2.5rem' }}
+                      />
+                      <Key size={14} style={{ position: 'absolute', right: '12px', top: '12px', color: 'var(--secondary)' }} />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
+                    Upload Cartridge Inventory Excel
+                  </h3>
+                  <p style={{ fontSize: '0.825rem', color: 'var(--secondary)', lineHeight: 1.3 }}>
+                    Provide an Excel spreadsheet (`.xlsx` or `.xls`) containing cartridge inventory. 
+                    The system will automatically map the first sheet&apos;s data into the NOC stock level charts.
+                  </p>
+                </div>
+
+                <div style={{
+                  border: '2px dashed rgba(var(--primary-rgb), 0.25)',
+                  borderRadius: '8px',
+                  padding: '2.5rem 1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(var(--primary-rgb), 0.01)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  textAlign: 'center',
+                  transition: 'all 0.2s'
+                }} className="excel-upload-zone">
+                  <input 
+                    type="file" 
+                    accept=".xlsx, .xls"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setTesting(true);
+                      setTestResult(null);
+                      try {
+                        const reader = new FileReader();
+                        reader.onload = async (evt) => {
+                          try {
+                            const bstr = evt.target?.result;
+                            const wb = XLSX.read(bstr, { type: 'binary' });
+                            const wsname = wb.SheetNames[0];
+                            const ws = wb.Sheets[wsname];
+                            const rawData = XLSX.utils.sheet_to_json(ws) as Array<Record<string, string | number>>;
+                            
+                            if (!rawData || rawData.length === 0) {
+                              alert("Sheet is empty or couldn't be parsed.");
+                              setTestResult('failed');
+                              setTesting(false);
+                              return;
+                            }
+
+                            // map keys
+                            const cartridges = rawData.map((row) => {
+                              const keys = Object.keys(row);
+                              const typeKey = keys.find(k => k.toLowerCase() === 'type' || k.toLowerCase().includes('model') || k.toLowerCase().includes('code')) || 'type';
+                              const currentKey = keys.find(k => k.toLowerCase() === 'current' || k.toLowerCase().includes('stock') || k.toLowerCase().includes('qty')) || 'current';
+                              const targetKey = keys.find(k => k.toLowerCase() === 'target' || k.toLowerCase().includes('capacity') || k.toLowerCase().includes('limit') || k.toLowerCase().includes('threshold')) || 'target';
+                              const labelKey = keys.find(k => k.toLowerCase() === 'label' || k.toLowerCase().includes('name') || k.toLowerCase().includes('description')) || 'label';
+
+                              return {
+                                type: String(row[typeKey] || ''),
+                                current: Number(row[currentKey] || 0),
+                                target: Number(row[targetKey] || 100),
+                                label: String(row[labelKey] || '')
+                              };
+                            });
+
+                            // POST to stock endpoint
+                            const postRes = await fetch('/api/status/stock', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ cartridges })
+                            });
+
+                            if (postRes.ok) {
+                              setTestResult('success');
+                              onSave();
+                            } else {
+                              setTestResult('failed');
+                            }
+                          } catch (err) {
+                            console.error(err);
+                            setTestResult('failed');
+                          } finally {
+                            setTesting(false);
+                          }
+                        };
+                        reader.readAsBinaryString(file);
+                      } catch (err) {
+                        console.error(err);
+                        setTestResult('failed');
+                        setTesting(false);
+                      }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      opacity: 0,
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <Upload size={32} color="var(--primary)" style={{ marginBottom: '0.5rem' }} />
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--foreground)' }}>Click or Drag Excel File Here</span>
+                  <span style={{ fontSize: '0.675rem', color: 'var(--secondary)', marginTop: '2px' }}>Supported: .xlsx, .xls (Headers: Type, Current, Target, Label)</span>
+                </div>
+              </div>
+            )}
 
             {/* Bottom Controls / Status */}
             <div style={{
@@ -273,53 +392,61 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               alignItems: 'center',
               borderTop: '1px solid rgba(var(--primary-rgb), 0.12)',
               paddingTop: '1.5rem',
-              marginTop: '1rem'
+              marginTop: '1rem',
+              width: '100%'
             }}>
               <div>
                 {testing && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Loader2 size={16} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-                    <span>Verifying Secure Access Handshake...</span>
+                    <span>{activeTab === 'inventory' ? 'Parsing & Saving Excel Inventory...' : 'Verifying Secure Access Handshake...'}</span>
                   </div>
                 )}
                 {testResult === 'success' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Check size={16} />
-                    <span>Connection Established Successfully!</span>
+                    <span>{activeTab === 'inventory' ? 'Inventory Updated Successfully!' : 'Connection Established Successfully!'}</span>
                   </div>
                 )}
                 {testResult === 'failed' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <AlertCircle size={16} />
-                    <span>Handshake Failed. Verify Endpoint Credentials.</span>
+                    <span>{activeTab === 'inventory' ? 'Error parsing file columns. Check headers.' : 'Handshake Failed. Verify Credentials.'}</span>
                   </div>
                 )}
-                {!testing && !testResult && configs[activeTab]?.connected && (
+                {!testing && !testResult && activeTab !== 'inventory' && configs[activeTab]?.connected && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Check size={16} />
                     <span>Connected ({form[activeTab].method})</span>
                   </div>
                 )}
+                {!testing && !testResult && activeTab === 'inventory' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--secondary)', fontSize: '0.875rem', fontWeight: 700 }}>
+                    <span>Upload new inventory .xlsx/.xls at any time to refresh.</span>
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                {configs[activeTab]?.connected ? (
-                  <button 
-                    onClick={() => handleDisconnect(activeTab)}
-                    disabled={testing}
-                    className="btn-danger"
-                  >
-                    Disconnect
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => handleTestConnection(activeTab)}
-                    disabled={testing}
-                    className="btn-primary"
-                  >
-                    Test & Connect
-                  </button>
-                )}
+                {activeTab !== 'inventory' ? (
+                  configs[activeTab]?.connected ? (
+                    <button 
+                      onClick={() => handleDisconnect(activeTab)}
+                      disabled={testing}
+                      className="btn-danger"
+                    >
+                      Disconnect
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => handleTestConnection(activeTab)}
+                      disabled={testing}
+                      className="btn-primary"
+                    >
+                      Test & Connect
+                    </button>
+                  )
+                ) : null}
               </div>
             </div>
           </div>

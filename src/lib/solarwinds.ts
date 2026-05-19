@@ -53,7 +53,7 @@ async function querySWIS<T>(
     },
     body: JSON.stringify({ query: swqlQuery }),
     agent
-  } as any);
+  } as unknown as RequestInit);
 
   if (!response.ok) {
     const errorText = await response.text();
