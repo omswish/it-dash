@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import { getSolarWindsServers, getSolarWindsISPInterfaces } from './solarwinds';
+import { fetchNutanixMetrics } from './nutanix';
 
 const DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
 
@@ -41,6 +42,7 @@ export interface NutanixMetrics {
   storageUsage: number;
   historyCpu: number[];
   historyMem: number[];
+  nodeStatuses?: string[];
 }
 
 export interface TicketBreakdown {
@@ -366,7 +368,8 @@ function generateInitialData(): DbSchema {
       nodesCount: 3,
       storageUsage: 68,
       historyCpu: generateHistory(40, 70),
-      historyMem: generateHistory(55, 80)
+      historyMem: generateHistory(55, 80),
+      nodeStatuses: ['normal', 'normal', 'normal']
     },
     symphony: {
       openIncidents: 4,
@@ -427,6 +430,9 @@ export function getDb(): DbSchema {
       }
       if (db.configs.solarwinds && db.configs.solarwinds.connected) {
         triggerSolarWindsSyncBackground(db.configs.solarwinds.endpoint, db.configs.solarwinds.username, db.configs.solarwinds.secret || '');
+      }
+      if (db.configs.nutanix.connected) {
+        triggerNutanixSyncBackground(db.configs.nutanix.endpoint, db.configs.nutanix.username, db.configs.nutanix.authMethod, db.configs.nutanix.secret || '');
       }
     }
     
@@ -505,9 +511,9 @@ function autoSeed(db: DbSchema): DbSchema {
         };
       });
 
-  // Update Nutanix metrics if connected
+  // Update Nutanix metrics if NOT connected (simulated mode)
   let updatedNutanix = { ...db.nutanix };
-  if (db.configs.nutanix.connected) {
+  if (!db.configs.nutanix.connected) {
     const cpuDiff = Math.floor(Math.random() * 9) - 4;
     const currentCpu = db.nutanix.historyCpu[db.nutanix.historyCpu.length - 1];
     const newCpu = Math.max(10, Math.min(95, currentCpu + cpuDiff));
@@ -532,11 +538,20 @@ function autoSeed(db: DbSchema): DbSchema {
     
     const newStorage = Math.max(45, Math.min(85, currentStorage + storageDiff));
 
+    // Simulate node status updates occasionally
+    let nodeStatuses = db.nutanix.nodeStatuses || ['normal', 'normal', 'normal'];
+    if (Math.random() > 0.90) {
+      const index = Math.floor(Math.random() * 3);
+      nodeStatuses = [...nodeStatuses];
+      nodeStatuses[index] = Math.random() > 0.8 ? 'degraded' : 'normal';
+    }
+
     updatedNutanix = {
       ...db.nutanix,
       storageUsage: newStorage,
       historyCpu: [...db.nutanix.historyCpu.slice(1), newCpu],
-      historyMem: [...db.nutanix.historyMem.slice(1), newMem]
+      historyMem: [...db.nutanix.historyMem.slice(1), newMem],
+      nodeStatuses
     };
   }
 
@@ -879,3 +894,47 @@ function triggerSolarWindsSyncBackground(endpoint: string, username: string, sec
       isUpdatingSolarWinds = false;
     });
 }
+
+let isUpdatingNutanix = false;
+
+async function runNutanixSync(endpoint: string, username: string, authMethod: string, secret: string) {
+  return fetchNutanixMetrics(endpoint, username, authMethod, secret);
+}
+
+function triggerNutanixSyncBackground(endpoint: string, username: string, authMethod: string, secret: string) {
+  if (isUpdatingNutanix) return;
+  isUpdatingNutanix = true;
+
+  runNutanixSync(endpoint, username, authMethod, secret)
+    .then((data) => {
+      try {
+        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
+        const db = JSON.parse(fileContent) as DbSchema;
+
+        // Keep historical arrays
+        const historyCpu = db.nutanix?.historyCpu || [];
+        const historyMem = db.nutanix?.historyMem || [];
+
+        db.nutanix = {
+          uptime: data.uptime,
+          nodesCount: data.nodesCount,
+          storageUsage: data.storageUsage,
+          historyCpu: [...historyCpu.slice(1), data.cpuUsage],
+          historyMem: [...historyMem.slice(1), data.memoryUsage],
+          nodeStatuses: data.nodeStatuses || db.nutanix.nodeStatuses || ['normal', 'normal', 'normal']
+        };
+
+        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+        console.log('Nutanix Sync: Successfully updated db.json with live values:', data);
+      } catch (err) {
+        console.error('Nutanix Sync: Error updating database with sync values:', err);
+      }
+    })
+    .catch((err) => {
+      console.error('Nutanix Sync failed:', err);
+    })
+    .finally(() => {
+      isUpdatingNutanix = false;
+    });
+}
+

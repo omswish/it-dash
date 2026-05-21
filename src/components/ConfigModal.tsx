@@ -226,6 +226,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                       <>
                         <option value="SSH Key">SSH Key</option>
                         <option value="Password">Password</option>
+                        <option value="Web Authentication (Prism Console)">Web Authentication (Prism Console)</option>
                       </>
                     )}
                     {activeTab === 'symphony' && (
@@ -248,7 +249,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                      {activeTab === 'nutanix' ? 'CLI SSH Username' : activeTab === 'solarwinds' ? 'Orion User Account' : 'Client ID / User'}
+                      {activeTab === 'nutanix' ? (form.nutanix.method === 'Web Authentication (Prism Console)' ? 'Prism Console Username' : 'CLI SSH Username') : activeTab === 'solarwinds' ? 'Orion User Account' : 'Client ID / User'}
                     </label>
                     <input 
                       type="text" 
@@ -259,7 +260,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                      {activeTab === 'nutanix' ? 'SSH Private Key / Password' : activeTab === 'solarwinds' ? 'Account Password' : 'Client Secret Key / Token'}
+                      {activeTab === 'nutanix' ? (form.nutanix.method === 'Web Authentication (Prism Console)' ? 'Prism Console Password' : 'SSH Private Key / Password') : activeTab === 'solarwinds' ? 'Account Password' : 'Client Secret Key / Token'}
                     </label>
                     <div style={{ position: 'relative' }}>
                       <input 

@@ -187,15 +187,11 @@ export default function Dashboard() {
 
   if (!data) return null;
 
-  const totalServers = data.servers.length;
   const serverAlerts = data.servers.filter(s => s.status !== 'operational' || s.backupStatus === 'failed').length;
 
   const totalNetworks = data.networks.length;
   const operationalNetworks = data.networks.filter(n => n.status === 'operational').length;
   const networkAlerts = totalNetworks - operationalNetworks;
-
-  const avgCpu = Math.round(data.servers.reduce((acc, s) => acc + s.cpu, 0) / totalServers);
-  const avgMemory = Math.round(data.servers.reduce((acc, s) => acc + s.memory, 0) / totalServers);
 
   // Group connected sources count (excluding ISMS APEX since it is removed)
   const activeSourcesCount = [
@@ -204,8 +200,11 @@ export default function Dashboard() {
     data.configs.solarwinds
   ].filter(c => c && c.connected).length;
 
-  const n2Color = avgCpu > 75 ? '#be123c' : avgCpu > 50 ? '#ea580c' : '#22c55e';
-  const n3Color = serverAlerts > 1 ? '#be123c' : serverAlerts > 0 ? '#ea580c' : '#22c55e';
+  const getNodeColor = (status: string) => {
+    if (status === 'down') return '#be123c';
+    if (status === 'degraded') return '#ea580c';
+    return '#22c55e';
+  };
 
   // Printer Cartridge Stock Local Parameters
   const cartridgeInventory = data.cartridges || [
@@ -294,7 +293,7 @@ export default function Dashboard() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span className={`status-dot ${data.configs.nutanix.connected ? 'operational' : 'down'}`} style={{ width: '5px', height: '5px' }}></span>
               <span style={{ fontSize: '0.6rem', fontWeight: 800, color: data.configs.nutanix.connected ? 'var(--success)' : 'var(--danger)', textTransform: 'uppercase' }}>
-                {data.configs.nutanix.connected ? 'CLI Active' : 'CLI Disconnected'}
+                {data.configs.nutanix.connected ? (data.configs.nutanix.authMethod === 'Web Authentication (Prism Console)' ? 'Web Active' : 'CLI Active') : 'Disconnected'}
               </span>
             </div>
           </div>
@@ -305,7 +304,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                 <Cpu size={16} color="var(--primary)" />
                 <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--foreground)', fontFamily: 'var(--font-heading)' }}>
-                  {avgCpu}% <span style={{ fontSize: '0.7rem', color: 'var(--secondary)', fontWeight: 700 }}>CPU</span> / {avgMemory}% <span style={{ fontSize: '0.7rem', color: 'var(--secondary)', fontWeight: 700 }}>RAM</span>
+                  {data.nutanix.historyCpu?.[data.nutanix.historyCpu.length - 1] ?? 0}% <span style={{ fontSize: '0.7rem', color: 'var(--secondary)', fontWeight: 700 }}>CPU</span> / {data.nutanix.historyMem?.[data.nutanix.historyMem.length - 1] ?? 0}% <span style={{ fontSize: '0.7rem', color: 'var(--secondary)', fontWeight: 700 }}>RAM</span>
                 </span>
               </div>
               {/* Divider */}
@@ -323,25 +322,22 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                 <Server size={16} color="var(--secondary)" style={{ marginRight: '1px' }} />
                 <div style={{ display: 'flex', gap: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(15, 23, 42, 0.03)', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid rgba(15, 23, 42, 0.06)' }}>
-                    <span className="status-dot" style={{ width: '5px', height: '5px', backgroundColor: '#22c55e', animation: 'none' }}></span>
-                    <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--foreground)' }}>N1</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(15, 23, 42, 0.03)', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid rgba(15, 23, 42, 0.06)' }}>
-                    <span className="status-dot" style={{ width: '5px', height: '5px', backgroundColor: n2Color, animation: n2Color !== '#22c55e' ? 'pulse 2s infinite' : 'none' }}></span>
-                    <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--foreground)' }}>N2</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(15, 23, 42, 0.03)', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid rgba(15, 23, 42, 0.06)' }}>
-                    <span className="status-dot" style={{ width: '5px', height: '5px', backgroundColor: n3Color, animation: n3Color !== '#22c55e' ? 'pulse 2s infinite' : 'none' }}></span>
-                    <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--foreground)' }}>N3</span>
-                  </div>
+                  {(data.nutanix.nodeStatuses || ['normal', 'normal', 'normal']).map((status, index) => {
+                    const color = getNodeColor(status);
+                    return (
+                      <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(15, 23, 42, 0.03)', padding: '0.15rem 0.35rem', borderRadius: '4px', border: '1px solid rgba(15, 23, 42, 0.06)' }}>
+                        <span className="status-dot" style={{ width: '5px', height: '5px', backgroundColor: color, animation: status !== 'normal' ? 'pulse 2s infinite' : 'none' }}></span>
+                        <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--foreground)' }}>N{index + 1}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginTop: '2px', color: 'var(--secondary)' }}>
               <Key size={14} color="var(--danger)" />
-              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)' }}>Click to configure SSH CLI credentials</span>
+              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)' }}>Click to configure Nutanix connection details</span>
             </div>
           )}
         </div>
