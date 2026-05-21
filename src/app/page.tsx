@@ -532,11 +532,11 @@ export default function Dashboard() {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
             <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
               <Network size={14} color="var(--primary)" />
-              ISP Gateway Status (Side-by-Side)
+              SDWAN & ILL Links (Side-by-Side)
             </h2>
-            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0 }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0, flexWrap: 'wrap' }}>
               {data.networks.map((net) => (
-                <div key={net.id} style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+                <div key={net.id} style={{ flex: '1 1 calc(50% - 0.5rem)', display: 'flex', minHeight: '120px' }}>
                   <NetworkCard {...net} />
                 </div>
               ))}

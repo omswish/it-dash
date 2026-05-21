@@ -16,18 +16,62 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { system, endpoint, username, authMethod, connected, secret } = body;
+    const { system, endpoint, endpointNetwork, username, authMethod, connected, secret } = body;
     
     if (!system || !['nutanix', 'symphony', 'solarwinds'].includes(system)) {
       return NextResponse.json({ error: 'Invalid system specified' }, { status: 400 });
     }
 
+    if (connected) {
+      if (system === 'solarwinds') {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        let host = endpoint.trim();
+        let port = '17774';
+        if (host.includes('//')) host = host.split('//')[1];
+        if (host.includes('/')) host = host.split('/')[0];
+        if (host.includes(':')) {
+          const parts = host.split(':');
+          host = parts[0];
+          port = parts[1];
+        }
+        const url = `https://${host}:${port}/SolarWinds/InformationService/v3/Json/Query`;
+        const auth = Buffer.from(`${username}:${secret}`).toString('base64');
+        
+        try {
+          const testRes = await fetch(url, {
+            method: 'POST',
+            headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: "SELECT TOP 1 NodeID FROM Orion.Nodes" }),
+            signal: AbortSignal.timeout(5000)
+          });
+          
+          if (!testRes.ok) {
+            return NextResponse.json({ error: 'Authentication failed. Check credentials.' }, { status: 401 });
+          }
+        } catch (err) {
+          return NextResponse.json({ error: 'Connection timed out or host unreachable.' }, { status: 404 });
+        }
+      } else {
+        // For Nutanix / Symphony, test if the URL is minimally reachable
+        try {
+          let testUrl = endpoint;
+          if (!testUrl.startsWith('http')) {
+            testUrl = `https://${testUrl}`;
+          }
+          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+          await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
+        } catch (err) {
+          return NextResponse.json({ error: 'Endpoint is unreachable or timed out.' }, { status: 404 });
+        }
+      }
+    }
+
     const db = getDb();
     
-    // Simulate testing connection delay or just save directly
     db.configs[system as 'nutanix' | 'symphony' | 'solarwinds'] = {
       connected: connected !== undefined ? connected : true,
       endpoint: endpoint || '',
+      endpointNetwork: endpointNetwork,
       username: username || '',
       authMethod: authMethod || 'API Key',
       secret: secret || ''

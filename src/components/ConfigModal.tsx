@@ -10,7 +10,7 @@ interface ConfigModalProps {
   configs: {
     nutanix: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
     symphony: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
-    solarwinds?: { connected: boolean; endpoint: string; username: string; authMethod: string; secret?: string };
+    solarwinds?: { connected: boolean; endpoint: string; endpointNetwork?: string; username: string; authMethod: string; secret?: string };
   };
   onSave: () => void;
 }

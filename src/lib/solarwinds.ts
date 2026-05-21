@@ -22,6 +22,9 @@ async function querySWIS<T>(
   secret: string,
   swqlQuery: string
 ): Promise<T[]> {
+  if (!endpoint) {
+    throw new Error('SolarWinds endpoint is missing or empty.');
+  }
   // Parse host and port from endpoint (e.g. "10.100.1.50:17774" or "https://10.100.1.50:17774")
   let host = endpoint.trim();
   let port = '17774';
@@ -77,6 +80,7 @@ export async function getSolarWindsServers(
       PercentMemoryUsed AS [MemoryPercent],
       StatusDescription AS [Status]
     FROM Orion.Nodes
+    WHERE Caption LIKE '%HIDDOR%'
   `;
   return querySWIS<SWServerMetric>(endpoint, username, secret, query);
 }
@@ -95,7 +99,7 @@ export async function getSolarWindsISPInterfaces(
       I.OutBandwidth AS [OutSpeed]
     FROM Orion.Nodes AS N
     JOIN Orion.NPM.Interfaces AS I ON N.NodeID = I.NodeID
-    WHERE I.Caption LIKE '%ISP%' OR I.Caption LIKE '%WAN%'
+    WHERE I.Caption LIKE '%SDWAN%' OR I.Caption LIKE '%ILL%'
   `;
   return querySWIS<SWInterfaceMetric>(endpoint, username, secret, query);
 }

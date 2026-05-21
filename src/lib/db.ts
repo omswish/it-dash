@@ -31,6 +31,7 @@ export interface NetworkData {
 export interface SystemConfig {
   connected: boolean;
   endpoint: string;
+  endpointNetwork?: string;
   username: string;
   authMethod: string;
   secret?: string;
@@ -110,285 +111,37 @@ export interface DbSchema {
 }
 
 function generateInitialData(): DbSchema {
-  const generateHistory = (min: number, max: number) => {
-    return Array.from({ length: 20 }, () => Math.floor(Math.random() * (max - min) + min));
-  };
-
   return {
     lastUpdated: Date.now(),
-    servers: [
-      {
-        id: 'srv-smartface',
-        name: 'Smartface',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 42,
-        memory: 58,
-        disk: 48,
-        backupStatus: 'successful',
-        history: generateHistory(30, 60),
-      },
-      {
-        id: 'srv-clms',
-        name: 'CLMS',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 56,
-        memory: 74,
-        disk: 62,
-        backupStatus: 'successful',
-        history: generateHistory(45, 75),
-      },
-      {
-        id: 'srv-dhcp',
-        name: 'DHCP',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 18,
-        memory: 38,
-        disk: 25,
-        backupStatus: 'successful',
-        history: generateHistory(10, 30),
-      },
-      {
-        id: 'srv-ilms-app',
-        name: 'ILMS APP',
-        location: 'Utkal Alumina',
-        status: 'degraded',
-        cpu: 78,
-        memory: 88,
-        disk: 69,
-        backupStatus: 'successful',
-        history: generateHistory(60, 90),
-      },
-      {
-        id: 'srv-ilms-db',
-        name: 'ILMS DB',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 32,
-        memory: 64,
-        disk: 91,
-        backupStatus: 'failed',
-        history: generateHistory(20, 50),
-      },
-      {
-        id: 'srv-ad-01',
-        name: 'AD Primary',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 15,
-        memory: 40,
-        disk: 35,
-        backupStatus: 'successful',
-        history: generateHistory(10, 25),
-      },
-      {
-        id: 'srv-ad-02',
-        name: 'AD Backup',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 12,
-        memory: 35,
-        disk: 30,
-        backupStatus: 'successful',
-        history: generateHistory(8, 20),
-      },
-      {
-        id: 'srv-mail',
-        name: 'Exchange Mail',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 45,
-        memory: 82,
-        disk: 75,
-        backupStatus: 'successful',
-        history: generateHistory(40, 60),
-      },
-      {
-        id: 'srv-sap-app',
-        name: 'SAP App',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 58,
-        memory: 79,
-        disk: 68,
-        backupStatus: 'successful',
-        history: generateHistory(50, 70),
-      },
-      {
-        id: 'srv-sap-db',
-        name: 'SAP DB',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 64,
-        memory: 88,
-        disk: 82,
-        backupStatus: 'successful',
-        history: generateHistory(55, 80),
-      },
-      {
-        id: 'srv-utility',
-        name: 'Utility Gateway',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 22,
-        memory: 45,
-        disk: 40,
-        backupStatus: 'successful',
-        history: generateHistory(15, 35),
-      },
-      {
-        id: 'srv-fileshare',
-        name: 'File Share',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 28,
-        memory: 55,
-        disk: 85,
-        backupStatus: 'successful',
-        history: generateHistory(20, 40),
-      },
-      {
-        id: 'srv-print',
-        name: 'Print Server',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 10,
-        memory: 28,
-        disk: 30,
-        backupStatus: 'successful',
-        history: generateHistory(5, 20),
-      },
-      {
-        id: 'srv-security',
-        name: 'Endpoint Security',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 35,
-        memory: 60,
-        disk: 50,
-        backupStatus: 'successful',
-        history: generateHistory(25, 45),
-      },
-      {
-        id: 'srv-apex-db',
-        name: 'Oracle APEX DB',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 40,
-        memory: 70,
-        disk: 65,
-        backupStatus: 'successful',
-        history: generateHistory(30, 55),
-      },
-      {
-        id: 'srv-cctv-01',
-        name: 'CCTV Monitor 01',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 70,
-        memory: 75,
-        disk: 88,
-        backupStatus: 'successful',
-        history: generateHistory(65, 80),
-      },
-      {
-        id: 'srv-cctv-02',
-        name: 'CCTV Monitor 02',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 68,
-        memory: 72,
-        disk: 85,
-        backupStatus: 'successful',
-        history: generateHistory(60, 75),
-      },
-      {
-        id: 'srv-weighbridge',
-        name: 'Weighbridge Host',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 15,
-        memory: 32,
-        disk: 28,
-        backupStatus: 'successful',
-        history: generateHistory(10, 25),
-      },
-      {
-        id: 'srv-plm',
-        name: 'PLM Server',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 30,
-        memory: 50,
-        disk: 45,
-        backupStatus: 'successful',
-        history: generateHistory(20, 40),
-      },
-      {
-        id: 'srv-backup-repo',
-        name: 'Backup Repo',
-        location: 'Utkal Alumina',
-        status: 'operational',
-        cpu: 8,
-        memory: 20,
-        disk: 92,
-        backupStatus: 'successful',
-        history: generateHistory(5, 15),
-      }
-    ],
-    networks: [
-      {
-        id: 'net-rjio',
-        provider: 'RJIO',
-        status: 'operational',
-        uptime: 99.99,
-        latency: 8,
-        utilization: 68,
-        history: generateHistory(60, 80),
-      },
-      {
-        id: 'net-railtel',
-        provider: 'RailTel',
-        status: 'operational',
-        uptime: 99.92,
-        latency: 18,
-        utilization: 45,
-        history: generateHistory(35, 60),
-      }
-    ],
+    servers: [],
+    networks: [],
     configs: {
       nutanix: { connected: false, endpoint: '', username: '', authMethod: 'SSH Key' },
       symphony: { connected: false, endpoint: '', username: '', authMethod: 'API Key' },
       solarwinds: { connected: false, endpoint: '', username: '', authMethod: 'Basic Authentication' }
     },
     nutanix: {
-      uptime: '142d 8h 12m',
-      nodesCount: 3,
-      storageUsage: 68,
-      historyCpu: generateHistory(40, 70),
-      historyMem: generateHistory(55, 80),
-      nodeStatuses: ['normal', 'normal', 'normal']
+      uptime: '0d 0h 0m',
+      nodesCount: 0,
+      storageUsage: 0,
+      historyCpu: Array.from({ length: 20 }, () => 0),
+      historyMem: Array.from({ length: 20 }, () => 0)
     },
     symphony: {
-      openIncidents: 4,
-      openIncidentsBreakdown: { new: 1, assigned: 1, inProgress: 1, pending: 1 },
-      serviceRequests: 18,
-      serviceRequestsBreakdown: { new: 5, assigned: 4, inProgress: 6, pending: 3 },
-      workOrders: 12,
-      workOrdersBreakdown: { new: 3, assigned: 3, inProgress: 4, pending: 2 },
-      changeRequests: 2,
-      changeRequestsBreakdown: { new: 1, assigned: 0, inProgress: 1, pending: 0 },
-      serviceRequestsSla: 94,
-      incidentsResponseSla: 98,
-      incidentsResolutionSla: 94,
-      requestsResponseSla: 99,
-      requestsResolutionSla: 96,
-      activeIncidents: [
-        { id: 'INC00000984711', priority: 'P2', caller: 'R. K. Senapati', title: 'Utkal WAN Link Degradation', status: 'In Progress' },
-        { id: 'INC00000984725', priority: 'P4', caller: 'S. Mohapatra', title: 'Office 365 License Sync', status: 'Assigned' }
-      ]
+      openIncidents: 0,
+      openIncidentsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
+      serviceRequests: 0,
+      serviceRequestsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
+      workOrders: 0,
+      workOrdersBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
+      changeRequests: 0,
+      changeRequestsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
+      serviceRequestsSla: 0,
+      incidentsResponseSla: 0,
+      incidentsResolutionSla: 0,
+      requestsResponseSla: 0,
+      requestsResolutionSla: 0,
+      activeIncidents: []
     },
     cartridges: [
       { type: '88A', current: 85, target: 100, label: 'HP LaserJet 88A' },
@@ -423,7 +176,7 @@ export function getDb(): DbSchema {
     // Auto seed if 10s have passed
     const now = Date.now();
     if (now - db.lastUpdated >= 10000) {
-      db = autoSeed(db);
+      db.lastUpdated = now;
       fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
       if (db.configs.symphony.connected) {
         triggerSymphonyScrapeBackground(db.configs.symphony.endpoint);
@@ -451,127 +204,7 @@ export function writeDb(db: DbSchema) {
   }
 }
 
-function autoSeed(db: DbSchema): DbSchema {
-  const now = Date.now();
-  
-  const isSolarWindsConnected = db.configs.solarwinds?.connected ?? false;
 
-  // Update servers
-  const updatedServers = isSolarWindsConnected
-    ? db.servers
-    : db.servers.map((server) => {
-        const cpuDiff = Math.floor(Math.random() * 11) - 5;
-        const newCpu = Math.max(5, Math.min(99, server.cpu + cpuDiff));
-        const memDiff = Math.floor(Math.random() * 7) - 3;
-        const newMem = Math.max(10, Math.min(99, server.memory + memDiff));
-        let newDisk = server.disk;
-        if (Math.random() > 0.9) newDisk = Math.min(100, server.disk + 1);
-        
-        let newStatus = server.status;
-        if (Math.random() > 0.98) {
-          newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
-        }
-
-        let newBackup = server.backupStatus;
-        if (Math.random() > 0.95) {
-          newBackup = newBackup === 'successful' ? 'failed' : 'successful';
-        }
-
-        return {
-          ...server,
-          cpu: newCpu,
-          memory: newMem,
-          disk: newDisk,
-          status: newStatus,
-          backupStatus: newBackup,
-          history: [...server.history.slice(1), newCpu],
-        };
-      });
-
-  // Update networks
-  const updatedNetworks = isSolarWindsConnected
-    ? db.networks
-    : db.networks.map((net) => {
-        const utilDiff = Math.floor(Math.random() * 15) - 7;
-        const newUtil = Math.max(5, Math.min(100, net.utilization + utilDiff));
-        const latDiff = Math.floor(Math.random() * 5) - 2;
-        const newLat = Math.max(2, Math.min(100, net.latency + latDiff));
-        
-        let newStatus = net.status;
-        if (Math.random() > 0.98) {
-          newStatus = newStatus === 'operational' ? 'degraded' : 'operational';
-        }
-
-        return {
-          ...net,
-          utilization: newUtil,
-          latency: newLat,
-          status: newStatus,
-          history: [...net.history.slice(1), newUtil],
-        };
-      });
-
-  // Update Nutanix metrics if NOT connected (simulated mode)
-  let updatedNutanix = { ...db.nutanix };
-  if (!db.configs.nutanix.connected) {
-    const cpuDiff = Math.floor(Math.random() * 9) - 4;
-    const currentCpu = db.nutanix.historyCpu[db.nutanix.historyCpu.length - 1];
-    const newCpu = Math.max(10, Math.min(95, currentCpu + cpuDiff));
-
-    const memDiff = Math.floor(Math.random() * 5) - 2;
-    const currentMem = db.nutanix.historyMem[db.nutanix.historyMem.length - 1];
-    const newMem = Math.max(20, Math.min(95, currentMem + memDiff));
-
-    // Make storage dynamic, fluctuating within 45% - 85% range, and reset if stuck at 100%
-    let storageDiff = 0;
-    const r = Math.random();
-    if (r > 0.85) {
-      storageDiff = 1;
-    } else if (r < 0.15) {
-      storageDiff = -1;
-    }
-    
-    let currentStorage = db.nutanix.storageUsage;
-    if (currentStorage >= 100) {
-      currentStorage = 68; // Reset stuck static 100% value
-    }
-    
-    const newStorage = Math.max(45, Math.min(85, currentStorage + storageDiff));
-
-    // Simulate node status updates occasionally
-    let nodeStatuses = db.nutanix.nodeStatuses || ['normal', 'normal', 'normal'];
-    if (Math.random() > 0.90) {
-      const index = Math.floor(Math.random() * 3);
-      nodeStatuses = [...nodeStatuses];
-      nodeStatuses[index] = Math.random() > 0.8 ? 'degraded' : 'normal';
-    }
-
-    updatedNutanix = {
-      ...db.nutanix,
-      storageUsage: newStorage,
-      historyCpu: [...db.nutanix.historyCpu.slice(1), newCpu],
-      historyMem: [...db.nutanix.historyMem.slice(1), newMem],
-      nodeStatuses
-    };
-  }
-
-  // Update Symphony Summit metrics if connected
-  const updatedSymphony = { ...db.symphony };
-  // Handled via async background scraping to fetch actual portal values
-
-
-
-  return {
-    lastUpdated: now,
-    servers: updatedServers,
-    networks: updatedNetworks,
-    configs: db.configs,
-    nutanix: updatedNutanix,
-    symphony: updatedSymphony,
-    cartridges: db.cartridges,
-    onboardingRequests: db.onboardingRequests
-  };
-}
 
 let isUpdatingSymphony = false;
 let lastTabOpenTime = 0;
