@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
+import { ensureBrowserRunning } from './browser';
 
 export interface NutanixFetchResult {
   uptime: string;
@@ -96,81 +97,7 @@ export function parseNutanixOutput(output: string): NutanixFetchResult {
   };
 }
 
-function ensureBrowserRunning(): Promise<void> {
-  return new Promise<void>(async (resolve, reject) => {
-    try {
-      const res = await fetch('http://localhost:9222/json');
-      if (res.ok) {
-        resolve();
-        return;
-      }
-    } catch {
-      // Not running, proceed to launch
-    }
 
-    console.log('Nutanix Scraper: Remote debugging port not active. Attempting to start browser instance...');
-
-    // Determine browser path
-    let browserPath = '';
-    const chromePaths = [
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
-    ];
-    const edgePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-
-    for (const p of chromePaths) {
-      if (fs.existsSync(p)) {
-        browserPath = p;
-        break;
-      }
-    }
-    if (!browserPath && fs.existsSync(edgePath)) {
-      browserPath = edgePath;
-    }
-
-    if (!browserPath) {
-      reject(new Error('Nutanix Console: No Chromium-based browser (Chrome or Edge) found on the system. Please configure SSH instead or run Chrome/Edge manually with --remote-debugging-port=9222.'));
-      return;
-    }
-
-    console.log(`Nutanix Scraper: Spawning browser from path: ${browserPath}`);
-    const profileDir = path.join(os.tmpdir(), 'it-dash-browser-profile');
-    const args = [
-      '--remote-debugging-port=9222',
-      '--headless=new',
-      '--disable-gpu',
-      '--ignore-certificate-errors',
-      '--allow-insecure-localhost',
-      `--user-data-dir=${profileDir}`
-    ];
-
-    try {
-      const child = spawn(browserPath, args, {
-        detached: true,
-        stdio: 'ignore'
-      });
-      child.unref();
-
-      // Poll port 9222 for up to 5 seconds
-      for (let i = 0; i < 10; i++) {
-        await new Promise((r) => setTimeout(r, 500));
-        try {
-          const testRes = await fetch('http://localhost:9222/json');
-          if (testRes.ok) {
-            console.log('Nutanix Scraper: Browser debugger started successfully.');
-            resolve();
-            return;
-          }
-        } catch {
-          // Wait and retry
-        }
-      }
-      reject(new Error('Nutanix Console: Browser spawned but remote debugging port 9222 did not activate.'));
-    } catch (spawnErr) {
-      reject(new Error('Nutanix Console: Failed to launch browser process: ' + (spawnErr as Error).message));
-    }
-  });
-}
 
 function evaluateCDP(ws: WebSocket, expression: string): Promise<any> {
   return new Promise((resolve, reject) => {

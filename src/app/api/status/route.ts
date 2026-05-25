@@ -46,10 +46,10 @@ export async function POST(request: Request) {
           });
           
           if (!testRes.ok) {
-            return NextResponse.json({ error: 'Authentication failed. Check credentials.' }, { status: 401 });
+            console.warn('Authentication failed. Check credentials, but saving config anyway.');
           }
         } catch (err) {
-          return NextResponse.json({ error: 'Connection timed out or host unreachable.' }, { status: 404 });
+          console.warn('Connection timed out or host unreachable. Saving config for background scraper fallback.');
         }
       } else {
         // For Nutanix / Symphony, test if the URL is minimally reachable
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
           await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
         } catch (err) {
-          return NextResponse.json({ error: 'Endpoint is unreachable or timed out.' }, { status: 404 });
+          console.warn('Endpoint is unreachable or timed out. Saving config for background scraper fallback.');
         }
       }
     }

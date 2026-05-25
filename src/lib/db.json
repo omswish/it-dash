@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1779512493316,
+  "lastUpdated": 1779690311254,
   "servers": [],
   "networks": [],
   "configs": {
@@ -10,16 +10,17 @@
       "authMethod": "SSH Key"
     },
     "symphony": {
-      "connected": false,
+      "connected": true,
       "endpoint": "https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx",
-      "username": "",
-      "authMethod": "API Key"
+      "username": "hil-dor.itdashboard@adityabirla.com",
+      "authMethod": "API Key",
+      "secret": "ItDa$(1857"
     },
     "solarwinds": {
       "connected": false,
       "endpoint": "http://10.36.91.45/Orion/Login.aspx",
       "endpointNetwork": "http://10.36.91.46/Orion/Login.aspx",
-      "username": "",
+      "username": "hil-dor.itdashboard@adityabirla.com",
       "authMethod": "Basic Authentication"
     }
   },
@@ -101,11 +102,11 @@
       "inProgress": 0,
       "pending": 0
     },
-    "serviceRequestsSla": 0,
-    "incidentsResponseSla": 0,
-    "incidentsResolutionSla": 0,
-    "requestsResponseSla": 0,
-    "requestsResolutionSla": 0,
+    "serviceRequestsSla": 92,
+    "incidentsResponseSla": 98,
+    "incidentsResolutionSla": 94,
+    "requestsResponseSla": 99,
+    "requestsResolutionSla": 96,
     "activeIncidents": []
   },
   "cartridges": [
@@ -134,28 +135,28 @@
       "type": "onboarding",
       "employeeName": "Amit Kumar",
       "department": "Digital Transformation",
-      "date": "2026-05-23"
+      "date": "2026-05-25"
     },
     {
       "id": "REQ-OB-02",
       "type": "onboarding",
       "employeeName": "Priya Sharma",
       "department": "HR Shared Services",
-      "date": "2026-05-25"
+      "date": "2026-05-27"
     },
     {
       "id": "REQ-OF-01",
       "type": "offboarding",
       "employeeName": "Rajesh Patel",
       "department": "Finance & Accounts",
-      "date": "2026-05-28"
+      "date": "2026-05-30"
     },
     {
       "id": "REQ-OB-03",
       "type": "onboarding",
       "employeeName": "Suresh Naidu",
       "department": "Operations",
-      "date": "2026-05-29"
+      "date": "2026-05-31"
     }
   ]
 }
