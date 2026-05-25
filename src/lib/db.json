@@ -1,0 +1,161 @@
+{
+  "lastUpdated": 1779512493316,
+  "servers": [],
+  "networks": [],
+  "configs": {
+    "nutanix": {
+      "connected": false,
+      "endpoint": "https://10.23.50.27:9440/console/#login",
+      "username": "",
+      "authMethod": "SSH Key"
+    },
+    "symphony": {
+      "connected": false,
+      "endpoint": "https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx",
+      "username": "",
+      "authMethod": "API Key"
+    },
+    "solarwinds": {
+      "connected": false,
+      "endpoint": "http://10.36.91.45/Orion/Login.aspx",
+      "endpointNetwork": "http://10.36.91.46/Orion/Login.aspx",
+      "username": "",
+      "authMethod": "Basic Authentication"
+    }
+  },
+  "nutanix": {
+    "uptime": "0d 0h 0m",
+    "nodesCount": 0,
+    "storageUsage": 0,
+    "historyCpu": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "historyMem": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "symphony": {
+    "openIncidents": 0,
+    "openIncidentsBreakdown": {
+      "new": 0,
+      "assigned": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "serviceRequests": 0,
+    "serviceRequestsBreakdown": {
+      "new": 0,
+      "assigned": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "workOrders": 0,
+    "workOrdersBreakdown": {
+      "new": 0,
+      "assigned": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "changeRequests": 0,
+    "changeRequestsBreakdown": {
+      "new": 0,
+      "assigned": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "serviceRequestsSla": 0,
+    "incidentsResponseSla": 0,
+    "incidentsResolutionSla": 0,
+    "requestsResponseSla": 0,
+    "requestsResolutionSla": 0,
+    "activeIncidents": []
+  },
+  "cartridges": [
+    {
+      "type": "88A",
+      "current": 85,
+      "target": 100,
+      "label": "HP LaserJet 88A"
+    },
+    {
+      "type": "12A",
+      "current": 34,
+      "target": 50,
+      "label": "HP LaserJet 12A"
+    },
+    {
+      "type": "378A",
+      "current": 28,
+      "target": 40,
+      "label": "Premium 378A Color"
+    }
+  ],
+  "onboardingRequests": [
+    {
+      "id": "REQ-OB-01",
+      "type": "onboarding",
+      "employeeName": "Amit Kumar",
+      "department": "Digital Transformation",
+      "date": "2026-05-23"
+    },
+    {
+      "id": "REQ-OB-02",
+      "type": "onboarding",
+      "employeeName": "Priya Sharma",
+      "department": "HR Shared Services",
+      "date": "2026-05-25"
+    },
+    {
+      "id": "REQ-OF-01",
+      "type": "offboarding",
+      "employeeName": "Rajesh Patel",
+      "department": "Finance & Accounts",
+      "date": "2026-05-28"
+    },
+    {
+      "id": "REQ-OB-03",
+      "type": "onboarding",
+      "employeeName": "Suresh Naidu",
+      "department": "Operations",
+      "date": "2026-05-29"
+    }
+  ]
+}

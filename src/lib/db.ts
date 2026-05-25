@@ -116,9 +116,9 @@ function generateInitialData(): DbSchema {
     servers: [],
     networks: [],
     configs: {
-      nutanix: { connected: false, endpoint: '', username: '', authMethod: 'SSH Key' },
-      symphony: { connected: false, endpoint: '', username: '', authMethod: 'API Key' },
-      solarwinds: { connected: false, endpoint: '', username: '', authMethod: 'Basic Authentication' }
+      nutanix: { connected: false, endpoint: 'https://10.23.50.27:9440/console/#login', username: '', authMethod: 'SSH Key' },
+      symphony: { connected: false, endpoint: 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx', username: '', authMethod: 'API Key' },
+      solarwinds: { connected: false, endpoint: 'http://10.36.91.45/Orion/Login.aspx', endpointNetwork: 'http://10.36.91.46/Orion/Login.aspx', username: 'hil-dor.itdashboard@adityabirla.com', authMethod: 'Basic Authentication' }
     },
     nutanix: {
       uptime: '0d 0h 0m',

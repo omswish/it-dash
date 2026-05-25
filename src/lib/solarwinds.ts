@@ -25,9 +25,9 @@ async function querySWIS<T>(
   if (!endpoint) {
     throw new Error('SolarWinds endpoint is missing or empty.');
   }
-  // Parse host and port from endpoint (e.g. "10.100.1.50:17774" or "https://10.100.1.50:17774")
+  // Parse host and port from endpoint (e.g. "10.100.1.50:17778" or "https://10.100.1.50:17778")
   let host = endpoint.trim();
-  let port = '17774';
+  let port = '17778';
 
   if (host.includes('//')) {
     host = host.split('//')[1];

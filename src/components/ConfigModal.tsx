@@ -24,9 +24,9 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
 
   // Form states initialized with existing config if available
   const [form, setForm] = useState({
-    nutanix: { endpoint: configs.nutanix.endpoint || '10.20.40.12', username: configs.nutanix.username || 'nutanix_admin', secret: configs.nutanix.secret || '', method: configs.nutanix.authMethod || 'SSH Key' },
+    nutanix: { endpoint: configs.nutanix.endpoint || 'https://10.23.50.27:9440/console/#login', username: configs.nutanix.username || 'nutanix_admin', secret: configs.nutanix.secret || '', method: configs.nutanix.authMethod || 'SSH Key' },
     symphony: { endpoint: configs.symphony.endpoint || 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx', username: configs.symphony.username || 'symphony_agent', secret: configs.symphony.secret || '', method: configs.symphony.authMethod || 'SAML SSO (Chrome Session)' },
-    solarwinds: { endpoint: configs.solarwinds?.endpoint || '10.100.1.50:17774', username: configs.solarwinds?.username || 'svc_noc_dashboard', secret: configs.solarwinds?.secret || '', method: configs.solarwinds?.authMethod || 'Basic Authentication' },
+    solarwinds: { endpoint: configs.solarwinds?.endpoint || 'http://10.36.91.45/Orion/Login.aspx', endpointNetwork: configs.solarwinds?.endpointNetwork || 'http://10.36.91.46/Orion/Login.aspx', username: configs.solarwinds?.username || 'hil-dor.itdashboard@adityabirla.com', secret: configs.solarwinds?.secret || '', method: configs.solarwinds?.authMethod || 'Basic Authentication' },
   });
 
   if (!isOpen) return null;
@@ -45,6 +45,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
         body: JSON.stringify({
           system,
           endpoint: form[system].endpoint,
+          endpointNetwork: system === 'solarwinds' ? form.solarwinds.endpointNetwork : undefined,
           username: form[system].username,
           authMethod: form[system].method,
           secret: form[system].secret,
@@ -201,7 +202,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                 {/* Endpoint Address */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
-                    {activeTab === 'nutanix' || activeTab === 'solarwinds' ? 'Host IP Address / Domain' : 'REST Endpoint URL'}
+                    {activeTab === 'nutanix' ? 'Nutanix Prism Portal URL' : activeTab === 'solarwinds' ? 'SolarWinds Server Portal URL' : 'Symphony Service Endpoint URL'}
                   </label>
                   <input 
                     type="text" 
@@ -210,6 +211,20 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                     className="config-input" 
                   />
                 </div>
+
+                {activeTab === 'solarwinds' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '0.825rem', color: '#334155', fontWeight: 600 }}>
+                      SolarWinds Network Portal URL
+                    </label>
+                    <input 
+                      type="text" 
+                      value={form.solarwinds.endpointNetwork}
+                      onChange={(e) => setForm({ ...form, solarwinds: { ...form.solarwinds, endpointNetwork: e.target.value }})}
+                      className="config-input" 
+                    />
+                  </div>
+                )}
 
                 {/* Authentication Method Dropdown */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
