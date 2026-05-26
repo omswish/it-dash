@@ -99,9 +99,11 @@ export function parseNutanixOutput(output: string): NutanixFetchResult {
 
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function evaluateCDP(ws: WebSocket, expression: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const id = Math.floor(Math.random() * 1000000);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listener = (data: any) => {
       try {
         const response = JSON.parse(data.toString());
@@ -179,8 +181,6 @@ export async function runNutanixWebScrape(
 
   return new Promise<NutanixFetchResult>((resolve, reject) => {
     const ws = new WebSocket(tab!.webSocketDebuggerUrl!);
-    let timeout: NodeJS.Timeout;
-    
     const cleanup = () => {
       clearTimeout(timeout);
       if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
@@ -188,7 +188,7 @@ export async function runNutanixWebScrape(
       }
     };
 
-    timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       cleanup();
       reject(new Error('Nutanix telemetry scrape timed out after 60 seconds'));
     }, 60000); // 60s total timeout
@@ -204,6 +204,7 @@ export async function runNutanixWebScrape(
           try {
             const msg = JSON.parse(data.toString());
             if (msg.method === 'Runtime.consoleAPICalled') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const args = msg.params.args.map((a: any) => a.value || a.description || JSON.stringify(a));
               console.log(`[PAGE-CONSOLE] [${msg.params.type}]`, ...args);
             }
@@ -367,6 +368,7 @@ export async function runNutanixWebScrape(
             }
 
             const hosts = hostsData.entities || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const nodeStatuses = hosts.map((h: any) => {
               const state = (h.state || 'normal').toLowerCase();
               const status = (h.status || 'normal').toLowerCase();

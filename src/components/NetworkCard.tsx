@@ -22,7 +22,8 @@ export default function NetworkCard({ provider, status, uptime, latency, utiliza
   };
 
   // Split history into rx and tx deterministically (e.g., 62% rx, 38% tx with slight variance)
-  const chartData = history.map((val, idx) => {
+  const safeHistory = history && Array.isArray(history) ? history : [];
+  const chartData = safeHistory.map((val, idx) => {
     const factor = idx % 2 === 0 ? 0.62 : 0.58;
     const rx = Math.round(val * factor);
     const tx = Math.round(val * (1 - factor));
@@ -33,7 +34,7 @@ export default function NetworkCard({ provider, status, uptime, latency, utiliza
     };
   });
 
-  const latestVal = history[history.length - 1] || utilization;
+  const latestVal = (safeHistory.length > 0 ? safeHistory[safeHistory.length - 1] : utilization) || 0;
   const currentRx = Math.round(latestVal * 0.62);
   const currentTx = Math.round(latestVal * 0.38);
 

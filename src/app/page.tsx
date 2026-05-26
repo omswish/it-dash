@@ -644,11 +644,10 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-            </div>
-
         </div>
+      </div>
 
-      {/* Bottom Bar: Notifications, Stock Alerts, HR Requests, Analog Clock */}
+      {/* Bottom Bar: Notifications, Integration Connection Statuses, Analog Clock */}
       <footer className="glass-panel" style={{
         flexShrink: 0,
         height: '64px',
@@ -663,79 +662,70 @@ export default function Dashboard() {
         gap: '1rem',
         overflow: 'hidden'
       }}>
-        {/* Left Section: Notifications & Alerts */}
+        {/* Left Section: NOC Console Feed */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.725rem', borderRight: '1px solid rgba(100, 116, 139, 0.15)', paddingRight: '1rem' }}>
-            <span style={{ fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.025em' }}>NOC Console Feed:</span>
-            <span style={{ color: 'var(--foreground)', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.725rem', borderRight: '1px solid rgba(100, 116, 139, 0.15)', paddingRight: '1.25rem' }}>
+            <span style={{ fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.025em' }}>NOC Feed:</span>
+            <span style={{ color: 'var(--foreground)', fontWeight: 700 }}>
               {activeSourcesCount === 3 ? 'All integrations active' : `${3 - activeSourcesCount} systems offline`}
             </span>
           </div>
-          
-          {/* Cartridge Stock Alert Indicator Button */}
-          <button 
-            onClick={() => setIsCartridgeModalOpen(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: cartridgeAlertsCount > 0 ? 'rgba(239, 68, 68, 0.06)' : 'rgba(13, 148, 136, 0.06)',
-              border: `1px solid ${cartridgeAlertsCount > 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(13, 148, 136, 0.2)'}`,
-              padding: '0.25rem 0.55rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              color: cartridgeAlertsCount > 0 ? 'var(--danger)' : '#0d9488',
-              fontSize: '0.7rem',
-              fontWeight: 800,
-              fontFamily: 'var(--font-heading)',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; }}
-          >
-            <Database size={12} />
-            <span>
-              {cartridgeAlertsCount > 0 ? `${cartridgeAlertsCount} Stock Shortages` : 'Stock Levels: Normal'}
-            </span>
-          </button>
         </div>
 
-        {/* Middle Section: Onboarding/Offboarding Requests */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', overflowX: 'auto', padding: '0 0.5rem' }} className="custom-scroll">
-          <span style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', flexShrink: 0 }}>HR Requests (7D):</span>
-          {upcomingRequests.length === 0 ? (
-            <span style={{ fontSize: '0.675rem', color: 'var(--secondary)', fontStyle: 'italic' }}>No onboarding/offboarding requests in next 7 days</span>
-          ) : (
-            upcomingRequests.map(req => {
-              const isToday = req.date === todayStr;
-              return (
-                <div 
-                  key={req.id} 
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '4px',
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    background: isToday ? 'rgba(239, 68, 68, 0.03)' : 'rgba(100, 116, 139, 0.03)',
-                    border: `1.5px solid ${isToday ? '#ef4444' : 'rgba(100, 116, 139, 0.15)'}`,
-                    boxShadow: isToday ? '0 0 6px rgba(239, 68, 68, 0.15)' : 'none',
-                    color: isToday ? 'var(--danger)' : 'var(--foreground)',
-                    flexShrink: 0
-                  }}
-                >
-                  <span style={{ textTransform: 'uppercase', fontSize: '0.55rem', fontWeight: 800, padding: '1px 3px', borderRadius: '3px', background: req.type === 'onboarding' ? 'rgba(13, 148, 136, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: req.type === 'onboarding' ? '#0d9488' : '#ef4444' }}>
-                    {req.type}
-                  </span>
-                  <span>{req.employeeName}</span>
-                  <span style={{ color: 'var(--secondary)', fontWeight: 600 }}>({req.department})</span>
-                  <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>{isToday ? 'TODAY' : req.date}</span>
-                </div>
-              );
-            })
-          )}
+        {/* Middle Section: Live Integration Status Badges */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
+          <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.025em' }}>Endpoint Feeds:</span>
+          
+          {/* Symphony */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: data?.configs.symphony?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
+            border: `1px solid ${data?.configs.symphony?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+            padding: '0.25rem 0.6rem',
+            borderRadius: '6px',
+            color: data?.configs.symphony?.connected ? 'var(--success)' : 'var(--danger)',
+            fontSize: '0.7rem',
+            fontWeight: 800
+          }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.symphony?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
+            <span>Hindalco ITSM (Symphony)</span>
+          </div>
+
+          {/* Nutanix */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: data?.configs.nutanix?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
+            border: `1px solid ${data?.configs.nutanix?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+            padding: '0.25rem 0.6rem',
+            borderRadius: '6px',
+            color: data?.configs.nutanix?.connected ? 'var(--success)' : 'var(--danger)',
+            fontSize: '0.7rem',
+            fontWeight: 800
+          }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.nutanix?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
+            <span>Nutanix HCI</span>
+          </div>
+
+          {/* SolarWinds */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: data?.configs.solarwinds?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
+            border: `1px solid ${data?.configs.solarwinds?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+            padding: '0.25rem 0.6rem',
+            borderRadius: '6px',
+            color: data?.configs.solarwinds?.connected ? 'var(--success)' : 'var(--danger)',
+            fontSize: '0.7rem',
+            fontWeight: 800
+          }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.solarwinds?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
+            <span>SolarWinds Orion</span>
+          </div>
         </div>
 
         {/* Right Section: Date, Time & Analog Clock */}
@@ -854,14 +844,16 @@ export default function Dashboard() {
               {hoveredServer.name} 7D Load
             </span>
             <span style={{ fontSize: '0.575rem', fontWeight: 800, color: 'var(--primary)' }}>
-              Avg: {Math.round(hoveredServer.history.slice(-7).reduce((a,b) => a+b, 0) / 7)}%
+              Avg: {hoveredServer.history && Array.isArray(hoveredServer.history) && hoveredServer.history.length > 0 
+                ? Math.round(hoveredServer.history.slice(-7).reduce((a, b) => a + b, 0) / Math.min(7, hoveredServer.history.length)) 
+                : 0}%
             </span>
           </div>
           
           {/* Mini 7D CPU area sparkline */}
           <div style={{ height: '32px' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={hoveredServer.history.slice(-7).map((val, idx) => ({ day: `D${idx+1}`, load: val }))} margin={{ top: 1, right: 1, left: 1, bottom: 1 }}>
+              <AreaChart data={(hoveredServer.history && Array.isArray(hoveredServer.history) ? hoveredServer.history : []).slice(-7).map((val, idx) => ({ day: `D${idx+1}`, load: val }))} margin={{ top: 1, right: 1, left: 1, bottom: 1 }}>
                 <defs>
                   <linearGradient id="hoverCpuGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.25} />

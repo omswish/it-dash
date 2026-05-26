@@ -114,12 +114,21 @@ export interface DbSchema {
 function generateInitialData(): DbSchema {
   return {
     lastUpdated: Date.now(),
-    servers: [],
-    networks: [],
+    servers: [
+      { id: 'srv-smartface', name: 'Smartface', location: 'Utkal Alumina', status: 'operational', cpu: 0, memory: 0, disk: 0, backupStatus: 'successful', history: Array.from({ length: 20 }, () => 0) },
+      { id: 'srv-clms', name: 'CLMS', location: 'Utkal Alumina', status: 'operational', cpu: 0, memory: 0, disk: 0, backupStatus: 'successful', history: Array.from({ length: 20 }, () => 0) },
+      { id: 'srv-dhcp', name: 'DHCP', location: 'Utkal Alumina', status: 'operational', cpu: 0, memory: 0, disk: 0, backupStatus: 'successful', history: Array.from({ length: 20 }, () => 0) },
+      { id: 'srv-ilms-app', name: 'ILMS APP', location: 'Utkal Alumina', status: 'operational', cpu: 0, memory: 0, disk: 0, backupStatus: 'successful', history: Array.from({ length: 20 }, () => 0) },
+      { id: 'srv-ilms-db', name: 'ILMS DB', location: 'Utkal Alumina', status: 'operational', cpu: 0, memory: 0, disk: 0, backupStatus: 'successful', history: Array.from({ length: 20 }, () => 0) }
+    ],
+    networks: [
+      { id: 'net-rjio', provider: 'RJIO', status: 'operational', uptime: 99.99, latency: 12, utilization: 0, history: Array.from({ length: 20 }, () => 0) },
+      { id: 'net-railtel', provider: 'RailTel', status: 'operational', uptime: 99.92, latency: 12, utilization: 0, history: Array.from({ length: 20 }, () => 0) }
+    ],
     configs: {
       nutanix: { connected: false, endpoint: 'https://10.23.50.27:9440/console/#login', username: '', authMethod: 'SSH Key' },
       symphony: { connected: false, endpoint: 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx', username: '', authMethod: 'API Key' },
-      solarwinds: { connected: true, endpoint: 'http://10.36.91.45/Orion/Login.aspx', endpointNetwork: 'http://10.36.91.46/Orion/Login.aspx', username: 'hil-dor.itdashboard@adityabirla.com', authMethod: 'Basic Authentication' }
+      solarwinds: { connected: false, endpoint: 'http://10.36.91.45/Orion/Login.aspx', endpointNetwork: 'http://10.36.91.46/Orion/Login.aspx', username: 'hil-dor.itdashboard@adityabirla.com', authMethod: 'Basic Authentication' }
     },
     nutanix: {
       uptime: '0d 0h 0m',
@@ -172,22 +181,13 @@ export function getDb(): DbSchema {
 
   try {
     const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-    let db = JSON.parse(fileContent) as DbSchema;
+    const db = JSON.parse(fileContent) as DbSchema;
     
-    // Auto seed if 10s have passed
+    // Background seeding is disabled. Extension pushes via /api/update.
     const now = Date.now();
     if (now - db.lastUpdated >= 10000) {
       db.lastUpdated = now;
       fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-      if (db.configs.symphony.connected) {
-        triggerSymphonyScrapeBackground(db.configs.symphony.endpoint);
-      }
-      if (db.configs.solarwinds && db.configs.solarwinds.connected) {
-        triggerSolarWindsSyncBackground(db.configs.solarwinds.endpoint, db.configs.solarwinds.username, db.configs.solarwinds.secret || '');
-      }
-      if (db.configs.nutanix.connected) {
-        triggerNutanixSyncBackground(db.configs.nutanix.endpoint, db.configs.nutanix.username, db.configs.nutanix.authMethod, db.configs.nutanix.secret || '');
-      }
     }
     
     return db;
@@ -205,417 +205,16 @@ export function writeDb(db: DbSchema) {
   }
 }
 
+// ============================================================================
+// AUTOMATED SCRAPERS DISABLED
+// ============================================================================
+// Note: As of the Edge Extension Architecture Pivot, the Next.js backend no 
+// longer actively spawns browsers or probes the network directly. 
+// Instead, the native Edge Extension running in the user's authenticated 
+// browser session pushes data to the POST /api/update endpoint, which safely 
+// updates db.json.
+// ============================================================================
 
-
-let isUpdatingSymphony = false;
-let lastTabOpenTime = 0;
-
-async function runSymphonyScrape(endpoint: string) {
-  try {
-    await ensureBrowserRunning();
-    
-    const res = await fetch('http://localhost:9222/json');
-    if (!res.ok) throw new Error('Chrome debugging port not reachable');
-    const tabs = (await res.json()) as Array<{ id: string; url: string; title: string; webSocketDebuggerUrl?: string }>;
-    
-    let tab = tabs.find((t) => t.url.includes('hsd.adityabirla.com') || t.title.includes('Hindalco'));
-    
-    if (!tab) {
-      const now = Date.now();
-      if (now - lastTabOpenTime < 300000) {
-        console.log('Symphony Scraper: Hindalco tab not open, but skipping tab open to prevent flooding.');
-        throw new Error('Hindalco tab not open (tab open rate limited)');
-      }
-      
-      console.log('Symphony Scraper: Hindalco tab not open, attempting to open a new tab...');
-      lastTabOpenTime = now;
-      const targetUrl = endpoint || 'https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx';
-      const openRes = await fetch(`http://localhost:9222/json/new?url=${encodeURIComponent(targetUrl)}`, { method: 'PUT' });
-      if (openRes.ok) {
-        const newTab = await openRes.json();
-        await new Promise((resolve) => setTimeout(resolve, 4000));
-        const refetchRes = await fetch('http://localhost:9222/json');
-        const refetchTabs = (await refetchRes.json()) as Array<{ id: string; url: string; title: string; webSocketDebuggerUrl?: string }>;
-        tab = refetchTabs.find((t) => t.id === newTab.id);
-      }
-    }
-    
-    if (!tab || !tab.webSocketDebuggerUrl) {
-      throw new Error('Could not attach to Hindalco Analyst Dashboard tab');
-    }
-    
-    return new Promise<{
-      incidents: number;
-      incidentsBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
-      requests: number;
-      requestsBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
-      orders: number;
-      ordersBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
-      changes: number;
-      changesBreakdown: { new: number; assigned: number; inProgress: number; pending: number };
-      activeIncidents: ActiveIncident[];
-    }>((resolve, reject) => {
-      const ws = new WebSocket(tab.webSocketDebuggerUrl!);
-      
-      const timeout = setTimeout(() => {
-        ws.close();
-        reject(new Error('WebSocket evaluation timed out'));
-      }, 8000);
-      
-      ws.on('open', () => {
-        const message = {
-          id: 1,
-          method: 'Runtime.evaluate',
-          params: {
-            expression: `(async () => {
-              const getVal = (selector) => {
-                const el = document.querySelector(selector);
-                return el ? parseInt(el.innerText.trim(), 10) || 0 : 0;
-              };
-              
-              const parseChart = (containerId, isChange = false) => {
-                const container = document.getElementById(containerId);
-                if (!container) return { new: 0, assigned: 0, inProgress: 0, pending: 0 };
-                
-                const svg = container.querySelector('svg');
-                if (!svg) return { new: 0, assigned: 0, inProgress: 0, pending: 0 };
-                
-                const texts = Array.from(svg.querySelectorAll('text')).map(el => {
-                  const x = parseFloat(el.getAttribute('x')) || 0;
-                  const txt = el.textContent.trim();
-                  return { txt, x };
-                });
-                
-                const result = { new: 0, assigned: 0, inProgress: 0, pending: 0 };
-                const categories = ['New', 'Assigned', 'In-Progress', 'Pending'];
-                const labelPositions = {};
-                
-                texts.forEach(item => {
-                  if (categories.includes(item.txt)) {
-                    labelPositions[item.txt] = item.x;
-                  }
-                });
-                
-                if (Object.keys(labelPositions).length > 0) {
-                  texts.forEach(item => {
-                    const val = parseInt(item.txt, 10);
-                    if (!isNaN(val)) {
-                      let closestCategory = null;
-                      let minDiff = Infinity;
-                      for (const [cat, x] of Object.entries(labelPositions)) {
-                        const diff = Math.abs(x - item.x);
-                        if (diff < minDiff && diff < 10) {
-                          minDiff = diff;
-                          closestCategory = cat;
-                        }
-                      }
-                      if (closestCategory) {
-                        const key = closestCategory === 'In-Progress' ? 'inProgress' : closestCategory.toLowerCase();
-                        result[key] = val;
-                      }
-                    }
-                  });
-                  return result;
-                }
-                
-                const sorted = texts.sort((a, b) => a.x - b.x);
-                const values = sorted.map(t => parseInt(t.txt, 10) || 0).filter(v => !isNaN(v));
-                
-                if (isChange) {
-                  if (values.length >= 3) {
-                    result.new = values[0];
-                    result.inProgress = values[1];
-                    result.pending = values[2];
-                  }
-                  return result;
-                }
-                
-                const labels = Array.from(container.querySelectorAll('.dx-legend-item-text')).map(el => el.textContent.trim());
-                if (labels.length > 0) {
-                  labels.forEach((label, i) => {
-                    if (i < values.length) {
-                      const key = label === 'In-Progress' ? 'inProgress' : label.toLowerCase();
-                      result[key] = values[i];
-                    }
-                  });
-                }
-                return result;
-              };
-
-              const parseActiveIncidentsFromDoc = (doc) => {
-                const results = [];
-                const rows = Array.from(doc.querySelectorAll('tr'));
-                rows.forEach(row => {
-                  const cells = Array.from(row.querySelectorAll('td'));
-                  if (cells.length < 9) return;
-                  const idLink = cells[1].querySelector('a');
-                  if (!idLink) return;
-                  const idText = idLink.textContent.trim();
-                  if (!idText.match(/^\\d+$/)) return;
-                  
-                  const id = 'INC' + idText;
-                  const status = cells[3] ? cells[3].textContent.trim() : '';
-                  const caller = cells[4] ? cells[4].textContent.trim() : '';
-                  const priorityText = cells[7] ? cells[7].textContent.trim() : '';
-                  const symptom = cells[8] ? cells[8].textContent.trim() : '';
-                  
-                  let priority = 'P3';
-                  const pMatch = priorityText.match(/P[1-4]/);
-                  if (pMatch) {
-                    priority = pMatch[0];
-                  }
-                  
-                  results.push({ id, priority, caller, title: symptom, status });
-                });
-                return results;
-              };
-
-              let activeInc = parseActiveIncidentsFromDoc(document);
-              if (activeInc.length === 0) {
-                try {
-                  const res = await fetch('/MDLIncidentMgmt/IM_WorkgroupTickets.aspx?dashboard=true');
-                  if (res.ok) {
-                    const html = await res.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    activeInc = parseActiveIncidentsFromDoc(doc);
-                  }
-                } catch (e) {
-                  console.error('Fetch error:', e);
-                }
-              }
-
-              return {
-                incidents: getVal("a[aria-label=' My workgroups'] span"),
-                incidentsBreakdown: parseChart("myWorkgroupIncidents"),
-                requests: getVal("a[aria-label='My Workgroup'][href*='SR_WorkgroupTickets'] span"),
-                requestsBreakdown: parseChart("myWorkgroupRequests"),
-                orders: getVal("a[aria-label='My Workgroup'][href*='WO_Workorder'] span"),
-                ordersBreakdown: parseChart("myWorkgroupWorkorders"),
-                changes: getVal("a[aria-label='My workgroup'][href*='CM_ChangeRequestList'] span"),
-                changesBreakdown: parseChart("myWorkgroupCRs", true),
-                activeIncidents: activeInc
-              };
-            })()`,
-            awaitPromise: true,
-            returnByValue: true
-          }
-        };
-        ws.send(JSON.stringify(message));
-      });
-      
-      ws.on('message', (data) => {
-        clearTimeout(timeout);
-        try {
-          const response = JSON.parse(data.toString());
-          if (response.result && response.result.result && response.result.result.value) {
-            resolve(response.result.result.value);
-          } else {
-            reject(new Error('Unexpected response format from CDP'));
-          }
-        } catch (e) {
-          reject(e);
-        } finally {
-          ws.close();
-        }
-      });
-      
-      ws.on('error', (err) => {
-        clearTimeout(timeout);
-        reject(err);
-      });
-    });
-  } catch (err) {
-    console.error('Symphony Scraper Error:', err);
-    throw err;
-  }
+export function startBackgroundSync() {
+  console.log('Background Sync Initialized: Listening for Edge Extension Webhooks at /api/update');
 }
-
-function triggerSymphonyScrapeBackground(endpoint: string) {
-  if (isUpdatingSymphony) return;
-  isUpdatingSymphony = true;
-  
-  runSymphonyScrape(endpoint)
-    .then((data) => {
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-        db.symphony = {
-          ...db.symphony,
-openIncidents: data.incidents,
-          activeIncidents: data.activeIncidents,
-          openIncidentsBreakdown: data.incidentsBreakdown,
-          serviceRequests: data.requests,
-          serviceRequestsBreakdown: data.requestsBreakdown,
-          workOrders: data.orders,
-          workOrdersBreakdown: data.ordersBreakdown,
-          changeRequests: data.changes,
-          changeRequestsBreakdown: data.changesBreakdown,
-          serviceRequestsSla: 92,
-          incidentsResponseSla: 98,
-          incidentsResolutionSla: 94,
-          requestsResponseSla: 99,
-          requestsResolutionSla: 96
-        };
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-        console.log('Symphony Scraper: Successfully updated db.json with live values:', data);
-      } catch (err) {
-        console.error('Symphony Scraper: Error updating database with scraped values:', err);
-      }
-    })
-    .catch((err) => {
-      console.error('Symphony Scraper: Scrape failed, using simulated fallback data.', err);
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-        db.symphony = {
-          ...db.symphony,
-          openIncidents: Math.floor(Math.random() * 20 + 5),
-          activeIncidents: [{ id: 'INC3492', priority: 'P1', caller: 'Rajiv', title: 'Network Down at Utkal', status: 'In-Progress' }],
-          openIncidentsBreakdown: { new: 2, assigned: 3, inProgress: 4, pending: 1 },
-          serviceRequests: Math.floor(Math.random() * 30 + 10),
-          serviceRequestsBreakdown: { new: 5, assigned: 10, inProgress: 8, pending: 2 },
-          workOrders: 15,
-          workOrdersBreakdown: { new: 3, assigned: 5, inProgress: 5, pending: 2 },
-          changeRequests: 4,
-          changeRequestsBreakdown: { new: 1, assigned: 1, inProgress: 1, pending: 1 }
-        };
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-      } catch(e) {}
-    })
-    .finally(() => {
-      isUpdatingSymphony = false;
-    });
-}
-
-let isUpdatingSolarWinds = false;
-
-async function runSolarWindsSync(endpoint: string, username: string, secret: string) {
-  const servers = await getSolarWindsServers(endpoint, username, secret);
-  const interfaces = await getSolarWindsISPInterfaces(endpoint, username, secret);
-  return { servers, interfaces };
-}
-
-function triggerSolarWindsSyncBackground(endpoint: string, username: string, secret: string) {
-  if (isUpdatingSolarWinds) return;
-  isUpdatingSolarWinds = true;
-
-  runSolarWindsSync(endpoint, username, secret)
-    .then((data) => {
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-
-        // Map SolarWinds Servers to local schema
-        db.servers = data.servers.map((srv, idx) => ({
-          id: `sw-srv-${idx}`,
-          name: srv.NodeName,
-          location: 'SolarWinds Node',
-          status: srv.Status === 'Up' || srv.Status === '1' || srv.Status.toLowerCase() === 'up' ? 'operational' : 'down',
-          cpu: Math.round(srv.CPUPercent || 0),
-          memory: Math.round(srv.MemoryPercent || 0),
-          disk: 50,
-          backupStatus: 'successful',
-          history: Array.from({ length: 20 }, () => Math.floor(Math.random() * 20 + 40))
-        }));
-
-        // Map SolarWinds Interfaces to local Network/ISP status schema
-        db.networks = data.interfaces.map((inf, idx) => ({
-          id: `sw-net-${idx}`,
-          provider: inf.InterfaceName.includes('Tata') ? 'Tata' 
-                  : inf.InterfaceName.includes('Airtel') ? 'Airtel' 
-                  : inf.InterfaceName.includes('Jio') || inf.InterfaceName.includes('RJIO') ? 'RJIO' 
-                  : inf.InterfaceName.includes('RailTel') ? 'RailTel' 
-                  : inf.InterfaceName.substring(0, 15),
-          status: inf.InterfaceStatus === 'Up' || inf.InterfaceStatus === '1' || inf.InterfaceStatus.toLowerCase() === 'up' ? 'operational' : 'down',
-          uptime: 99.9,
-          latency: 12,
-          utilization: Math.round(((inf.InSpeed + inf.OutSpeed) / 2) / 1000000) || 50,
-          history: Array.from({ length: 20 }, () => Math.floor(Math.random() * 30 + 40))
-        }));
-
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-        console.log('SolarWinds Sync: Successfully updated db.json with live values.');
-      } catch (err) {
-        console.error('SolarWinds Sync: Error updating database with sync values:', err);
-      }
-    })
-    .catch((err) => {
-      console.error('SolarWinds Sync failed, applying fallback data:', err);
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-        db.servers = [
-          { id: 'sw-srv-0', name: 'HIDDOR-APP-01', location: 'Utkal DC', status: 'operational', cpu: 45, memory: 60, disk: 50, backupStatus: 'successful', history: Array.from({length:20}, ()=>Math.floor(Math.random()*20+30)) },
-          { id: 'sw-srv-1', name: 'HIDDOR-DB-01', location: 'Utkal DC', status: 'operational', cpu: 75, memory: 85, disk: 80, backupStatus: 'successful', history: Array.from({length:20}, ()=>Math.floor(Math.random()*20+60)) }
-        ];
-        db.networks = [
-          { id: 'sw-net-0', provider: 'Airtel ILL', status: 'operational', uptime: 99.9, latency: 12, utilization: Math.floor(Math.random()*20+40), history: Array.from({length:20}, ()=>Math.floor(Math.random()*20+40)) },
-          { id: 'sw-net-1', provider: 'RJIO SDWAN', status: 'operational', uptime: 100, latency: 8, utilization: Math.floor(Math.random()*20+20), history: Array.from({length:20}, ()=>Math.floor(Math.random()*20+20)) }
-        ];
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-      } catch(e) {}
-    })
-    .finally(() => {
-      isUpdatingSolarWinds = false;
-    });
-}
-
-let isUpdatingNutanix = false;
-
-async function runNutanixSync(endpoint: string, username: string, authMethod: string, secret: string) {
-  return fetchNutanixMetrics(endpoint, username, authMethod, secret);
-}
-
-function triggerNutanixSyncBackground(endpoint: string, username: string, authMethod: string, secret: string) {
-  if (isUpdatingNutanix) return;
-  isUpdatingNutanix = true;
-
-  runNutanixSync(endpoint, username, authMethod, secret)
-    .then((data) => {
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-
-        // Keep historical arrays
-        const historyCpu = db.nutanix?.historyCpu || [];
-        const historyMem = db.nutanix?.historyMem || [];
-
-        db.nutanix = {
-          uptime: data.uptime,
-          nodesCount: data.nodesCount,
-          storageUsage: data.storageUsage,
-          historyCpu: [...historyCpu.slice(1), data.cpuUsage],
-          historyMem: [...historyMem.slice(1), data.memoryUsage],
-          nodeStatuses: data.nodeStatuses || db.nutanix.nodeStatuses || ['normal', 'normal', 'normal']
-        };
-
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-        console.log('Nutanix Sync: Successfully updated db.json with live values:', data);
-      } catch (err) {
-        console.error('Nutanix Sync: Error updating database with sync values:', err);
-      }
-    })
-    .catch((err) => {
-      console.error('Nutanix Sync failed, applying fallback data:', err);
-      try {
-        const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
-        const db = JSON.parse(fileContent) as DbSchema;
-        const historyCpu = db.nutanix?.historyCpu || Array.from({length:20}, ()=>0);
-        const historyMem = db.nutanix?.historyMem || Array.from({length:20}, ()=>0);
-        db.nutanix = {
-          uptime: '142d 8h 12m',
-          nodesCount: 3,
-          storageUsage: 65,
-          historyCpu: [...historyCpu.slice(1), Math.floor(Math.random()*20+40)],
-          historyMem: [...historyMem.slice(1), Math.floor(Math.random()*20+50)],
-          nodeStatuses: ['normal', 'normal', 'normal']
-        };
-        fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-      } catch(e) {}
-    })
-    .finally(() => {
-      isUpdatingNutanix = false;
-    });
-}
-
