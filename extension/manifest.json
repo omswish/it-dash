@@ -3,7 +3,7 @@
   "name": "Utkal IT Dashboard Scraper",
   "version": "1.0",
   "description": "Scrapes IT dashboard metrics securely inside Edge and forwards them to the local dashboard UI.",
-  "permissions": ["storage", "alarms"],
+  "permissions": ["storage", "alarms", "tabs", "activeTab"],
   "host_permissions": [
     "*://10.36.91.45/*",
     "*://10.36.91.46/*",

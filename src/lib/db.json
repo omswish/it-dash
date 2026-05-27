@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1779772291845,
+  "lastUpdated": 1779850827275,
   "servers": [
     {
       "id": "srv-smartface",
@@ -227,25 +227,22 @@
   "configs": {
     "nutanix": {
       "connected": true,
-      "endpoint": "https://10.23.50.27:9440/console/#login",
-      "username": "hil-dor.itdashboard@adityabirla.com",
-      "authMethod": "Web Authentication (Prism Console)",
-      "secret": "ItDa$(1857"
+      "endpoint": "",
+      "username": "",
+      "authMethod": "API Key"
     },
     "symphony": {
       "connected": true,
-      "endpoint": "https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx",
-      "username": "omkar.s@adityabirla.com",
-      "authMethod": "API Key",
-      "secret": "Anya@#26"
+      "endpoint": "",
+      "username": "",
+      "authMethod": "API Key"
     },
     "solarwinds": {
       "connected": true,
       "endpoint": "http://10.36.91.45/Orion/Login.aspx",
       "endpointNetwork": "http://10.36.91.46/Orion/Login.aspx",
       "username": "hil-dor.itdashboard@adityabirla.com",
-      "authMethod": "Basic Authentication",
-      "secret": "ItDa@#26"
+      "authMethod": "Basic Authentication"
     }
   },
   "nutanix": {
@@ -296,13 +293,13 @@
       50,
       50
     ],
+    "cpu": 45,
+    "mem": 50,
     "nodeStatuses": [
       "normal",
       "normal",
       "normal"
-    ],
-    "cpu": 45,
-    "mem": 50
+    ]
   },
   "symphony": {
     "openIncidents": 0,
@@ -336,31 +333,31 @@
     "serviceRequestsSla": 92,
     "incidentsResponseSla": 0,
     "incidentsResolutionSla": 0,
-    "requestsResponseSla": 100,
+    "requestsResponseSla": 0,
     "requestsResolutionSla": 0,
     "activeIncidents": [],
     "incidents": 0,
+    "requests": 0,
+    "orders": 0,
+    "changes": 0,
     "incidentsBreakdown": {
       "new": 0,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
     },
-    "requests": 0,
     "requestsBreakdown": {
       "new": 0,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
     },
-    "orders": 0,
     "ordersBreakdown": {
       "new": 0,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
     },
-    "changes": 0,
     "changesBreakdown": {
       "new": 0,
       "assigned": 0,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 
 interface TrafficData {
@@ -19,17 +20,18 @@ export default function UptimeChart({ data, status, strokeColor }: UptimeChartPr
   const rxColor = strokeColor || '#c2410c';
   // Tx is secondary slate/charcoal grey
   const txColor = '#475569';
+  const chartId = useId();
 
   return (
     <div className="chart-container" style={{ height: '100%', minHeight: '48px', position: 'relative' }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
           <defs>
-            <linearGradient id={`colorRx-${status}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={`colorRx-${chartId}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={rxColor} stopOpacity={0.25} />
               <stop offset="95%" stopColor={rxColor} stopOpacity={0} />
             </linearGradient>
-            <linearGradient id={`colorTx-${status}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={`colorTx-${chartId}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={txColor} stopOpacity={0.2} />
               <stop offset="95%" stopColor={txColor} stopOpacity={0} />
             </linearGradient>
@@ -55,7 +57,7 @@ export default function UptimeChart({ data, status, strokeColor }: UptimeChartPr
             stroke={rxColor} 
             strokeWidth={1.5}
             fillOpacity={1} 
-            fill={`url(#colorRx-${status})`} 
+            fill={`url(#colorRx-${chartId})`} 
           />
           <Area 
             type="monotone" 
@@ -64,7 +66,7 @@ export default function UptimeChart({ data, status, strokeColor }: UptimeChartPr
             stroke={txColor} 
             strokeWidth={1.5}
             fillOpacity={1} 
-            fill={`url(#colorTx-${status})`} 
+            fill={`url(#colorTx-${chartId})`} 
           />
         </AreaChart>
       </ResponsiveContainer>

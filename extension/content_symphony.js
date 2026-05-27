@@ -67,7 +67,7 @@ function extractSymphonyData() {
     const myWorkgroups = items.filter(i => i.text === "My Workgroup");
     myWorkgroups.forEach(mw => {
       const col = getColumnName(mw.x);
-      const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\\d+$/.test(i.text));
+      const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\d+$/.test(i.text));
       if (numbersAbove.length > 0) {
         numbersAbove.sort((a, b) => b.y - a.y);
         const val = parseInt(numbersAbove[0].text, 10);
@@ -83,7 +83,7 @@ function extractSymphonyData() {
     
     categoryLabels.forEach(catLabel => {
       const col = getColumnName(catLabel.x);
-      const numbersAbove = items.filter(i => i.y < catLabel.y && i.y > catLabel.y - 250 && Math.abs(i.x - catLabel.x) < 50 && /^\\d+$/.test(i.text));
+      const numbersAbove = items.filter(i => i.y < catLabel.y && i.y > catLabel.y - 250 && Math.abs(i.x - catLabel.x) < 50 && /^\d+$/.test(i.text));
       let val = 0;
       if (numbersAbove.length > 0) {
         numbersAbove.sort((a, b) => Math.abs(a.x - catLabel.x) - Math.abs(b.x - catLabel.x));

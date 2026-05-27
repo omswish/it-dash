@@ -1,9 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import WebSocket from 'ws';
-import { getSolarWindsServers, getSolarWindsISPInterfaces } from './solarwinds';
-import { fetchNutanixMetrics } from './nutanix';
-import { ensureBrowserRunning } from './browser';
+
 
 const DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
 
@@ -183,12 +180,7 @@ export function getDb(): DbSchema {
     const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
     const db = JSON.parse(fileContent) as DbSchema;
     
-    // Background seeding is disabled. Extension pushes via /api/update.
-    const now = Date.now();
-    if (now - db.lastUpdated >= 10000) {
-      db.lastUpdated = now;
-      fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-    }
+
     
     return db;
   } catch (error) {
@@ -215,6 +207,4 @@ export function writeDb(db: DbSchema) {
 // updates db.json.
 // ============================================================================
 
-export function startBackgroundSync() {
-  console.log('Background Sync Initialized: Listening for Edge Extension Webhooks at /api/update');
-}
+

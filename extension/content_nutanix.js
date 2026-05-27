@@ -18,15 +18,15 @@ function extractNutanixData() {
     document.querySelectorAll('*').forEach(el => {
       const text = (el.textContent || '').trim().toLowerCase();
       if (text.includes('cpu usage') || text === 'cpu') {
-        const val = el.parentElement.innerText.match(/(\\d+(\\.\\d+)?)%/);
+        const val = el.parentElement.innerText.match(/(\d+(\.\d+)?)%/);
         if (val) cpu = parseFloat(val[1]);
       }
       if (text.includes('memory usage') || text === 'memory') {
-        const val = el.parentElement.innerText.match(/(\\d+(\\.\\d+)?)%/);
+        const val = el.parentElement.innerText.match(/(\d+(\.\d+)?)%/);
         if (val) mem = parseFloat(val[1]);
       }
       if (text.includes('storage') && text.includes('%')) {
-        const val = el.innerText.match(/(\\d+(\\.\\d+)?)%/);
+        const val = el.innerText.match(/(\d+(\.\d+)?)%/);
         if (val) storage = parseFloat(val[1]);
       }
     });
@@ -35,12 +35,12 @@ function extractNutanixData() {
     // but the exact DOM nodes weren't found. The Next.js backend will handle history pushing.
     
     const data = {
-      nodesCount: 3,
-      storageUsage: storage || 65,
-      cpu: cpu || 45,
-      mem: mem || 50,
-      uptime: '142d 8h 12m',
-      nodeStatuses: ['normal', 'normal', 'normal']
+      nodesCount: 0,
+      storageUsage: storage || 0,
+      cpu: cpu || 0,
+      mem: mem || 0,
+      uptime: 'N/A',
+      nodeStatuses: []
     };
 
     chrome.runtime.sendMessage({ type: 'NUTANIX_DATA', data });

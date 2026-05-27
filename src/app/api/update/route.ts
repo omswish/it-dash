@@ -19,7 +19,22 @@ export async function POST(req: Request) {
     // Apply Symphony Extension Data
     if (data.symphony) {
       db.configs.symphony.connected = true;
-      db.symphony = { ...db.symphony, ...data.symphony };
+      db.symphony = {
+        ...db.symphony,
+        openIncidents: data.symphony.incidents ?? db.symphony.openIncidents,
+        openIncidentsBreakdown: data.symphony.incidentsBreakdown ?? db.symphony.openIncidentsBreakdown,
+        serviceRequests: data.symphony.requests ?? db.symphony.serviceRequests,
+        serviceRequestsBreakdown: data.symphony.requestsBreakdown ?? db.symphony.serviceRequestsBreakdown,
+        workOrders: data.symphony.orders ?? db.symphony.workOrders,
+        workOrdersBreakdown: data.symphony.ordersBreakdown ?? db.symphony.workOrdersBreakdown,
+        changeRequests: data.symphony.changes ?? db.symphony.changeRequests,
+        changeRequestsBreakdown: data.symphony.changesBreakdown ?? db.symphony.changeRequestsBreakdown,
+        incidentsResponseSla: data.symphony.incidentsResponseSla ?? db.symphony.incidentsResponseSla,
+        incidentsResolutionSla: data.symphony.incidentsResolutionSla ?? db.symphony.incidentsResolutionSla,
+        requestsResponseSla: data.symphony.requestsResponseSla ?? db.symphony.requestsResponseSla,
+        requestsResolutionSla: data.symphony.requestsResolutionSla ?? db.symphony.requestsResolutionSla,
+        activeIncidents: data.symphony.activeIncidents ?? db.symphony.activeIncidents,
+      };
     }
 
     // Apply SolarWinds Extension Data
@@ -74,12 +89,16 @@ export async function POST(req: Request) {
       
       db.nutanix = {
         ...db.nutanix,
-        ...data.nutanix,
-        historyCpu: [...historyCpu.slice(1), data.nutanix.cpu],
-        historyMem: [...historyMem.slice(1), data.nutanix.mem],
+        uptime: data.nutanix.uptime ?? db.nutanix.uptime,
+        nodesCount: data.nutanix.nodesCount ?? db.nutanix.nodesCount,
+        storageUsage: data.nutanix.storageUsage ?? db.nutanix.storageUsage,
+        nodeStatuses: data.nutanix.nodeStatuses ?? db.nutanix.nodeStatuses,
+        historyCpu: [...historyCpu.slice(1), data.nutanix.cpu ?? 0],
+        historyMem: [...historyMem.slice(1), data.nutanix.mem ?? 0],
       };
     }
 
+    db.lastUpdated = Date.now();
     fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 
     return NextResponse.json({ success: true, timestamp: new Date().toISOString() });

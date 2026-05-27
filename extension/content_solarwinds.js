@@ -14,7 +14,11 @@ async function extractSolarWindsData() {
         WHERE n.Vendor = 'Windows'
       `;
       
-      const res = await fetch('/SolarWinds/InformationService/v3/Json/Query?query=' + encodeURIComponent(query));
+      const res = await fetch('/SolarWinds/InformationService/v3/Json/Query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
       if (!res.ok) throw new Error('Failed to query SolarWinds SWIS API: ' + res.status);
       const json = await res.json();
       
@@ -25,8 +29,8 @@ async function extractSolarWindsData() {
         status: node.Status === 1 ? 'operational' : 'down',
         cpu: Math.round(node.CPULoad || 0),
         memory: Math.round(node.PercentMemoryUsed || 0),
-        disk: Math.round(Math.random() * 40 + 30), // Placeholder if disk isn't easily queryable
-        backupStatus: 'successful'
+        disk: 0,
+        backupStatus: 'N/A'
       }));
       
       chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: servers });
@@ -39,7 +43,11 @@ async function extractSolarWindsData() {
         WHERE i.Caption LIKE '%SDWAN%' OR i.Caption LIKE '%ILL%' OR i.Caption LIKE '%ISP%' OR i.Caption LIKE '%Link%'
       `;
       
-      const res = await fetch('/SolarWinds/InformationService/v3/Json/Query?query=' + encodeURIComponent(query));
+      const res = await fetch('/SolarWinds/InformationService/v3/Json/Query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
       if (!res.ok) throw new Error('Failed to query SolarWinds SWIS API: ' + res.status);
       const json = await res.json();
       
@@ -47,9 +55,9 @@ async function extractSolarWindsData() {
         id: `sw-net-${node.InterfaceID || i}`,
         provider: node.Caption || 'Unknown Gateway',
         status: node.Status === 1 ? 'operational' : (node.Status === 2 ? 'down' : 'degraded'),
-        uptime: 99.9,
-        latency: 12,
-        utilization: Math.round(((node.InPercentUtil || 0) + (node.OutPercentUtil || 0)) / 2) || Math.round(Math.random() * 40 + 20)
+        uptime: 0,
+        latency: 0,
+        utilization: Math.round(((node.InPercentUtil || 0) + (node.OutPercentUtil || 0)) / 2) || 0
       }));
       
       chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: networks });

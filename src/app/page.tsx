@@ -134,19 +134,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [isCartridgeModalOpen, setIsCartridgeModalOpen] = useState(false);
+
   const [time, setTime] = useState(new Date());
 
   // Stateful server hover sparkline popover
   const [hoveredServer, setHoveredServer] = useState<ServerData | null>(null);
   const [popoverCoords, setPopoverCoords] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const { todayStr, oneWeekLater } = useMemo(() => {
-    const t = new Date();
-    const today = t.toISOString().split('T')[0];
-    const future = new Date(t.getTime() + 7 * 24 * 3600 * 1000).toISOString().split('T')[0];
-    return { todayStr: today, oneWeekLater: future };
-  }, []);
+
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -206,18 +201,7 @@ export default function Dashboard() {
     return '#22c55e';
   };
 
-  // Printer Cartridge Stock Local Parameters
-  const cartridgeInventory = data.cartridges || [
-    { type: '88A', current: 85, target: 100, label: 'HP LaserJet 88A' },
-    { type: '12A', current: 34, target: 50, label: 'HP LaserJet 12A' },
-    { type: '378A', current: 28, target: 40, label: 'Premium 378A Color' },
-  ];
 
-  const cartridgeAlertsCount = cartridgeInventory.filter(item => item.current < item.target * 0.8).length;
-
-  const upcomingRequests = (data.onboardingRequests || []).filter(req => {
-    return req.date >= todayStr && req.date <= oneWeekLater;
-  });
 
   const sec = time.getSeconds();
   const min = time.getMinutes();
@@ -760,68 +744,7 @@ export default function Dashboard() {
         </div>
       </footer>
 
-      {/* Cartridge Levels Dialog Modal */}
-      {isCartridgeModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.4)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          animation: 'fadeIn 0.2s ease-out'
-        }}>
-          <div className="glass-panel" style={{
-            width: '600px',
-            padding: '1.5rem',
-            background: '#fffdf9',
-            border: '1px solid rgba(var(--primary-rgb), 0.2)',
-            boxShadow: '0 10px 30px rgba(120, 110, 90, 0.15)',
-            borderRadius: '10px'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(100,116,139,0.1)', paddingBottom: '0.5rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Database size={18} color="var(--primary)" />
-                Consumables Inventory Stock Levels
-              </h3>
-              <button onClick={() => setIsCartridgeModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--secondary)' }}>
-                <X size={18} />
-              </button>
-            </div>
 
-            <div style={{ height: '240px', width: '100%', marginBottom: '1.25rem' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={cartridgeInventory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="type" tick={{ fill: 'var(--foreground)', fontSize: '0.65rem', fontWeight: 700 }} />
-                  <YAxis tick={{ fill: 'var(--foreground)', fontSize: '0.65rem', fontWeight: 700 }} />
-                  <Tooltip contentStyle={{ background: '#fffdf9', borderRadius: '6px', fontSize: '0.7rem' }} />
-                  <Bar dataKey="current" name="Current Stock" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="target" name="Target Level" fill="rgba(100, 116, 139, 0.2)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {cartridgeInventory.map((item) => {
-                const pct = Math.round((item.current / item.target) * 100);
-                return (
-                  <div key={item.type} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0.625rem', background: pct < 80 ? 'rgba(239, 68, 68, 0.05)' : 'rgba(100, 116, 139, 0.03)', border: `1px solid ${pct < 80 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(100, 116, 139, 0.08)'}`, borderRadius: '4px' }}>
-                    <span style={{ fontWeight: 700 }}>Type {item.type} ({item.label})</span>
-                    <span style={{ fontWeight: 800, color: pct < 80 ? 'var(--danger)' : 'var(--success)' }}>
-                      {item.current} / {item.target} ({pct}%)
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Dynamic Stateful 7D Server CPU History Tooltip Popover */}
       {hoveredServer && (

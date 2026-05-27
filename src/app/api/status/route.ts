@@ -24,9 +24,8 @@ export async function POST(request: Request) {
 
     if (connected) {
       if (system === 'solarwinds') {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
         let host = endpoint.trim();
-        let port = '17774';
+        let port = '17778';
         if (host.includes('//')) host = host.split('//')[1];
         if (host.includes('/')) host = host.split('/')[0];
         if (host.includes(':')) {
@@ -42,8 +41,9 @@ export async function POST(request: Request) {
             method: 'POST',
             headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: "SELECT TOP 1 NodeID FROM Orion.Nodes" }),
-            signal: AbortSignal.timeout(5000)
-          });
+            signal: AbortSignal.timeout(5000),
+            agent: new (require('https').Agent)({ rejectUnauthorized: false })
+          } as any);
           
           if (!testRes.ok) {
             console.warn('Authentication failed. Check credentials, but saving config anyway.');
@@ -58,8 +58,7 @@ export async function POST(request: Request) {
           if (!testUrl.startsWith('http')) {
             testUrl = `https://${testUrl}`;
           }
-          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-          await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
+          await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000), agent: new (require('https').Agent)({ rejectUnauthorized: false }) } as any);
         } catch (err) {
           console.warn('Endpoint is unreachable or timed out. Saving config for background scraper fallback.');
         }
