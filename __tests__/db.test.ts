@@ -1,6 +1,5 @@
 import { getDb, DbSchema } from '@/lib/db';
 import fs from 'fs';
-import path from 'path';
 
 // Mock fs to avoid actually writing/reading db.json during tests
 jest.mock('fs');

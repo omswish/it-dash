@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1779850827275,
+  "lastUpdated": 1781156954044,
   "servers": [
     {
       "id": "srv-smartface",
@@ -227,22 +227,24 @@
   "configs": {
     "nutanix": {
       "connected": true,
-      "endpoint": "",
-      "username": "",
-      "authMethod": "API Key"
+      "endpoint": "https://10.23.50.27:9440/console/#login",
+      "username": "hil-dor.itdashboard@adityabirla.com",
+      "authMethod": "Web Authentication (Prism Console)",
+      "secret": "ItDa$*1857"
     },
     "symphony": {
       "connected": true,
-      "endpoint": "",
-      "username": "",
-      "authMethod": "API Key"
+      "endpoint": "https://hsd.adityabirla.com/MDLIncidentMgmt/SDE_Dashboard.aspx",
+      "username": "omkar.s@adityabirla.com",
+      "authMethod": "API Key",
+      "secret": "Anya@#26"
     },
     "solarwinds": {
       "connected": true,
-      "endpoint": "http://10.36.91.45/Orion/Login.aspx",
-      "endpointNetwork": "http://10.36.91.46/Orion/Login.aspx",
-      "username": "hil-dor.itdashboard@adityabirla.com",
-      "authMethod": "Basic Authentication"
+      "endpoint": "",
+      "username": "",
+      "authMethod": "API Key",
+      "secret": ""
     }
   },
   "nutanix": {
@@ -302,19 +304,19 @@
     ]
   },
   "symphony": {
-    "openIncidents": 0,
+    "openIncidents": 4,
     "openIncidentsBreakdown": {
       "new": 0,
       "assigned": 0,
-      "inProgress": 0,
-      "pending": 0
+      "inProgress": 1,
+      "pending": 3
     },
-    "serviceRequests": 0,
+    "serviceRequests": 6,
     "serviceRequestsBreakdown": {
       "new": 0,
       "assigned": 0,
-      "inProgress": 0,
-      "pending": 0
+      "inProgress": 1,
+      "pending": 5
     },
     "workOrders": 0,
     "workOrdersBreakdown": {
@@ -323,17 +325,17 @@
       "inProgress": 0,
       "pending": 0
     },
-    "changeRequests": 0,
+    "changeRequests": 3,
     "changeRequestsBreakdown": {
-      "new": 0,
+      "new": 3,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
     },
     "serviceRequestsSla": 92,
-    "incidentsResponseSla": 0,
+    "incidentsResponseSla": 99,
     "incidentsResolutionSla": 0,
-    "requestsResponseSla": 0,
+    "requestsResponseSla": 100,
     "requestsResolutionSla": 0,
     "activeIncidents": [],
     "incidents": 0,

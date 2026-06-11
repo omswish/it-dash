@@ -3,10 +3,7 @@ console.log('Utkal IT Dashboard Scraper: Nutanix Content Script Injected');
 function extractNutanixData() {
   try {
     // Attempt to extract from Prism UI DOM directly
-    const getElText = (selector) => {
-      const el = document.querySelector(selector);
-      return el ? el.innerText.trim() : null;
-    };
+
 
     // Nutanix UI usually has widgets for CPU, Storage, Memory
     // This is a generic heuristic scraper for common Nutanix Prism layouts

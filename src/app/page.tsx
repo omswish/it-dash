@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import NetworkCard from '@/components/NetworkCard';
 import ConfigModal from '@/components/ConfigModal';
 import { ServerData, DbSchema } from '@/lib/db';
@@ -8,7 +8,7 @@ import {
   ShieldCheck, AlertTriangle, RefreshCw, Cpu, Server, Network, 
   Settings, Key, ChevronRight, Database, Radio, Check, X, Info
 } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, XAxis, Tooltip } from 'recharts';
 
 
 

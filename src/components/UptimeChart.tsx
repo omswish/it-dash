@@ -15,7 +15,7 @@ interface UptimeChartProps {
   strokeColor?: string;
 }
 
-export default function UptimeChart({ data, status, strokeColor }: UptimeChartProps) {
+export default function UptimeChart({ data, strokeColor }: UptimeChartProps) {
   // Rx is dynamic based on status and provider theme
   const rxColor = strokeColor || '#c2410c';
   // Tx is secondary slate/charcoal grey

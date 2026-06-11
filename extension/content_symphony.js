@@ -35,24 +35,39 @@ function extractSymphonyData() {
 
     const headers = ["Incident", "Service Request", "Work Order", "Change Record"];
     const colBounds = [];
-    headers.forEach(h => {
-      const headerItem = items.find(i => i.text === h);
-      if (headerItem) colBounds.push({ name: h, x: headerItem.x, item: headerItem });
+    const possibleHeaders = items.filter(i => headers.includes(i.text));
+    
+    // Group headers by Y coordinate to find the actual column headers (not breadcrumbs)
+    const yGroups = [];
+    possibleHeaders.forEach(p => {
+      let foundGroup = yGroups.find(g => Math.abs(g.y - p.y) < 20);
+      if (foundGroup) {
+        foundGroup.items.push(p);
+      } else {
+        yGroups.push({ y: p.y, items: [p] });
+      }
     });
-    colBounds.sort((a, b) => a.x - b.x);
+    
+    // The correct row is the one with the most matching headers (usually all 4)
+    yGroups.sort((a, b) => b.items.length - a.items.length);
+    const bestRow = yGroups.length > 0 ? yGroups[0].items : [];
 
-    const getColumnName = (x) => {
+    headers.forEach(h => {
+      const headerItem = bestRow.find(i => i.text === h);
+      if (headerItem) colBounds.push({ name: h, x: headerItem.x, left: headerItem.rect.left, item: headerItem });
+    });
+    colBounds.sort((a, b) => a.left - b.left);
+
+    const getColumnName = (item) => {
       if (colBounds.length === 0) return null;
-      let closest = colBounds[0];
-      let minDiff = Math.abs(x - closest.x);
-      for(let i=1; i<colBounds.length; i++) {
-        const diff = Math.abs(x - colBounds[i].x);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closest = colBounds[i];
+      let matchedCol = colBounds[colBounds.length - 1].name;
+      for(let i=0; i<colBounds.length - 1; i++) {
+        if (item.x < colBounds[i+1].left) {
+          matchedCol = colBounds[i].name;
+          break;
         }
       }
-      return closest.name;
+      return matchedCol;
     };
 
     const data = {
@@ -66,7 +81,7 @@ function extractSymphonyData() {
 
     const myWorkgroups = items.filter(i => i.text === "My Workgroup");
     myWorkgroups.forEach(mw => {
-      const col = getColumnName(mw.x);
+      const col = getColumnName(mw);
       const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\d+$/.test(i.text));
       if (numbersAbove.length > 0) {
         numbersAbove.sort((a, b) => b.y - a.y);
@@ -82,7 +97,7 @@ function extractSymphonyData() {
     const categoryLabels = items.filter(i => categories.includes(i.text));
     
     categoryLabels.forEach(catLabel => {
-      const col = getColumnName(catLabel.x);
+      const col = getColumnName(catLabel);
       const numbersAbove = items.filter(i => i.y < catLabel.y && i.y > catLabel.y - 250 && Math.abs(i.x - catLabel.x) < 50 && /^\d+$/.test(i.text));
       let val = 0;
       if (numbersAbove.length > 0) {
@@ -105,7 +120,6 @@ function extractSymphonyData() {
     const findSLA = (headerText, matchStr) => {
        const headers = items.filter(i => i.text.includes(headerText));
        let bestHeader = null;
-       let minDiff = Infinity;
        headers.forEach(h => {
          const subLabels = items.filter(i => i.text.includes(matchStr) && Math.abs(i.x - h.x) < 400 && i.y > h.y);
          if (subLabels.length > 0) bestHeader = subLabels[0];

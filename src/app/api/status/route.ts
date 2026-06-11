@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDb, writeDb } from '@/lib/db';
+import * as https from 'https';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,14 +42,14 @@ export async function POST(request: Request) {
             method: 'POST',
             headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: "SELECT TOP 1 NodeID FROM Orion.Nodes" }),
-            signal: AbortSignal.timeout(5000),
-            agent: new (require('https').Agent)({ rejectUnauthorized: false })
-          } as any);
+            // @ts-expect-error - Next.js fetch agent typing workaround
+            agent: new https.Agent({ rejectUnauthorized: false })
+          });
           
           if (!testRes.ok) {
             console.warn('Authentication failed. Check credentials, but saving config anyway.');
           }
-        } catch (err) {
+        } catch {
           console.warn('Connection timed out or host unreachable. Saving config for background scraper fallback.');
         }
       } else {
@@ -58,8 +59,9 @@ export async function POST(request: Request) {
           if (!testUrl.startsWith('http')) {
             testUrl = `https://${testUrl}`;
           }
-          await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000), agent: new (require('https').Agent)({ rejectUnauthorized: false }) } as any);
-        } catch (err) {
+          // @ts-expect-error - Next.js fetch agent typing workaround
+          await fetch(testUrl, { method: 'GET', signal: AbortSignal.timeout(5000), agent: new https.Agent({ rejectUnauthorized: false }) });
+        } catch {
           console.warn('Endpoint is unreachable or timed out. Saving config for background scraper fallback.');
         }
       }
