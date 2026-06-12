@@ -66,8 +66,8 @@ export interface SymphonyMetrics {
   serviceRequestsBreakdown: TicketBreakdown;
   workOrders: number;
   workOrdersBreakdown: TicketBreakdown;
-  changeRequests: number;
-  changeRequestsBreakdown: TicketBreakdown;
+  changeRecords: number;
+  changeRecordsBreakdown: TicketBreakdown;
   serviceRequestsSla: number;
   incidentsResponseSla: number;
   incidentsResolutionSla: number;
@@ -141,8 +141,8 @@ function generateInitialData(): DbSchema {
       serviceRequestsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
       workOrders: 0,
       workOrdersBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
-      changeRequests: 0,
-      changeRequestsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
+      changeRecords: 0,
+      changeRecordsBreakdown: { new: 0, assigned: 0, inProgress: 0, pending: 0 },
       serviceRequestsSla: 0,
       incidentsResponseSla: 0,
       incidentsResolutionSla: 0,

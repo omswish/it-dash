@@ -19,14 +19,17 @@ function renderTicketCategoryVerticalBarChart(
   total: number,
   breakdown: { new: number; assigned: number; inProgress: number; pending: number } | undefined,
   chartColor: string,
-  slaContent?: React.ReactNode
+  slaContent?: React.ReactNode,
+  customLabels?: { new: string; assigned: string; inProgress: string; pending: string }
 ) {
+  const labels = customLabels || { new: 'New', assigned: 'Assigned', inProgress: 'In Progress', pending: 'Pending' };
+  
   const chartData = [
-    { name: 'New', value: breakdown?.new ?? 0 },
-    { name: 'Assigned', value: breakdown?.assigned ?? 0 },
-    { name: 'In Progress', value: breakdown?.inProgress ?? 0 },
-    { name: 'Pending', value: breakdown?.pending ?? 0 }
-  ];
+    { name: labels.new, value: breakdown?.new ?? 0 },
+    { name: labels.assigned, value: breakdown?.assigned ?? 0 },
+    { name: labels.inProgress, value: breakdown?.inProgress ?? 0 },
+    { name: labels.pending, value: breakdown?.pending ?? 0 }
+  ].filter(d => d.name !== ''); // Filter out empty names so they don't render on XAxis
 
   const hasNewTickets = (breakdown?.new ?? 0) > 0;
   
@@ -424,10 +427,12 @@ export default function Dashboard() {
                         )}
 
                         {renderTicketCategoryVerticalBarChart(
-                          'Change Requests',
-                          data.symphony.changeRequests,
-                          data.symphony.changeRequestsBreakdown,
-                          'var(--primary)'
+                          'Change Record',
+                          data.symphony.changeRecords,
+                          data.symphony.changeRecordsBreakdown,
+                          'var(--primary)',
+                          undefined,
+                          { new: 'Initiated', assigned: '', inProgress: 'Implemented', pending: 'Approved Stage' }
                         )}
                       </div>
 

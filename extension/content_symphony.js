@@ -117,6 +117,22 @@ function extractSymphonyData() {
       if (col === "Change Record" && data.changesBreakdown[key] !== undefined) data.changesBreakdown[key] = val;
     });
 
+    // Extremely robust direct DOM extraction using Angular bindings (if present)
+    const exactCrTotal = document.querySelector('[ng-bind="CR.MyWorkgroupCount"]');
+    if (exactCrTotal && exactCrTotal.textContent) {
+      data.changes = parseInt(exactCrTotal.textContent.trim(), 10) || 0;
+    }
+    
+    // Also try to find breakdown values if they have specific bindings
+    const exactCrNew = document.querySelector('[ng-bind="CR.InitiatedCount"]');
+    if (exactCrNew && exactCrNew.textContent) data.changesBreakdown.new = parseInt(exactCrNew.textContent.trim(), 10) || 0;
+    
+    const exactCrInProgress = document.querySelector('[ng-bind="CR.ImplementedCount"]');
+    if (exactCrInProgress && exactCrInProgress.textContent) data.changesBreakdown.inProgress = parseInt(exactCrInProgress.textContent.trim(), 10) || 0;
+    
+    const exactCrPending = document.querySelector('[ng-bind="CR.ApprovedCount"]');
+    if (exactCrPending && exactCrPending.textContent) data.changesBreakdown.pending = parseInt(exactCrPending.textContent.trim(), 10) || 0;
+
     const findSLA = (headerText, matchStr) => {
        const headers = items.filter(i => i.text.includes(headerText));
        let bestHeader = null;

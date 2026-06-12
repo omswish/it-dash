@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
     // Apply Symphony Extension Data
     if (data.symphony) {
+      console.log('--- INCOMING SYMPHONY PAYLOAD ---', JSON.stringify(data.symphony));
       db.configs.symphony.connected = true;
       db.symphony = {
         ...db.symphony,
@@ -27,8 +28,8 @@ export async function POST(req: Request) {
         serviceRequestsBreakdown: data.symphony.requestsBreakdown ?? db.symphony.serviceRequestsBreakdown,
         workOrders: data.symphony.orders ?? db.symphony.workOrders,
         workOrdersBreakdown: data.symphony.ordersBreakdown ?? db.symphony.workOrdersBreakdown,
-        changeRequests: data.symphony.changes ?? db.symphony.changeRequests,
-        changeRequestsBreakdown: data.symphony.changesBreakdown ?? db.symphony.changeRequestsBreakdown,
+        changeRecords: data.symphony.changes ?? db.symphony.changeRecords,
+        changeRecordsBreakdown: data.symphony.changesBreakdown ?? db.symphony.changeRecordsBreakdown,
         incidentsResponseSla: data.symphony.incidentsResponseSla ?? db.symphony.incidentsResponseSla,
         incidentsResolutionSla: data.symphony.incidentsResolutionSla ?? db.symphony.incidentsResolutionSla,
         requestsResponseSla: data.symphony.requestsResponseSla ?? db.symphony.requestsResponseSla,

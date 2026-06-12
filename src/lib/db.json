@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1781156954044,
+  "lastUpdated": 1781236632117,
   "servers": [
     {
       "id": "srv-smartface",
@@ -248,75 +248,71 @@
     }
   },
   "nutanix": {
-    "uptime": "142d 8h 12m",
-    "nodesCount": 3,
-    "storageUsage": 65,
+    "uptime": "N/A",
+    "nodesCount": 0,
+    "storageUsage": 0,
     "historyCpu": [
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45,
-      45
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     "historyMem": [
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50,
-      50
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     "cpu": 45,
     "mem": 50,
-    "nodeStatuses": [
-      "normal",
-      "normal",
-      "normal"
-    ]
+    "nodeStatuses": []
   },
   "symphony": {
-    "openIncidents": 4,
+    "openIncidents": 8,
     "openIncidentsBreakdown": {
       "new": 0,
       "assigned": 0,
-      "inProgress": 1,
-      "pending": 3
+      "inProgress": 4,
+      "pending": 4
     },
-    "serviceRequests": 6,
+    "serviceRequests": 5,
     "serviceRequestsBreakdown": {
       "new": 0,
       "assigned": 0,
-      "inProgress": 1,
-      "pending": 5
+      "inProgress": 0,
+      "pending": 4
     },
     "workOrders": 0,
     "workOrdersBreakdown": {
@@ -325,15 +321,15 @@
       "inProgress": 0,
       "pending": 0
     },
-    "changeRequests": 3,
-    "changeRequestsBreakdown": {
+    "changeRecords": 1,
+    "changeRecordsBreakdown": {
       "new": 3,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
     },
     "serviceRequestsSla": 92,
-    "incidentsResponseSla": 99,
+    "incidentsResponseSla": 100,
     "incidentsResolutionSla": 0,
     "requestsResponseSla": 100,
     "requestsResolutionSla": 0,
@@ -362,6 +358,13 @@
     },
     "changesBreakdown": {
       "new": 0,
+      "assigned": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "changeRequests": 3,
+    "changeRequestsBreakdown": {
+      "new": 3,
       "assigned": 0,
       "inProgress": 0,
       "pending": 0
