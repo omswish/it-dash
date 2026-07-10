@@ -15,7 +15,7 @@ interface ConfigModalProps {
   onSave: () => void;
 }
 
-type TabType = 'nutanix' | 'symphony' | 'solarwinds' | 'inventory';
+type TabType = 'nutanix' | 'symphony' | 'solarwinds';
 
 export default function ConfigModal({ isOpen, onClose, configs, onSave }: ConfigModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('nutanix');
@@ -173,19 +173,11 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
               <span>SolarWinds Orion API</span>
               {configs.solarwinds?.connected && <span className="connected-badge"></span>}
             </button>
-            <button 
-              onClick={() => { setActiveTab('inventory'); setTestResult(null); }}
-              style={getTabStyle(activeTab === 'inventory')}
-            >
-              <Database size={16} />
-              <span>Cartridge Stock Excel</span>
-            </button>
           </div>
 
           {/* Right Inputs Content */}
           <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#ffffff' }}>
-            {activeTab !== 'inventory' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
                 <div>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
                     {activeTab === 'nutanix' && 'Nutanix CLI Hypervisor Access'}
@@ -290,116 +282,6 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                   </div>
                 </div>
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-                <div>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '4px' }}>
-                    Upload Cartridge Inventory Excel
-                  </h3>
-                  <p style={{ fontSize: '0.825rem', color: 'var(--secondary)', lineHeight: 1.3 }}>
-                    Provide an Excel spreadsheet (`.xlsx` or `.xls`) containing cartridge inventory. 
-                    The system will automatically map the first sheet&apos;s data into the NOC stock level charts.
-                  </p>
-                </div>
-
-                <div style={{
-                  border: '2px dashed rgba(var(--primary-rgb), 0.25)',
-                  borderRadius: '8px',
-                  padding: '2.5rem 1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(var(--primary-rgb), 0.01)',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  textAlign: 'center',
-                  transition: 'all 0.2s'
-                }} className="excel-upload-zone">
-                  <input 
-                    type="file" 
-                    accept=".xlsx, .xls"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      setTesting(true);
-                      setTestResult(null);
-                      try {
-                        const reader = new FileReader();
-                        reader.onload = async (evt) => {
-                          try {
-                            const bstr = evt.target?.result;
-                            const wb = XLSX.read(bstr, { type: 'binary' });
-                            const wsname = wb.SheetNames[0];
-                            const ws = wb.Sheets[wsname];
-                            const rawData = XLSX.utils.sheet_to_json(ws) as Array<Record<string, string | number>>;
-                            
-                            if (!rawData || rawData.length === 0) {
-                              alert("Sheet is empty or couldn't be parsed.");
-                              setTestResult('failed');
-                              setTesting(false);
-                              return;
-                            }
-
-                            // map keys
-                            const cartridges = rawData.map((row) => {
-                              const keys = Object.keys(row);
-                              const typeKey = keys.find(k => k.toLowerCase() === 'type' || k.toLowerCase().includes('model') || k.toLowerCase().includes('code')) || 'type';
-                              const currentKey = keys.find(k => k.toLowerCase() === 'current' || k.toLowerCase().includes('stock') || k.toLowerCase().includes('qty')) || 'current';
-                              const targetKey = keys.find(k => k.toLowerCase() === 'target' || k.toLowerCase().includes('capacity') || k.toLowerCase().includes('limit') || k.toLowerCase().includes('threshold')) || 'target';
-                              const labelKey = keys.find(k => k.toLowerCase() === 'label' || k.toLowerCase().includes('name') || k.toLowerCase().includes('description')) || 'label';
-
-                              return {
-                                type: String(row[typeKey] || ''),
-                                current: Number(row[currentKey] || 0),
-                                target: Number(row[targetKey] || 100),
-                                label: String(row[labelKey] || '')
-                              };
-                            });
-
-                            // POST to stock endpoint
-                            const postRes = await fetch('/api/status/stock', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ cartridges })
-                            });
-
-                            if (postRes.ok) {
-                              setTestResult('success');
-                              onSave();
-                            } else {
-                              setTestResult('failed');
-                            }
-                          } catch (err) {
-                            console.error(err);
-                            setTestResult('failed');
-                          } finally {
-                            setTesting(false);
-                          }
-                        };
-                        reader.readAsBinaryString(file);
-                      } catch (err) {
-                        console.error(err);
-                        setTestResult('failed');
-                        setTesting(false);
-                      }
-                    }}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      opacity: 0,
-                      cursor: 'pointer'
-                    }}
-                  />
-                  <Upload size={32} color="var(--primary)" style={{ marginBottom: '0.5rem' }} />
-                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--foreground)' }}>Click or Drag Excel File Here</span>
-                  <span style={{ fontSize: '0.675rem', color: 'var(--secondary)', marginTop: '2px' }}>Supported: .xlsx, .xls (Headers: Type, Current, Target, Label)</span>
-                </div>
-              </div>
-            )}
 
             {/* Bottom Controls / Status */}
             <div style={{
@@ -415,37 +297,31 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                 {testing && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Loader2 size={16} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-                    <span>{activeTab === 'inventory' ? 'Parsing & Saving Excel Inventory...' : 'Verifying Secure Access Handshake...'}</span>
+                    <span>Verifying Secure Access Handshake...</span>
                   </div>
                 )}
                 {testResult === 'success' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Check size={16} />
-                    <span>{activeTab === 'inventory' ? 'Inventory Updated Successfully!' : 'Connection Established Successfully!'}</span>
+                    <span>Connection Established Successfully!</span>
                   </div>
                 )}
                 {testResult === 'failed' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <AlertCircle size={16} />
-                    <span>{activeTab === 'inventory' ? 'Error parsing file columns. Check headers.' : 'Handshake Failed. Verify Credentials.'}</span>
+                    <span>Handshake Failed. Verify Credentials.</span>
                   </div>
                 )}
-                {!testing && !testResult && activeTab !== 'inventory' && configs[activeTab]?.connected && (
+                {!testing && !testResult && configs[activeTab]?.connected && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success)', fontSize: '0.875rem', fontWeight: 700 }}>
                     <Check size={16} />
                     <span>Connected ({form[activeTab].method})</span>
                   </div>
                 )}
-                {!testing && !testResult && activeTab === 'inventory' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--secondary)', fontSize: '0.875rem', fontWeight: 700 }}>
-                    <span>Upload new inventory .xlsx/.xls at any time to refresh.</span>
-                  </div>
-                )}
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                {activeTab !== 'inventory' ? (
-                  configs[activeTab]?.connected ? (
+                {configs[activeTab]?.connected ? (
                     <button 
                       onClick={() => handleDisconnect(activeTab)}
                       disabled={testing}
@@ -461,8 +337,7 @@ export default function ConfigModal({ isOpen, onClose, configs, onSave }: Config
                     >
                       Test & Connect
                     </button>
-                  )
-                ) : null}
+                  )}
               </div>
             </div>
           </div>

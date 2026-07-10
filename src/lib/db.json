@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1781236632117,
+  "lastUpdated": 1781239145499,
   "servers": [
     {
       "id": "srv-smartface",
@@ -311,7 +311,7 @@
     "serviceRequestsBreakdown": {
       "new": 0,
       "assigned": 0,
-      "inProgress": 0,
+      "inProgress": 1,
       "pending": 4
     },
     "workOrders": 0,

@@ -79,8 +79,15 @@ function extractSymphonyData() {
       activeIncidents: []
     };
 
-    const myWorkgroups = items.filter(i => i.text === "My Workgroup");
-    myWorkgroups.forEach(mw => {
+    // Target specific workgroups or locations
+    const targetGroups = items.filter(i => 
+      i.text.includes("Utkal_IT Support") || 
+      i.text.includes("Doraguda") || 
+      i.text.includes("Rayagada") ||
+      i.text === "My Workgroup" // Fallback if exact naming changes
+    );
+    
+    targetGroups.forEach(mw => {
       const col = getColumnName(mw);
       const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\d+$/.test(i.text));
       if (numbersAbove.length > 0) {
@@ -161,10 +168,28 @@ function extractSymphonyData() {
     data.requestsResponseSla = findSLA('Service Request SLA Summary', 'Response SLA Performance');
     data.requestsResolutionSla = findSLA('Service Request SLA Summary', 'Resolution SLA Performance');
 
+    // Detect if we are logged out
+    const loginForm = document.querySelector('form[action*="Login"], input[type="password"]');
+    if (loginForm) {
+      chrome.runtime.sendMessage({ 
+        type: 'SYMPHONY_DATA', 
+        data, 
+        status: 'auth_required', 
+        statusMessage: 'Authentication required. Operator session expired.' 
+      });
+      return;
+    }
+
     console.log('Extracted Symphony Data:', data);
-    chrome.runtime.sendMessage({ type: 'SYMPHONY_DATA', data });
+    chrome.runtime.sendMessage({ type: 'SYMPHONY_DATA', data, status: 'active' });
   } catch(e) {
     console.error('Symphony DOM Parsing Error:', e);
+    chrome.runtime.sendMessage({ 
+      type: 'SYMPHONY_DATA', 
+      data: null, 
+      status: 'layout_error', 
+      statusMessage: `Layout error: ${e.message}` 
+    });
   }
 }
 

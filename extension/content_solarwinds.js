@@ -33,7 +33,7 @@ async function extractSolarWindsData() {
         backupStatus: 'N/A'
       }));
       
-      chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: servers });
+      chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: servers, status: 'active' });
 
     } else {
       const query = `
@@ -60,10 +60,18 @@ async function extractSolarWindsData() {
         utilization: Math.round(((node.InPercentUtil || 0) + (node.OutPercentUtil || 0)) / 2) || 0
       }));
       
-      chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: networks });
+      chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: networks, status: 'active' });
     }
   } catch (error) {
     console.error('SolarWinds Extension Scrape Error:', error);
+    const isAuth = error.message.includes('401') || error.message.includes('403');
+    chrome.runtime.sendMessage({
+      type: 'SOLARWINDS_DATA',
+      source,
+      data: null,
+      status: isAuth ? 'auth_required' : 'network_error',
+      statusMessage: error.message
+    });
   }
 }
 

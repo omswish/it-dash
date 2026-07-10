@@ -20,6 +20,10 @@ export async function POST(req: Request) {
     if (data.symphony) {
       console.log('--- INCOMING SYMPHONY PAYLOAD ---', JSON.stringify(data.symphony));
       db.configs.symphony.connected = true;
+      if (data.symphony.status) {
+        db.configs.symphony.status = data.symphony.status;
+        db.configs.symphony.statusMessage = data.symphony.statusMessage || '';
+      }
       db.symphony = {
         ...db.symphony,
         openIncidents: data.symphony.incidents ?? db.symphony.openIncidents,
@@ -38,9 +42,16 @@ export async function POST(req: Request) {
       };
     }
 
+
     // Apply SolarWinds Extension Data
     if (data.solarwinds) {
-      if (db.configs.solarwinds) db.configs.solarwinds.connected = true;
+      if (db.configs.solarwinds) {
+        db.configs.solarwinds.connected = true;
+        if (data.solarwinds.status) {
+          db.configs.solarwinds.status = data.solarwinds.status;
+          db.configs.solarwinds.statusMessage = data.solarwinds.statusMessage || '';
+        }
+      }
       if (data.solarwinds.servers && data.solarwinds.servers.length > 0) {
         db.servers = data.solarwinds.servers.map((newSrv: Omit<ServerData, 'history'>) => {
           const oldSrv = db.servers?.find(s => 
@@ -85,6 +96,10 @@ export async function POST(req: Request) {
     // Apply Nutanix Extension Data
     if (data.nutanix) {
       db.configs.nutanix.connected = true;
+      if (data.nutanix.status) {
+        db.configs.nutanix.status = data.nutanix.status;
+        db.configs.nutanix.statusMessage = data.nutanix.statusMessage || '';
+      }
       const historyCpu = db.nutanix?.historyCpu || Array.from({length:20}, ()=>0);
       const historyMem = db.nutanix?.historyMem || Array.from({length:20}, ()=>0);
       

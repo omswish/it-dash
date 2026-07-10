@@ -33,6 +33,8 @@ export interface SystemConfig {
   username: string;
   authMethod: string;
   secret?: string;
+  status?: 'active' | 'auth_required' | 'layout_error' | 'network_error' | 'idle';
+  statusMessage?: string;
 }
 
 export interface NutanixMetrics {

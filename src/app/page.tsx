@@ -660,61 +660,106 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-
+        
         {/* Middle Section: Live Integration Status Badges */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
           <span style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.025em' }}>Endpoint Feeds:</span>
           
           {/* Symphony */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: data?.configs.symphony?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
-            border: `1px solid ${data?.configs.symphony?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-            padding: '0.25rem 0.6rem',
-            borderRadius: '6px',
-            color: data?.configs.symphony?.connected ? 'var(--success)' : 'var(--danger)',
-            fontSize: '0.7rem',
-            fontWeight: 800
-          }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.symphony?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
-            <span>Hindalco ITSM (Symphony)</span>
-          </div>
+          {(() => {
+            const cfg = data.configs.symphony;
+            const isConn = cfg?.connected;
+            const status = cfg?.status || 'idle';
+            const statusColor = !isConn ? 'rgba(100, 116, 139, 0.2)' : (status === 'active' ? 'rgba(34, 197, 94, 0.2)' : (status === 'auth_required' ? 'rgba(234, 88, 12, 0.2)' : 'rgba(185, 28, 28, 0.2)'));
+            const textColor = !isConn ? 'var(--secondary)' : (status === 'active' ? 'var(--success)' : (status === 'auth_required' ? '#ea580c' : 'var(--danger)'));
+            const dotColor = !isConn ? '#64748b' : (status === 'active' ? '#22c55e' : (status === 'auth_required' ? '#f97316' : '#ef4444'));
+            return (
+              <div 
+                title={cfg?.statusMessage || (isConn ? `Active (${status})` : 'Offline')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: isConn ? 'rgba(255, 255, 255, 0.8)' : 'rgba(100, 116, 139, 0.03)',
+                  border: `1px solid ${statusColor}`,
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '6px',
+                  color: textColor,
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  transition: 'all 0.2s',
+                  cursor: cfg?.statusMessage ? 'help' : 'default'
+                }}
+              >
+                <span className={`status-dot ${!isConn ? 'degraded' : (status === 'active' ? 'operational' : 'down')}`} style={{ width: '6px', height: '6px', backgroundColor: dotColor, animation: status !== 'active' && isConn ? 'pulse 2s infinite' : 'none' }}></span>
+                <span>Hindalco ITSM (Symphony)</span>
+              </div>
+            );
+          })()}
 
           {/* Nutanix */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: data?.configs.nutanix?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
-            border: `1px solid ${data?.configs.nutanix?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-            padding: '0.25rem 0.6rem',
-            borderRadius: '6px',
-            color: data?.configs.nutanix?.connected ? 'var(--success)' : 'var(--danger)',
-            fontSize: '0.7rem',
-            fontWeight: 800
-          }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.nutanix?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
-            <span>Nutanix HCI</span>
-          </div>
+          {(() => {
+            const cfg = data.configs.nutanix;
+            const isConn = cfg?.connected;
+            const status = cfg?.status || 'idle';
+            const statusColor = !isConn ? 'rgba(100, 116, 139, 0.2)' : (status === 'active' ? 'rgba(34, 197, 94, 0.2)' : (status === 'auth_required' ? 'rgba(234, 88, 12, 0.2)' : 'rgba(185, 28, 28, 0.2)'));
+            const textColor = !isConn ? 'var(--secondary)' : (status === 'active' ? 'var(--success)' : (status === 'auth_required' ? '#ea580c' : 'var(--danger)'));
+            const dotColor = !isConn ? '#64748b' : (status === 'active' ? '#22c55e' : (status === 'auth_required' ? '#f97316' : '#ef4444'));
+            return (
+              <div 
+                title={cfg?.statusMessage || (isConn ? `Active (${status})` : 'Offline')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: isConn ? 'rgba(255, 255, 255, 0.8)' : 'rgba(100, 116, 139, 0.03)',
+                  border: `1px solid ${statusColor}`,
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '6px',
+                  color: textColor,
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  transition: 'all 0.2s',
+                  cursor: cfg?.statusMessage ? 'help' : 'default'
+                }}
+              >
+                <span className={`status-dot ${!isConn ? 'degraded' : (status === 'active' ? 'operational' : 'down')}`} style={{ width: '6px', height: '6px', backgroundColor: dotColor, animation: status !== 'active' && isConn ? 'pulse 2s infinite' : 'none' }}></span>
+                <span>Nutanix HCI</span>
+              </div>
+            );
+          })()}
 
           {/* SolarWinds */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: data?.configs.solarwinds?.connected ? 'rgba(34, 197, 94, 0.06)' : 'rgba(239, 68, 68, 0.06)',
-            border: `1px solid ${data?.configs.solarwinds?.connected ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-            padding: '0.25rem 0.6rem',
-            borderRadius: '6px',
-            color: data?.configs.solarwinds?.connected ? 'var(--success)' : 'var(--danger)',
-            fontSize: '0.7rem',
-            fontWeight: 800
-          }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: data?.configs.solarwinds?.connected ? 'var(--success)' : 'var(--danger)', display: 'inline-block' }}></span>
-            <span>SolarWinds Orion</span>
-          </div>
+          {(() => {
+            const cfg = data.configs.solarwinds;
+            const isConn = cfg?.connected;
+            const status = cfg?.status || 'idle';
+            const statusColor = !isConn ? 'rgba(100, 116, 139, 0.2)' : (status === 'active' ? 'rgba(34, 197, 94, 0.2)' : (status === 'auth_required' ? 'rgba(234, 88, 12, 0.2)' : 'rgba(185, 28, 28, 0.2)'));
+            const textColor = !isConn ? 'var(--secondary)' : (status === 'active' ? 'var(--success)' : (status === 'auth_required' ? '#ea580c' : 'var(--danger)'));
+            const dotColor = !isConn ? '#64748b' : (status === 'active' ? '#22c55e' : (status === 'auth_required' ? '#f97316' : '#ef4444'));
+            return (
+              <div 
+                title={cfg?.statusMessage || (isConn ? `Active (${status})` : 'Offline')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: isConn ? 'rgba(255, 255, 255, 0.8)' : 'rgba(100, 116, 139, 0.03)',
+                  border: `1px solid ${statusColor}`,
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '6px',
+                  color: textColor,
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  transition: 'all 0.2s',
+                  cursor: cfg?.statusMessage ? 'help' : 'default'
+                }}
+              >
+                <span className={`status-dot ${!isConn ? 'degraded' : (status === 'active' ? 'operational' : 'down')}`} style={{ width: '6px', height: '6px', backgroundColor: dotColor, animation: status !== 'active' && isConn ? 'pulse 2s infinite' : 'none' }}></span>
+                <span>SolarWinds Orion</span>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Right Section: Date, Time & Analog Clock */}
