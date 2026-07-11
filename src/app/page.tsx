@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import NetworkCard from '@/components/NetworkCard';
+import UnifiedNetworkCard from '@/components/UnifiedNetworkCard';
 import { ServerData, DbSchema } from '@/lib/db';
 import { 
   ShieldCheck, AlertTriangle, RefreshCw, Cpu, Server, Network, 
@@ -393,22 +393,18 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* 2. ISP Gateway Status Card */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
-              <div style={{ padding: '0.625rem 1.25rem 0.25rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                <Network size={14} color="var(--primary)" />
-                <span className="stat-label" style={{ fontSize: '0.85rem' }}>SDWAN & ILL Links (Side-by-Side)</span>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0, padding: '0.5rem' }}>
-                {data.networks.map((net) => (
-                  <div key={net.id} style={{ flex: '1 1 calc(50% - 0.5rem)', display: 'flex', minHeight: '120px' }}>
-                    <NetworkCard {...net} />
-                  </div>
-                ))}
+            {/* 2. ISP Gateway Status Card */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+                <div style={{ padding: '0.625rem 1.25rem 0.25rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <Network size={14} color="var(--primary)" />
+                  <span className="stat-label" style={{ fontSize: '0.85rem' }}>SDWAN & ILL Links (Side-by-Side)</span>
+                </div>
+                <div style={{ flex: 1, minHeight: 0, padding: '0.5rem 1rem 1rem 1rem' }}>
+                  <UnifiedNetworkCard networks={data.networks} />
+                </div>
               </div>
             </div>
-          </div>
 
         </div>
 

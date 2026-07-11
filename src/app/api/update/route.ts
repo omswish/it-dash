@@ -67,29 +67,39 @@ export async function POST(req: Request) {
         });
       }
       if (data.solarwinds.networks && data.solarwinds.networks.length > 0) {
-        db.networks = data.solarwinds.networks.map((newNet: Omit<NetworkData, 'history'>) => {
-          const oldNet = db.networks?.find(n => 
-            n.id === newNet.id || 
-            n.provider.toLowerCase() === newNet.provider.toLowerCase() ||
-            (n.provider.length > 2 && newNet.provider.toLowerCase().includes(n.provider.toLowerCase())) ||
-            (newNet.provider.length > 2 && n.provider.toLowerCase().includes(newNet.provider.toLowerCase()))
-          );
-          const history = oldNet?.history && Array.isArray(oldNet.history) ? oldNet.history : Array.from({ length: 20 }, () => 0);
-          const updatedHistory = [...history.slice(1), newNet.utilization];
-          
+        const uniqueNets = new Map<string, NetworkData>();
+        
+        data.solarwinds.networks.forEach((newNet: Omit<NetworkData, 'history'>) => {
           let mappedProvider = newNet.provider;
           if (newNet.provider.toLowerCase().includes('rjio') || newNet.provider.toLowerCase().includes('jio')) {
             mappedProvider = 'RJIO';
           } else if (newNet.provider.toLowerCase().includes('railtel')) {
             mappedProvider = 'RailTel';
+          } else if (newNet.provider.includes('HIL-UTK-EC-1')) {
+            mappedProvider = 'HIL-UTK-EC-1';
+          } else if (newNet.provider.includes('HIL-UTK-EC-2')) {
+            mappedProvider = 'HIL-UTK-EC-2';
           }
           
-          return {
-            ...newNet,
-            provider: mappedProvider,
-            history: updatedHistory
-          } as NetworkData;
+          if (!uniqueNets.has(mappedProvider)) {
+            const oldNet = db.networks?.find(n => 
+              n.id === newNet.id || 
+              n.provider.toLowerCase() === mappedProvider.toLowerCase() ||
+              (n.provider.length > 2 && mappedProvider.toLowerCase().includes(n.provider.toLowerCase()))
+            );
+            
+            const history = oldNet?.history && Array.isArray(oldNet.history) ? oldNet.history : Array.from({ length: 20 }, () => 0);
+            const updatedHistory = [...history.slice(1), newNet.utilization];
+            
+            uniqueNets.set(mappedProvider, {
+              ...newNet,
+              provider: mappedProvider,
+              history: updatedHistory
+            } as NetworkData);
+          }
         });
+        
+        db.networks = Array.from(uniqueNets.values());
       }
     }
 
