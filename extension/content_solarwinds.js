@@ -50,25 +50,31 @@ async function extractSolarWindsData() {
             const valEl = cells[2].querySelector('a'); // Memory or CPU %
 
             if (nodeNameEl && valEl) {
-               const nodeName = nodeNameEl.innerText.trim();
-               if (serverNodesMap[nodeName]) {
+               const nodeName = nodeNameEl.innerText.trim().toLowerCase();
+               const matchedKey = Object.keys(serverNodesMap).find(key => 
+                  key.toLowerCase() === nodeName || 
+                  key.toLowerCase().startsWith(nodeName + '.') ||
+                  nodeName.startsWith(key.toLowerCase() + '.')
+               );
+               
+               if (matchedKey) {
                   foundAnyData = true;
                   const valText = valEl.innerText.replace(/\s|%/g, '');
                   const val = parseInt(valText) || 0;
                   
                   if (valEl.href.includes('Memory')) {
-                     serverNodesMap[nodeName].memory = val;
+                     serverNodesMap[matchedKey].memory = val;
                   } else if (valEl.href.includes('CPU')) {
-                     serverNodesMap[nodeName].cpu = val;
+                     serverNodesMap[matchedKey].cpu = val;
                   }
                   
                   const statusStr = statusImg?.getAttribute('src')?.toLowerCase() || '';
                   if (statusStr.includes('critical') || statusStr.includes('down')) {
-                     serverNodesMap[nodeName].status = 'down';
+                     serverNodesMap[matchedKey].status = 'down';
                   } else if (statusStr.includes('warning')) {
-                     serverNodesMap[nodeName].status = 'degraded';
+                     serverNodesMap[matchedKey].status = 'degraded';
                   } else if (statusStr.includes('up')) {
-                     serverNodesMap[nodeName].status = 'operational';
+                     serverNodesMap[matchedKey].status = 'operational';
                   }
                }
             }
