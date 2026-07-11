@@ -20,7 +20,8 @@
   "content_scripts": [
     {
       "matches": ["*://hsd.adityabirla.com/*"],
-      "js": ["content_symphony.js"]
+      "js": ["content_symphony.js"],
+      "all_frames": true
     },
     {
       "matches": ["*://10.36.91.45/*", "*://10.36.91.46/*"],
