@@ -166,7 +166,7 @@ export default function Dashboard() {
     Promise.resolve().then(() => {
       fetchData();
     });
-    const interval = setInterval(fetchData, 10000); // 10s auto sync
+    const interval = setInterval(fetchData, 30000); // 30s auto sync
     return () => clearInterval(interval);
   }, []);
 
@@ -234,8 +234,8 @@ export default function Dashboard() {
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--secondary)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.725rem', background: 'rgba(var(--primary-rgb), 0.04)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(var(--primary-rgb), 0.12)' }}>
-            <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%', display: 'inline-block', animation: 'pulse 10s infinite' }}></span>
-            <span style={{ fontWeight: 700, fontFamily: 'var(--font-heading)' }}>10s Sync</span>
+            <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%', display: 'inline-block', animation: 'pulse 30s infinite' }}></span>
+            <span style={{ fontWeight: 700, fontFamily: 'var(--font-heading)' }}>30s Sync</span>
           </div>
           <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>
             Sync: {lastUpdated?.toLocaleTimeString()}
