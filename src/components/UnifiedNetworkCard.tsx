@@ -3,6 +3,7 @@
 import { NetworkData } from '@/lib/db';
 import UptimeChart from './UptimeChart';
 import { Activity, ShieldCheck, AlertTriangle, XCircle, CheckCircle2 } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 
 interface UnifiedNetworkCardProps {
   networks: NetworkData[];
