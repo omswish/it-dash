@@ -51,7 +51,15 @@ function extractNutanixData() {
        const match = allServerNames.find(n => n.toLowerCase() === vmName || n.toLowerCase().startsWith(vmName + '.'));
        if (match) {
            let diskPercent = 'N/A';
+           let backupStatus = 'N/A';
            const tds = row.querySelectorAll('td');
+           
+           if (tds.length >= 13) {
+               const bText = tds[12].textContent.trim();
+               if (bText === 'Yes') backupStatus = 'successful';
+               else if (bText === 'No') backupStatus = 'failed';
+           }
+
            for (const td of tds) {
                const tdText = td.textContent.trim();
                const storageMatch = tdText.match(/([\d\.]+)\s*(GiB|TiB|MiB|GB|TB|MB)\s*\/\s*([\d\.]+)\s*(GiB|TiB|MiB|GB|TB|MB)/i);
@@ -77,7 +85,8 @@ function extractNutanixData() {
            }
            serverDisks.push({
               name: match,
-              disk: diskPercent
+              disk: diskPercent,
+              backupStatus
            });
        }
     });

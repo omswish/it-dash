@@ -141,7 +141,8 @@ export async function POST(req: Request) {
          data.nutanix.serverDisks.forEach((s: any) => {
             const srv = db.servers?.find(x => x.name.toLowerCase() === s.name.toLowerCase());
             if (srv) {
-               srv.disk = round2(s.disk);
+               if (s.disk !== 'N/A') srv.disk = round2(s.disk);
+               if (s.backupStatus !== 'N/A') srv.backupStatus = s.backupStatus;
             }
          });
       }
