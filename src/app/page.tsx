@@ -435,7 +435,7 @@ export default function Dashboard() {
                       <tr key={server.id} style={{ borderBottom: '1px solid rgba(100, 116, 139, 0.06)', transition: 'background 0.2s' }} className="table-row-hover">
                         <td style={{ padding: '0.45rem 0.55rem', fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                           <Server size={10} color="var(--primary)" />
-                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '60px' }}>{server.name}</span>
+                          <span style={{ whiteSpace: 'nowrap' }}>{server.name}</span>
                           <Info 
                             size={11} 
                             color="var(--primary)" 
@@ -452,11 +452,16 @@ export default function Dashboard() {
                             className="info-icon-hover"
                           />
                         </td>
-                        <td style={{ padding: '0.45rem 0.55rem' }}>
-                          <span style={getStatusBadgeStyle(server.status)}>
-                            <span className={`status-dot ${server.status}`} style={{ margin: 0, width: '3px', height: '3px' }}></span>
-                            <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>{server.status}</span>
-                          </span>
+                        <td style={{ padding: '0.45rem 0.55rem', textAlign: 'center' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            {server.status === 'operational' ? (
+                              <ShieldCheck size={14} color="var(--success)" title="Operational" />
+                            ) : server.status === 'degraded' ? (
+                              <AlertTriangle size={14} color="var(--warning)" title="Degraded" />
+                            ) : (
+                              <AlertTriangle size={14} color="var(--danger)" title="Down" />
+                            )}
+                          </div>
                         </td>
                         <td style={{ padding: '0.45rem 0.55rem' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
