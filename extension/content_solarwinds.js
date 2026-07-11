@@ -101,23 +101,10 @@ async function extractSolarWindsData() {
         });
       }
 
-      // 2. Fallback to basic text scraping if the table wasn't found or yielded no networks
+      // 2. If the table hasn't loaded yet, abort so we don't send empty/mocked data
       if (networks.length === 0) {
-        const textLines = document.body.innerText.split('\n');
-        textLines.forEach(line => {
-          if (line.includes('SDWAN') || line.includes('ILL') || line.includes('ISP') || line.includes('Link') || line.includes('HIL-UTK-EC')) {
-             if (line.length < 100 && !networks.find(n => n.provider === line.trim())) {
-               networks.push({
-                 id: `sw-net-${++netId}`,
-                 provider: line.trim(),
-                 status: 'operational',
-                 uptime: 0,
-                 latency: 0,
-                 utilization: 40 + Math.floor(Math.random() * 20)
-               });
-             }
-          }
-        });
+        console.log('Dashboard widgets not found yet. Waiting for page load...');
+        return;
       }
       
       chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: networks.slice(0, 10), status: 'active' });

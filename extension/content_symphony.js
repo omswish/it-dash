@@ -178,6 +178,12 @@ function extractSymphonyData() {
       return;
     }
 
+    // Abort if dashboard hasn't loaded yet (No anchor texts found) to prevent scraping zeroes
+    if (targetGroups.length === 0 && !exactCrTotal) {
+      console.log('Symphony Dashboard not loaded yet. Waiting...');
+      return;
+    }
+
     console.log('Extracted Symphony Data:', data);
     chrome.runtime.sendMessage({ type: 'SYMPHONY_DATA', data, status: 'active' });
   } catch(e) {
