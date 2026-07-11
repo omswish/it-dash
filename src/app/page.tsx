@@ -310,15 +310,11 @@ export default function Dashboard() {
                      <div style={{ display: 'flex', gap: '4px' }}>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(34, 197, 94, 0.08)', padding: '0.15rem 0.3rem', borderRadius: '4px', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
                          <span style={{ width: '4px', height: '4px', background: 'var(--success)', borderRadius: '50%' }}></span>
-                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--success)' }}>{data.nutanix.vmHealth.good}</span>
-                       </div>
-                       <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(234, 88, 12, 0.08)', padding: '0.15rem 0.3rem', borderRadius: '4px', border: '1px solid rgba(234, 88, 12, 0.2)' }}>
-                         <span style={{ width: '4px', height: '4px', background: 'var(--warning)', borderRadius: '50%' }}></span>
-                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--warning)' }}>{data.nutanix.vmHealth.warning}</span>
+                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--success)' }}>On: {data.nutanix.vmHealth.good}</span>
                        </div>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: 'rgba(185, 28, 28, 0.08)', padding: '0.15rem 0.3rem', borderRadius: '4px', border: '1px solid rgba(185, 28, 28, 0.2)' }}>
                          <span style={{ width: '4px', height: '4px', background: 'var(--danger)', borderRadius: '50%' }}></span>
-                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--danger)' }}>{data.nutanix.vmHealth.critical}</span>
+                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--danger)' }}>Off: {data.nutanix.vmHealth.critical}</span>
                        </div>
                      </div>
                   </div>

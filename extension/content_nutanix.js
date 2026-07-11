@@ -101,18 +101,20 @@ function extractNutanixData() {
     });
 
     let vmHealth = null;
-    const vmBlock = document.getElementById('ets-vm');
-    if (vmBlock) {
-       let vmGood = 0, vmWarning = 0, vmCritical = 0;
-       const critEl = vmBlock.querySelector('.count-box-critical .count-box-number');
-       if (critEl) vmCritical = parseInt(critEl.textContent.trim(), 10) || 0;
-       
-       const warnEl = vmBlock.querySelector('.count-box-warning .count-box-number');
-       if (warnEl) vmWarning = parseInt(warnEl.textContent.trim(), 10) || 0;
-       
-       const goodEl = vmBlock.querySelector('.count-box-good .count-box-number');
-       if (goodEl) vmGood = parseInt(goodEl.textContent.trim(), 10) || 0;
-       vmHealth = { good: vmGood, warning: vmWarning, critical: vmCritical };
+    const vmSummaryBlock = document.querySelector('.n-vantage-point-summary-vm');
+    if (vmSummaryBlock) {
+       let vmOn = 0, vmOff = 0;
+       vmSummaryBlock.querySelectorAll('li').forEach(li => {
+           const labelEl = li.querySelector('.n-col-1');
+           const valEl = li.querySelector('.n-col-2');
+           if (!labelEl || !valEl) return;
+           const label = labelEl.textContent.trim().toLowerCase();
+           const val = parseInt(valEl.textContent.trim(), 10) || 0;
+           if (label === 'on') vmOn = val;
+           else if (label === 'off') vmOff = val;
+       });
+       // Map 'on' to good and 'off' to critical so we don't break the payload schema
+       vmHealth = { good: vmOn, warning: 0, critical: vmOff };
     }
 
     let nodeStatuses = null;
