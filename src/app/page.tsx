@@ -346,21 +346,11 @@ export default function Dashboard() {
                           <Radio size={14} color="var(--primary)" />
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ 
-                            fontSize: '0.7rem', 
-                            color: 'var(--secondary)', 
-                            fontWeight: 800,
-                            background: 'rgba(var(--primary-rgb), 0.06)',
-                            padding: '0.15rem 0.45rem',
-                            borderRadius: '4px',
-                            border: '1px solid rgba(var(--primary-rgb), 0.15)',
-                            fontFamily: 'var(--font-heading)'
-                          }}>
-                            SLA {data.symphony.serviceRequestsSla}%
-                          </span>
-                          <div className="card-status status-operational" style={{ padding: '0.15rem 0.4rem' }}>
-                            <span className="status-dot operational" style={{ width: '5px', height: '5px' }}></span>
-                            <span style={{ fontSize: '0.675rem', fontWeight: 700 }}>Active</span>
+                          <div className={`card-status ${data.configs.symphony.status === 'active' ? 'status-operational' : 'status-degraded'}`} style={{ padding: '0.15rem 0.4rem' }}>
+                            <span className={`status-dot ${data.configs.symphony.status === 'active' ? 'operational' : 'degraded'}`} style={{ width: '5px', height: '5px' }}></span>
+                            <span style={{ fontSize: '0.675rem', fontWeight: 700, textTransform: 'capitalize' }}>
+                              {data.configs.symphony.status === 'active' ? 'Extension Connected' : data.configs.symphony.status === 'auth_required' ? 'Login Required' : 'Layout Error'}
+                            </span>
                           </div>
                         </div>
                       </div>
