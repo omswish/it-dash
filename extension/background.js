@@ -3,12 +3,37 @@ console.log('Utkal IT Dashboard Scraper: Background Worker Started');
 
 let combinedData = {
   symphony: null,
-  solarwinds: { servers: null, networks: null, status: 'idle', statusMessage: '' },
+  solarwinds: {
+    servers: null,
+    networks: [
+      { id: 'sw-net-1', provider: 'RJIO', status: 'operational', uptime: 0, latency: 0, utilization: 0 },
+      { id: 'sw-net-2', provider: 'HIL-UTK-EC-1', status: 'operational', uptime: 0, latency: 0, utilization: 0 },
+      { id: 'sw-net-3', provider: 'RailTel', status: 'operational', uptime: 0, latency: 0, utilization: 0 },
+      { id: 'sw-net-4', provider: 'HIL-UTK-EC-2', status: 'operational', uptime: 0, latency: 0, utilization: 0 }
+    ],
+    status: 'idle',
+    statusMessage: ''
+  },
   nutanix: null
+};
+
+const netIdMap = {
+   '1419': 'sw-net-1',
+   '401': 'sw-net-2',
+   '1417': 'sw-net-3',
+   '402': 'sw-net-4'
 };
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'GET_CREDENTIALS') {
+     fetch('http://localhost:3000/api/status')
+       .then(res => res.json())
+       .then(data => sendResponse({ success: true, configs: data.configs }))
+       .catch(err => sendResponse({ success: false, error: err.message }));
+     return true; // Keep channel open for async response
+  }
+
   if (message.type === 'SYMPHONY_DATA') {
     console.log('Received Symphony Data', message.data);
     combinedData.symphony = {
@@ -24,11 +49,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.source === 'server') {
       combinedData.solarwinds.servers = message.data;
     } else {
+      // Overwrite only if bulk scraper delivers networks list
       combinedData.solarwinds.networks = message.data;
     }
     combinedData.solarwinds.status = message.status || 'active';
     combinedData.solarwinds.statusMessage = message.statusMessage || '';
     pushToDashboard();
+  }
+
+  if (message.type === 'SOLARWINDS_SINGLE_NODE') {
+     console.log('Received SolarWinds Single Node Data', message.data);
+     const targetId = netIdMap[message.nodeId];
+     if (targetId) {
+        const net = combinedData.solarwinds.networks.find(n => n.id === targetId);
+        if (net) {
+           if (message.data.status) net.status = message.data.status;
+           if (message.data.latency !== undefined && message.data.latency !== null) net.latency = message.data.latency;
+           if (message.data.utilization !== undefined && message.data.utilization !== null) net.utilization = message.data.utilization;
+           
+           combinedData.solarwinds.status = 'active';
+           combinedData.solarwinds.statusMessage = '';
+           pushToDashboard();
+        }
+     }
   }
 
   if (message.type === 'NUTANIX_DATA') {
@@ -100,18 +143,7 @@ chrome.alarms.create('autoRefresh', { periodInMinutes: 5 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'autoRefresh') {
-    console.log('Auto-refreshing target tabs...');
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach(tab => {
-        if (
-          tab.url.includes('hsd.adityabirla.com/MDLIncidentMgmt') ||
-          tab.url.includes('10.36.91.45/Orion') ||
-          tab.url.includes('10.36.91.46/Orion') ||
-          tab.url.includes('10.23.50.27:9440')
-        ) {
-          chrome.tabs.reload(tab.id);
-        }
-      });
-    });
+    console.log('Auto-refresh alarm fired, but page reloading is disabled to prevent random reload disruptions.');
+    // Automatic page reloads disabled by user request.
   }
 });

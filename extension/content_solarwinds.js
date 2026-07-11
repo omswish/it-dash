@@ -1,6 +1,85 @@
 console.log('Utkal IT Dashboard Scraper: SolarWinds Content Script Injected');
 
+// Auto-Login Handling
+function handleAutoLogin(creds) {
+  if (!creds) return;
+  const userInput = document.querySelector('input[name*="user" i], input[id*="user" i], input[type="text"]');
+  const passInput = document.querySelector('input[name*="password" i], input[id*="password" i], input[type="password"]');
+  const submitBtn = document.querySelector('input[type="submit"], button[type="submit"], #cta, .btn-primary');
+  
+  if (userInput && passInput && submitBtn && !userInput.value) {
+    userInput.value = creds.username;
+    passInput.value = creds.secret;
+    userInput.dispatchEvent(new Event('input', { bubbles: true }));
+    passInput.dispatchEvent(new Event('input', { bubbles: true }));
+    setTimeout(() => submitBtn.click(), 1000);
+  }
+}
+
+// Keep-alive activity emulation
+function emulateActivity() {
+  window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Shift' }));
+}
+setInterval(emulateActivity, 60000);
+
+// Request credentials once loaded
+chrome.runtime.sendMessage({ type: 'GET_CREDENTIALS' }, (response) => {
+  if (response && response.success && response.configs) {
+    handleAutoLogin(response.configs.solarwinds);
+  }
+});
+
 async function extractSolarWindsData() {
+  const url = window.location.href;
+  
+  // Clean single-page Node Details scraping
+  if (url.includes('NodeDetails.aspx')) {
+    const objectMatch = url.match(/NetObject=N:(\d+)/);
+    if (objectMatch) {
+      const nodeId = objectMatch[1];
+      let status = 'operational';
+      let latency = 0;
+      let utilization = 0;
+      
+      const statusImgs = document.querySelectorAll('img[src*="Status" i], img[src*="status" i], .sw-status-icon');
+      for (const img of statusImgs) {
+        const src = img.src.toLowerCase();
+        if (src.includes('down') || src.includes('critical')) {
+          status = 'down';
+          break;
+        } else if (src.includes('warning') || src.includes('degraded')) {
+          status = 'degraded';
+        }
+      }
+      
+      const bodyText = document.body.innerText || '';
+      const latencyMatch = bodyText.match(/([\d\.]+)\s*ms/i);
+      if (latencyMatch) {
+        latency = parseFloat(latencyMatch[1]);
+      }
+      
+      const lines = bodyText.split('\n');
+      for (const line of lines) {
+        const lower = line.toLowerCase();
+        if (lower.includes('utilization') || lower.includes('load') || lower.includes('traffic')) {
+          const m = line.match(/(\d+(\.\d+)?)\s*%/);
+          if (m) {
+            utilization = parseFloat(m[1]);
+            break;
+          }
+        }
+      }
+      
+      chrome.runtime.sendMessage({
+        type: 'SOLARWINDS_SINGLE_NODE',
+        nodeId: nodeId,
+        data: { status, latency, utilization }
+      });
+      return;
+    }
+  }
+
   const isNetwork = window.location.host.includes('46');
   const source = isNetwork ? 'network' : 'server';
 

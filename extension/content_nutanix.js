@@ -1,5 +1,35 @@
 console.log('Utkal IT Dashboard Scraper: Nutanix Content Script Injected');
 
+// Auto-Login Handling
+function handleAutoLogin(creds) {
+  if (!creds) return;
+  const userInput = document.querySelector('input[type="text"], input[name*="user" i], input[placeholder*="username" i]');
+  const passInput = document.querySelector('input[type="password"]');
+  const submitBtn = document.querySelector('button[type="submit"], input[type="submit"], .btn-submit, #login-button');
+  
+  if (userInput && passInput && submitBtn && !userInput.value) {
+    userInput.value = creds.username;
+    passInput.value = creds.secret;
+    userInput.dispatchEvent(new Event('input', { bubbles: true }));
+    passInput.dispatchEvent(new Event('input', { bubbles: true }));
+    setTimeout(() => submitBtn.click(), 1000);
+  }
+}
+
+// Keep-alive activity emulation
+function emulateActivity() {
+  window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Shift' }));
+}
+setInterval(emulateActivity, 60000);
+
+// Request credentials once loaded
+chrome.runtime.sendMessage({ type: 'GET_CREDENTIALS' }, (response) => {
+  if (response && response.success && response.configs) {
+    handleAutoLogin(response.configs.nutanix);
+  }
+});
+
 function extractNutanixData() {
   try {
     // Attempt to extract from Prism UI DOM directly
