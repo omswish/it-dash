@@ -44,14 +44,40 @@ function extractNutanixData() {
     ];
     
     const serverDisks = [];
-    document.querySelectorAll('tr, .vm-row, .grid-row').forEach(row => {
-       const text = row.textContent || '';
-       const match = allServerNames.find(name => text.includes(name) || text.includes(name.split('.')[0]));
+    document.querySelectorAll('table.dataTable tbody tr, tr').forEach(row => {
+       const nameEl = row.querySelector('.n-vm-name');
+       if (!nameEl) return;
+       const vmName = nameEl.textContent.trim().toLowerCase();
+       const match = allServerNames.find(n => n.toLowerCase() === vmName || n.toLowerCase().startsWith(vmName + '.'));
        if (match) {
-           const percentMatch = text.match(/(\d+(\.\d+)?)(\s)?%/);
+           let diskPercent = 'N/A';
+           const tds = row.querySelectorAll('td');
+           for (const td of tds) {
+               const tdText = td.textContent.trim();
+               const storageMatch = tdText.match(/([\d\.]+)\s*(GiB|TiB|MiB|GB|TB|MB)\s*\/\s*([\d\.]+)\s*(GiB|TiB|MiB|GB|TB|MB)/i);
+               if (storageMatch) {
+                   const used = parseFloat(storageMatch[1]);
+                   const usedUnit = storageMatch[2].toLowerCase();
+                   const total = parseFloat(storageMatch[3]);
+                   const totalUnit = storageMatch[4].toLowerCase();
+                   
+                   let usedVal = used;
+                   if (usedUnit.includes('t')) usedVal *= 1024;
+                   else if (usedUnit.includes('m')) usedVal /= 1024;
+                   
+                   let totalVal = total;
+                   if (totalUnit.includes('t')) totalVal *= 1024;
+                   else if (totalUnit.includes('m')) totalVal /= 1024;
+                   
+                   if (totalVal > 0) {
+                       diskPercent = (usedVal / totalVal) * 100;
+                   }
+                   break;
+               }
+           }
            serverDisks.push({
               name: match,
-              disk: percentMatch ? parseFloat(percentMatch[1]) : 'N/A'
+              disk: diskPercent
            });
        }
     });
