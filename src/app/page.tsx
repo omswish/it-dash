@@ -334,39 +334,32 @@ export default function Dashboard() {
             </h2>
             {data.configs.symphony.connected ? (
               <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.65rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 0 }}>
-                {(() => {
-                  const hasCriticalIncident = data.symphony.activeIncidents?.some(
-                    inc => inc.priority === 'P1' || inc.priority === 'P2'
-                  ) ?? false;
-                  
-                  return (
-                    <>
-                      <div className="card-header" style={{ marginBottom: '0.25rem' }}>
-                        <div className="card-title" style={{ fontSize: '0.85rem' }}>
-                          <Radio size={14} color="var(--primary)" />
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div className={`card-status ${data.configs.symphony.status === 'active' ? 'status-operational' : 'status-degraded'}`} style={{ padding: '0.15rem 0.4rem' }}>
-                            <span className={`status-dot ${data.configs.symphony.status === 'active' ? 'operational' : 'degraded'}`} style={{ width: '5px', height: '5px' }}></span>
-                            <span style={{ fontSize: '0.675rem', fontWeight: 700, textTransform: 'capitalize' }}>
-                              {data.configs.symphony.status === 'active' ? 'Extension Connected' : data.configs.symphony.status === 'auth_required' ? 'Login Required' : 'Layout Error'}
-                            </span>
-                          </div>
-                        </div>
+                <div className="card-header" style={{ marginBottom: '0.25rem' }}>
+                  <div className="card-title" style={{ fontSize: '0.85rem' }}>
+                    <Radio size={14} color="var(--primary)" />
+                  </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div className={`card-status ${data.configs.symphony.status === 'active' ? 'status-operational' : 'status-degraded'}`} style={{ padding: '0.15rem 0.4rem' }}>
+                        <span className={`status-dot ${data.configs.symphony.status === 'active' ? 'operational' : 'degraded'}`} style={{ width: '5px', height: '5px' }}></span>
+                        <span style={{ fontSize: '0.675rem', fontWeight: 700, textTransform: 'capitalize' }}>
+                          {data.configs.symphony.status === 'active' ? 'Extension Connected' : data.configs.symphony.status === 'auth_required' ? 'Login Required' : 'Layout Error'}
+                        </span>
                       </div>
-                      
-                      {/* 1x4 Ticket Grid */}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', minHeight: 0, margin: '0.15rem 0', flex: 1 }}>
-                        {renderTicketCategoryVerticalBarChart(
-                          'Open Incidents',
-                          data.symphony.openIncidents,
-                          data.symphony.openIncidentsBreakdown,
-                          hasCriticalIncident ? 'var(--danger)' : '#1e3a8a',
-                          <>
-                            <span>Resp: <strong>{data.symphony.incidentsResponseSla}%</strong></span>
-                            <span>Reso: <strong>{data.symphony.incidentsResolutionSla}%</strong></span>
-                          </>
-                        )}
+                    </div>
+                  </div>
+                  
+                  {/* 1x4 Ticket Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', minHeight: 0, margin: '0.15rem 0', flex: 1 }}>
+                    {renderTicketCategoryVerticalBarChart(
+                      'Open Incidents',
+                      data.symphony.openIncidents,
+                      data.symphony.openIncidentsBreakdown,
+                      '#1e3a8a',
+                      <>
+                        <span>Resp: <strong>{data.symphony.incidentsResponseSla}%</strong></span>
+                        <span>Reso: <strong>{data.symphony.incidentsResolutionSla}%</strong></span>
+                      </>
+                    )}
 
                         {renderTicketCategoryVerticalBarChart(
                           'Service Requests',
@@ -394,83 +387,7 @@ export default function Dashboard() {
                           undefined,
                           { new: 'Initiated', assigned: '', inProgress: 'Implemented', pending: 'Approved Stage' }
                         )}
-                      </div>
-
-                      {/* Active Incident List */}
-                      <div style={{ marginTop: '0.45rem', borderTop: '1px solid var(--card-border)', paddingTop: '0.45rem', flexShrink: 0 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                          <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.025em', color: 'var(--foreground)' }}>
-                            Active Incidents
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', gap: '0.35rem', overflowX: 'auto', paddingBottom: '2px' }} className="custom-scroll">
-                          {data.symphony.activeIncidents && data.symphony.activeIncidents.length > 0 ? (
-                            data.symphony.activeIncidents.map((inc) => {
-                              const isCritical = inc.priority === 'P1' || inc.priority === 'P2';
-                              return (
-                                <div 
-                                  key={inc.id} 
-                                  style={{ 
-                                    flex: '0 0 auto',
-                                    width: '180px',
-                                    padding: '0.35rem 0.5rem',
-                                    background: isCritical ? 'rgba(185, 28, 28, 0.02)' : 'rgba(var(--primary-rgb), 0.02)',
-                                    border: isCritical ? '1px solid var(--danger)' : '1px solid var(--card-border)',
-                                    borderRadius: '6px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '1px'
-                                  }}
-                                >
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ 
-                                      fontSize: '0.675rem', 
-                                      fontWeight: 800, 
-                                      color: isCritical ? 'var(--danger)' : 'var(--foreground)',
-                                      fontFamily: 'var(--font-heading)',
-                                      border: isCritical ? '1px solid var(--danger)' : 'none',
-                                      padding: isCritical ? '0px 3px' : '0',
-                                      borderRadius: isCritical ? '3px' : '0'
-                                    }}>
-                                      {inc.id}
-                                    </span>
-                                    <span style={{ 
-                                      fontSize: '0.55rem', 
-                                      fontWeight: 800, 
-                                      padding: '0.05rem 0.2rem', 
-                                      borderRadius: '3px',
-                                      background: isCritical ? 'var(--danger)' : 'rgba(var(--primary-rgb), 0.1)',
-                                      color: isCritical ? '#fff' : 'var(--foreground)'
-                                    }}>
-                                      {inc.priority}
-                                    </span>
-                                  </div>
-                                  <div style={{ fontSize: '0.575rem', color: 'var(--foreground)', opacity: 0.8, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                                    {inc.title}
-                                  </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1px', fontSize: '0.55rem' }}>
-                                    <span style={{ 
-                                      color: isCritical ? 'var(--danger)' : 'var(--secondary)', 
-                                      fontWeight: 700,
-                                      border: isCritical ? '1px solid var(--danger)' : 'none',
-                                      padding: isCritical ? '0px 3px' : '0',
-                                      borderRadius: isCritical ? '2px' : '0'
-                                    }}>
-                                      👤 {inc.caller}
-                                    </span>
-                                    <span style={{ opacity: 0.7 }}>{inc.status}</span>
-                                  </div>
-                                </div>
-                              );
-                            })
-                          ) : (
-                            <span style={{ fontSize: '0.625rem', color: 'var(--secondary)' }}>No active incidents logged.</span>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
+                  </div>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginTop: '2px', color: 'var(--secondary)' }}>
