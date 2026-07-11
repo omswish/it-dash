@@ -32,6 +32,10 @@ async function extractSolarWindsData() {
           }
         }
       });
+      if (servers.length === 0) {
+        console.log('Server rows not found yet. Waiting for page load...');
+        return;
+      }
       
       chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: servers.slice(0, 10), status: 'active' });
 
