@@ -84,19 +84,23 @@ function extractSymphonyData() {
       i.text.includes("Utkal_IT Support") || 
       i.text.includes("Doraguda") || 
       i.text.includes("Rayagada") ||
-      i.text === "My Workgroup" // Fallback if exact naming changes
+      i.text === "My Workgroup" ||
+      i.text === "My Groups"
     );
     
+    // Sort from bottom to top, so the actual chart labels (which are lower on the page) are processed first
+    targetGroups.sort((a, b) => b.y - a.y);
+
     targetGroups.forEach(mw => {
       const col = getColumnName(mw);
       const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\d+$/.test(i.text));
       if (numbersAbove.length > 0) {
         numbersAbove.sort((a, b) => b.y - a.y);
         const val = parseInt(numbersAbove[0].text, 10);
-        if (col === "Incident") data.incidents = Math.max(data.incidents, val);
-        if (col === "Service Request") data.requests = Math.max(data.requests, val);
-        if (col === "Work Order") data.orders = Math.max(data.orders, val);
-        if (col === "Change Record") data.changes = Math.max(data.changes, val);
+        if (col === "Incident" && data.incidents === 0) data.incidents = val;
+        if (col === "Service Request" && data.requests === 0) data.requests = val;
+        if (col === "Work Order" && data.orders === 0) data.orders = val;
+        if (col === "Change Record" && data.changes === 0) data.changes = val;
       }
     });
 
