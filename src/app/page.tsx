@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UnifiedNetworkCard from '@/components/UnifiedNetworkCard';
 import { ServerData, DbSchema } from '@/lib/db';
 import { 
@@ -431,81 +431,95 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.servers.map((server) => (
-                      <tr key={server.id} style={{ borderBottom: '1px solid rgba(100, 116, 139, 0.06)', transition: 'background 0.2s' }} className="table-row-hover">
-                        <td style={{ padding: '0.45rem 0.55rem', fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                          <Server size={10} color="var(--primary)" />
-                          <span style={{ whiteSpace: 'nowrap' }}>{server.name}</span>
-                          <Info 
-                            size={11} 
-                            color="var(--primary)" 
-                            style={{ cursor: 'pointer', marginLeft: 'auto', opacity: 0.8, transition: 'all 0.2s' }}
-                            onMouseEnter={(e) => {
-                              const rect = e.currentTarget.getBoundingClientRect();
-                              setHoveredServer(server);
-                              setPopoverCoords({
-                                x: rect.left + window.scrollX + 16,
-                                y: rect.top + window.scrollY - 55
-                              });
-                            }}
-                            onMouseLeave={() => setHoveredServer(null)}
-                            className="info-icon-hover"
-                          />
-                        </td>
-                        <td style={{ padding: '0.45rem 0.55rem', textAlign: 'center' }}>
-                          <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            {server.status === 'operational' ? (
-                              <span title="Operational"><ShieldCheck size={14} color="var(--success)" /></span>
-                            ) : server.status === 'degraded' ? (
-                              <span title="Degraded"><AlertTriangle size={14} color="var(--warning)" /></span>
-                            ) : (
-                              <span title="Down"><AlertTriangle size={14} color="var(--danger)" /></span>
-                            )}
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.45rem 0.55rem' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.cpu}%</span>
-                            <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                              <div style={{ width: `${server.cpu}%`, height: '100%', background: server.cpu > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.45rem 0.55rem' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.memory}%</span>
-                            <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                              <div style={{ width: `${server.memory}%`, height: '100%', background: server.memory > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.45rem 0.55rem' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                            <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.disk}%</span>
-                            <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                              <div style={{ width: `${server.disk}%`, height: '100%', background: server.disk > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.45rem 0.55rem' }}>
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '1px',
-                            fontSize: '0.575rem',
-                            fontWeight: 700,
-                            padding: '0.08rem 0.25rem',
-                            borderRadius: '3px',
-                            background: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.06)' : 'rgba(185, 28, 28, 0.06)',
-                            border: '1px solid',
-                            borderColor: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.15)' : 'rgba(185, 28, 28, 0.15)',
-                            color: server.backupStatus === 'successful' ? 'var(--success)' : 'var(--danger)'
-                          }}>
-                            {server.backupStatus === 'successful' ? <Check size={8} /> : <X size={8} />}
-                            {server.backupStatus === 'successful' ? 'Success' : 'Failed'}
-                          </span>
-                        </td>
-                      </tr>
+                    {[
+                      { title: 'Windows Servers', items: data.servers.filter(s => s.name.includes('.abgplanet.abg.com')).map(s => ({...s, displayName: s.name.replace('.abgplanet.abg.com', '')})) },
+                      { title: 'Linux Servers', items: data.servers.filter(s => !s.name.includes('.abgplanet.abg.com')).map(s => ({...s, displayName: s.name})) }
+                    ].map(category => (
+                      <React.Fragment key={category.title}>
+                        {category.items.length > 0 && (
+                          <tr style={{ background: 'rgba(var(--primary-rgb), 0.04)' }}>
+                            <td colSpan={6} style={{ padding: '0.3rem 0.55rem', fontWeight: 800, fontSize: '0.65rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                              {category.title}
+                            </td>
+                          </tr>
+                        )}
+                        {category.items.map((server) => (
+                          <tr key={server.id} style={{ borderBottom: '1px solid rgba(100, 116, 139, 0.06)', transition: 'background 0.2s' }} className="table-row-hover">
+                            <td style={{ padding: '0.45rem 0.55rem', fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                              <Server size={10} color="var(--primary)" />
+                              <span style={{ whiteSpace: 'nowrap' }}>{server.displayName}</span>
+                              <Info 
+                                size={11} 
+                                color="var(--primary)" 
+                                style={{ cursor: 'pointer', marginLeft: 'auto', opacity: 0.8, transition: 'all 0.2s' }}
+                                onMouseEnter={(e) => {
+                                  const rect = e.currentTarget.getBoundingClientRect();
+                                  setHoveredServer(server as any);
+                                  setPopoverCoords({
+                                    x: rect.left + window.scrollX + 16,
+                                    y: rect.top + window.scrollY - 55
+                                  });
+                                }}
+                                onMouseLeave={() => setHoveredServer(null)}
+                                className="info-icon-hover"
+                              />
+                            </td>
+                            <td style={{ padding: '0.45rem 0.55rem', textAlign: 'center' }}>
+                              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                {server.status === 'operational' ? (
+                                  <span title="Operational"><ShieldCheck size={14} color="var(--success)" /></span>
+                                ) : server.status === 'degraded' ? (
+                                  <span title="Degraded"><AlertTriangle size={14} color="var(--warning)" /></span>
+                                ) : (
+                                  <span title="Down"><AlertTriangle size={14} color="var(--danger)" /></span>
+                                )}
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.45rem 0.55rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.cpu}%</span>
+                                <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${server.cpu}%`, height: '100%', background: server.cpu > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.45rem 0.55rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.memory}%</span>
+                                <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${server.memory}%`, height: '100%', background: server.memory > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.45rem 0.55rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.disk}%</span>
+                                <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${server.disk}%`, height: '100%', background: server.disk > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '0.45rem 0.55rem' }}>
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '1px',
+                                fontSize: '0.575rem',
+                                fontWeight: 700,
+                                padding: '0.08rem 0.25rem',
+                                borderRadius: '3px',
+                                background: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.06)' : 'rgba(185, 28, 28, 0.06)',
+                                border: '1px solid',
+                                borderColor: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.15)' : 'rgba(185, 28, 28, 0.15)',
+                                color: server.backupStatus === 'successful' ? 'var(--success)' : 'var(--danger)'
+                              }}>
+                                {server.backupStatus === 'successful' ? <Check size={8} /> : <X size={8} />}
+                                {server.backupStatus === 'successful' ? 'Success' : 'Failed'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>
