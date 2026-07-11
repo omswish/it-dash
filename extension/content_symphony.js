@@ -79,20 +79,23 @@ function extractSymphonyData() {
       activeIncidents: []
     };
 
-    // Since the user is pre-filtering the dashboard view, we can just grab the numbers under the main columns
-    const allNumbers = items.filter(i => /^\d+$/.test(i.text));
+    // We strictly use "My Workgroup" as the geometric anchor for the charts.
+    // The user will pre-filter their Symphony dashboard to Utkal_IT Support, so the numbers above "My Workgroup" will be correct.
+    const targetGroups = items.filter(i => i.text === "My Workgroup");
     
-    allNumbers.forEach(numItem => {
-      const col = getColumnName(numItem);
-      if (!col) return;
-      
-      const val = parseInt(numItem.text, 10);
-      
-      // We assume the largest standalone number in a column is the total count for that category
-      if (col === "Incident") data.incidents = Math.max(data.incidents, val);
-      if (col === "Service Request") data.requests = Math.max(data.requests, val);
-      if (col === "Work Order") data.orders = Math.max(data.orders, val);
-      if (col === "Change Record") data.changes = Math.max(data.changes, val);
+    targetGroups.sort((a, b) => b.y - a.y);
+    
+    targetGroups.forEach(mw => {
+      const col = getColumnName(mw);
+      const numbersAbove = items.filter(i => i.y < mw.y && i.y > mw.y - 150 && Math.abs(i.x - mw.x) < 100 && /^\d+$/.test(i.text));
+      if (numbersAbove.length > 0) {
+        numbersAbove.sort((a, b) => b.y - a.y);
+        const val = parseInt(numbersAbove[0].text, 10);
+        if (col === "Incident") data.incidents = Math.max(data.incidents, val);
+        if (col === "Service Request") data.requests = Math.max(data.requests, val);
+        if (col === "Work Order") data.orders = Math.max(data.orders, val);
+        if (col === "Change Record") data.changes = Math.max(data.changes, val);
+      }
     });
 
     const categories = ["New", "Assigned", "In-Progress", "Pending", "Initiated", "Implemented", "Approved Stage"];
