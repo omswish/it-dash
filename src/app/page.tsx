@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import NetworkCard from '@/components/NetworkCard';
-import ConfigModal from '@/components/ConfigModal';
 import { ServerData, DbSchema } from '@/lib/db';
 import { 
   ShieldCheck, AlertTriangle, RefreshCw, Cpu, Server, Network, 
-  Settings, Key, ChevronRight, Database, Radio, Check, X, Info
+  ChevronRight, Database, Radio, Check, X, Info
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, XAxis, Tooltip } from 'recharts';
 
@@ -136,7 +135,6 @@ export default function Dashboard() {
   const [data, setData] = useState<DbSchema | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
 
   const [time, setTime] = useState(new Date());
 
@@ -233,29 +231,6 @@ export default function Dashboard() {
           <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>
             Sync: {lastUpdated?.toLocaleTimeString()}
           </span>
-          <button 
-            onClick={() => setIsConfigOpen(true)}
-            style={{
-              background: 'rgba(var(--primary-rgb), 0.06)',
-              border: '1px solid rgba(var(--primary-rgb), 0.22)',
-              padding: '0.3rem 0.625rem',
-              borderRadius: '6px',
-              color: 'var(--primary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              transition: 'all 0.2s',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              fontFamily: 'var(--font-heading)'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(var(--primary-rgb), 0.12)'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(var(--primary-rgb), 0.06)'; }}
-          >
-            <Settings size={12} />
-            Configure Sources
-          </button>
         </div>
       </header>
 
@@ -264,16 +239,12 @@ export default function Dashboard() {
         
         {/* Card 1: HCI Health Card (linked to Nutanix source connection!) */}
         <div 
-          onClick={() => !data.configs.nutanix.connected && setIsConfigOpen(true)}
           className="glass-panel stat-box" 
           style={{ 
             padding: '0.625rem 1.25rem', 
             flex: '1.6 1 0%', 
-            cursor: data.configs.nutanix.connected ? 'default' : 'pointer',
             transition: 'all 0.2s'
           }}
-          onMouseOver={(e) => { if(!data.configs.nutanix.connected) e.currentTarget.style.borderColor = 'var(--primary)'; }}
-          onMouseOut={(e) => { if(!data.configs.nutanix.connected) e.currentTarget.style.borderColor = 'var(--card-border)'; }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
             <span className="stat-label">HCI Health</span>
@@ -323,8 +294,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginTop: '2px', color: 'var(--secondary)' }}>
-              <Key size={14} color="var(--danger)" />
-              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)' }}>Click to configure Nutanix connection details</span>
+              <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)' }}>Waiting for Edge extension data...</span>
             </div>
           )}
         </div>
@@ -513,7 +483,9 @@ export default function Dashboard() {
                 })()}
               </div>
             ) : (
-              <DisconnectCard system="Hindalco ITSM" icon={<Radio size={16} color="var(--secondary)" />} onConnect={() => setIsConfigOpen(true)} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginTop: '2px', color: 'var(--secondary)' }}>
+                 <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)' }}>Waiting for Edge extension data...</span>
+              </div>
             )}
           </div>
 
@@ -839,14 +811,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
-      {/* Config Panel Modal */}
-      <ConfigModal 
-        isOpen={isConfigOpen} 
-        onClose={() => setIsConfigOpen(false)} 
-        configs={data.configs}
-        onSave={fetchData}
-      />
 
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes spin {
