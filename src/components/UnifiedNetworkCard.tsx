@@ -41,7 +41,9 @@ export default function UnifiedNetworkCard({ networks }: UnifiedNetworkCardProps
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--foreground)' }}>{label}</span>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--secondary)' }}>{avgUtil}% Avg</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--secondary)' }}>
+            {net.latency ? `${net.latency}ms latency | ` : ''}{avgUtil}% Avg
+          </span>
         </div>
         <div style={{ height: '50px', background: 'rgba(15, 23, 42, 0.02)', border: '1px solid var(--card-border)', borderRadius: '6px', overflow: 'hidden' }}>
           <UptimeChart data={chartData} status={net.status} strokeColor={color} />
@@ -88,6 +90,11 @@ export default function UnifiedNetworkCard({ networks }: UnifiedNetworkCardProps
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             {getStatusIcon(sdwanA?.status)}
             <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'capitalize' }}>{sdwanA?.status || 'Unknown'}</span>
+            {sdwanA?.latency ? (
+              <span style={{ fontSize: '0.65rem', color: 'var(--secondary)', marginLeft: 'auto', fontWeight: 700 }}>
+                {sdwanA.latency}ms
+              </span>
+            ) : null}
           </div>
         </div>
         
@@ -96,6 +103,11 @@ export default function UnifiedNetworkCard({ networks }: UnifiedNetworkCardProps
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             {getStatusIcon(sdwanB?.status)}
             <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'capitalize' }}>{sdwanB?.status || 'Unknown'}</span>
+            {sdwanB?.latency ? (
+              <span style={{ fontSize: '0.65rem', color: 'var(--secondary)', marginLeft: 'auto', fontWeight: 700 }}>
+                {sdwanB.latency}ms
+              </span>
+            ) : null}
           </div>
         </div>
 
