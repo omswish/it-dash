@@ -477,25 +477,25 @@ export default function Dashboard() {
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.cpu}%</span>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.cpu !== null ? `${server.cpu}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${server.cpu}%`, height: '100%', background: server.cpu > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${server.cpu || 0}%`, height: '100%', background: (server.cpu || 0) > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                                 </div>
                               </div>
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.memory}%</span>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.memory !== null ? `${server.memory}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${server.memory}%`, height: '100%', background: server.memory > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${server.memory || 0}%`, height: '100%', background: (server.memory || 0) > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
                                 </div>
                               </div>
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.disk}%</span>
+                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.disk !== null && server.disk !== 'N/A' ? `${server.disk}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${server.disk}%`, height: '100%', background: server.disk > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${typeof server.disk === 'number' ? server.disk : 0}%`, height: '100%', background: (typeof server.disk === 'number' ? server.disk : 0) > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
                                 </div>
                               </div>
                             </td>
@@ -508,13 +508,13 @@ export default function Dashboard() {
                                 fontWeight: 700,
                                 padding: '0.08rem 0.25rem',
                                 borderRadius: '3px',
-                                background: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.06)' : 'rgba(185, 28, 28, 0.06)',
+                                background: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.06)' : server.backupStatus === 'failed' ? 'rgba(185, 28, 28, 0.06)' : 'rgba(100, 116, 139, 0.04)',
                                 border: '1px solid',
-                                borderColor: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.15)' : 'rgba(185, 28, 28, 0.15)',
-                                color: server.backupStatus === 'successful' ? 'var(--success)' : 'var(--danger)'
+                                borderColor: server.backupStatus === 'successful' ? 'rgba(71, 85, 105, 0.15)' : server.backupStatus === 'failed' ? 'rgba(185, 28, 28, 0.15)' : 'rgba(100, 116, 139, 0.1)',
+                                color: server.backupStatus === 'successful' ? 'var(--success)' : server.backupStatus === 'failed' ? 'var(--danger)' : 'var(--secondary)'
                               }}>
-                                {server.backupStatus === 'successful' ? <Check size={8} /> : <X size={8} />}
-                                {server.backupStatus === 'successful' ? 'Success' : 'Failed'}
+                                {server.backupStatus === 'successful' ? <Check size={8} /> : server.backupStatus === 'failed' ? <X size={8} /> : <span style={{ fontSize: '7px' }}>-</span>}
+                                {server.backupStatus === 'successful' ? 'Success' : server.backupStatus === 'failed' ? 'Failed' : 'N/A'}
                               </span>
                             </td>
                           </tr>

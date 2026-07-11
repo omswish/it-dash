@@ -32,10 +32,10 @@ async function extractSolarWindsData() {
            name: name,
            location: 'Utkal DC',
            status: 'operational',
-           cpu: 1 + Math.floor(Math.random() * 2), // mocked low CPU (1-2%) for missing servers
-           memory: 15 + Math.floor(Math.random() * 15), // mocked low memory for missing servers
-           disk: 30 + Math.floor(Math.random() * 40), // randomized placeholder
-           backupStatus: 'successful'
+           cpu: null,
+           memory: null,
+           disk: null,
+           backupStatus: null
          };
       });
 

@@ -53,15 +53,25 @@ export async function POST(req: Request) {
         }
       }
       if (data.solarwinds.servers && data.solarwinds.servers.length > 0) {
-        db.servers = data.solarwinds.servers.map((newSrv: Omit<ServerData, 'history'>) => {
+        db.servers = data.solarwinds.servers.map((newSrv: any) => {
           const oldSrv = db.servers?.find(s => 
             s.id === newSrv.id || 
             s.name.toLowerCase() === newSrv.name.toLowerCase()
           );
           const history = oldSrv?.history && Array.isArray(oldSrv.history) ? oldSrv.history : Array.from({ length: 20 }, () => 0);
-          const updatedHistory = [...history.slice(1), newSrv.cpu];
+          
+          const cpu = newSrv.cpu !== null ? newSrv.cpu : (oldSrv?.cpu ?? null);
+          const memory = newSrv.memory !== null ? newSrv.memory : (oldSrv?.memory ?? null);
+          const disk = newSrv.disk !== null ? newSrv.disk : (oldSrv?.disk ?? null);
+          const backupStatus = newSrv.backupStatus !== null ? newSrv.backupStatus : (oldSrv?.backupStatus ?? 'N/A');
+
+          const updatedHistory = [...history.slice(1), cpu || 0];
           return {
             ...newSrv,
+            cpu,
+            memory,
+            disk,
+            backupStatus,
             history: updatedHistory
           } as ServerData;
         });
@@ -122,6 +132,15 @@ export async function POST(req: Request) {
         historyCpu: [...historyCpu.slice(1), data.nutanix.cpu ?? 0],
         historyMem: [...historyMem.slice(1), data.nutanix.mem ?? 0],
       };
+      
+      if (data.nutanix.serverDisks && Array.isArray(data.nutanix.serverDisks)) {
+         data.nutanix.serverDisks.forEach((s: any) => {
+            const srv = db.servers?.find(x => x.name.toLowerCase() === s.name.toLowerCase());
+            if (srv) {
+               srv.disk = s.disk;
+            }
+         });
+      }
     }
 
     db.lastUpdated = Date.now();

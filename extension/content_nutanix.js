@@ -24,13 +24,49 @@ function extractNutanixData() {
       }
     });
 
+    const allServerNames = [
+        'HIL-HIDDOR-AV01.abgplanet.abg.com',
+        'HIL-HIDDOR-BK01',
+        'HIL-HIDDOR-CSCTS1',
+        'HIL-HIDDOR-CSCTS2',
+        'HILHIDDORDT0320',
+        'HIL-HIDDOR-FS01.abgplanet.abg.com',
+        'HILHIDDORILMSAP',
+        'HILHIDDORILMSDB',
+        'HIL-HIDDOR-PIMW.abgplanet.abg.com',
+        'HIL-HIDDOR-PSDM.abgplanet.abg.com',
+        'HIL-HIDDOR-US01.abgplanet.abg.com',
+        'HIL-HIDDOR-US02.abgplanet.abg.com',
+        'HIL-HIDDOR-US03.abgplanet.abg.com',
+        'HIL-HIDDOR-US04.abgplanet.abg.com',
+        'HIL-HIDDOR-US05.abgplanet.abg.com',
+        'HIL-HIDDOR-US06.abgplanet.abg.com'
+    ];
+    
+    const serverDisks = [];
+    document.querySelectorAll('tr, .vm-row, .grid-row').forEach(row => {
+       const text = row.textContent || '';
+       const match = allServerNames.find(name => text.includes(name) || text.includes(name.split('.')[0]));
+       if (match) {
+           // We assume there might be a percentage value representing storage in the row.
+           // Since we don't have the exact DOM structure, we look for anything that looks like "X %" or "X%" or "X.X %" 
+           // that might be related to storage. If we find a percentage, we use it. If not, we set 'N/A'.
+           const percentMatch = text.match(/(\d+(\.\d+)?)(\s)?%/);
+           serverDisks.push({
+              name: match,
+              disk: percentMatch ? parseFloat(percentMatch[1]) : 'N/A'
+           });
+       }
+    });
+
     const data = {
       nodesCount: 3,
       storageUsage: storage,
       cpu: cpu,
       mem: mem,
       uptime: 'N/A',
-      nodeStatuses: ['normal', 'normal', 'normal']
+      nodeStatuses: ['normal', 'normal', 'normal'],
+      serverDisks
     };
 
     const loginForm = document.querySelector('form[action*="Login"], input[type="password"]');

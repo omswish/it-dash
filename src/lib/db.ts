@@ -9,10 +9,10 @@ export interface ServerData {
   name: string;
   location: string;
   status: 'operational' | 'degraded' | 'down';
-  cpu: number;
-  memory: number;
-  disk: number;
-  backupStatus: 'successful' | 'failed';
+  cpu: number | null;
+  memory: number | null;
+  disk: number | string | null;
+  backupStatus: 'successful' | 'failed' | 'N/A';
   history: number[];
 }
 
