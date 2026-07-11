@@ -328,15 +328,12 @@ export default function Dashboard() {
           
           {/* 1. Hindalco Service Desk Card */}
           <div style={{ height: '350px', display: 'flex', flexDirection: 'column', minHeight: 0, flexShrink: 0 }}>
-            <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-              <Radio size={14} color="var(--primary)" />
-              Hindalco Service Desk
-            </h2>
             {data.configs.symphony.connected ? (
               <div className="glass-panel provider-card" style={{ flex: 1, padding: '0.5rem 0.65rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 0 }}>
                 <div className="card-header" style={{ marginBottom: '0.25rem' }}>
                   <div className="card-title" style={{ fontSize: '0.85rem' }}>
                     <Radio size={14} color="var(--primary)" />
+                    Hindalco Service Desk
                   </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <div className={`card-status ${data.configs.symphony.status === 'active' ? 'status-operational' : 'status-degraded'}`} style={{ padding: '0.15rem 0.4rem' }}>
@@ -398,16 +395,18 @@ export default function Dashboard() {
 
           {/* 2. ISP Gateway Status Card */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-              <Network size={14} color="var(--primary)" />
-              SDWAN & ILL Links (Side-by-Side)
-            </h2>
-            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0, flexWrap: 'wrap' }}>
-              {data.networks.map((net) => (
-                <div key={net.id} style={{ flex: '1 1 calc(50% - 0.5rem)', display: 'flex', minHeight: '120px' }}>
-                  <NetworkCard {...net} />
-                </div>
-              ))}
+            <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '0.625rem 1.25rem 0.25rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                <Network size={14} color="var(--primary)" />
+                <span className="stat-label" style={{ fontSize: '0.85rem' }}>SDWAN & ILL Links (Side-by-Side)</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minHeight: 0, padding: '0.5rem' }}>
+                {data.networks.map((net) => (
+                  <div key={net.id} style={{ flex: '1 1 calc(50% - 0.5rem)', display: 'flex', minHeight: '120px' }}>
+                    <NetworkCard {...net} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -418,12 +417,12 @@ export default function Dashboard() {
           
           {/* 1. Utkal Alumina Server Nodes */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <h2 className="section-title" style={{ fontSize: '0.95rem', marginBottom: '0.375rem', flexShrink: 0 }}>
-              <Server size={14} color="var(--primary)" />
-              Utkal Alumina Server Nodes
-            </h2>
             <div className="glass-panel" style={{ flex: 1, overflow: 'hidden', border: '1px solid var(--card-border)', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ flex: 1, overflowY: 'auto' }} className="custom-scroll">
+                <div style={{ padding: '0.625rem 1.25rem 0.25rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <Server size={14} color="var(--primary)" />
+                  <span className="stat-label" style={{ fontSize: '0.85rem' }}>Utkal Alumina Server Nodes</span>
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto' }} className="custom-scroll">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.7rem' }}>
                   <thead>
                     <tr style={{ background: 'rgba(100, 116, 139, 0.05)', borderBottom: '1px solid rgba(100, 116, 139, 0.1)', color: 'var(--secondary)' }}>

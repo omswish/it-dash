@@ -58,7 +58,7 @@ export default function NetworkCard({ provider, status, uptime, latency, utiliza
       : 'linear-gradient(to right, #0284c7, #0ea5e9)';
 
   return (
-    <div className="glass-panel provider-card" style={{ width: '100%', padding: '1rem 1.125rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', height: '100%', overflow: 'hidden' }}>
+    <div className="provider-card" style={{ width: '100%', padding: '1rem 1.125rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', height: '100%', overflow: 'hidden', background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '12px' }}>
       <div className="card-header" style={{ marginBottom: '2px' }}>
         <div className="card-title" style={{ fontSize: '0.9rem' }}>
           {getIcon()}
