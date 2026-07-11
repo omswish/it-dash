@@ -14,10 +14,11 @@ export default function UnifiedNetworkCard({ networks }: UnifiedNetworkCardProps
   const isp1 = networks.find(n => n.provider.includes('RJIO'));
   const isp2 = networks.find(n => n.provider.includes('RailTel'));
 
-  const activeLinks = networks.filter(n => n.status === 'operational').length;
-  const totalLinks = networks.length;
+  const sdwanLinks = [sdwanA, sdwanB].filter(Boolean);
+  const activeLinks = sdwanLinks.filter(n => n?.status === 'operational').length;
+  const totalLinks = 2;
 
-  // Derive overall health
+  // Derive overall health based on SD-WAN HA Status
   const isHealthy = activeLinks === totalLinks;
   
   // Weekly Availability % (Mock 99.98% if all good, lower otherwise)
