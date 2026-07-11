@@ -72,13 +72,36 @@ function extractNutanixData() {
        if (goodEl) vmGood = parseInt(goodEl.textContent.trim(), 10) || 0;
     }
 
+    let hostGood = 3, hostWarning = 0, hostCritical = 0;
+    const hostBlock = document.getElementById('ets-host');
+    if (hostBlock) {
+       const critEl = hostBlock.querySelector('.count-box-critical .count-box-number');
+       if (critEl) hostCritical = parseInt(critEl.textContent.trim(), 10) || 0;
+       
+       const warnEl = hostBlock.querySelector('.count-box-warning .count-box-number');
+       if (warnEl) hostWarning = parseInt(warnEl.textContent.trim(), 10) || 0;
+       
+       const goodEl = hostBlock.querySelector('.count-box-good .count-box-number');
+       if (goodEl) hostGood = parseInt(goodEl.textContent.trim(), 10) || 0;
+    }
+    
+    const nodeStatuses = [];
+    for(let i=0; i<hostCritical; i++) nodeStatuses.push('down');
+    for(let i=0; i<hostWarning; i++) nodeStatuses.push('warning');
+    for(let i=0; i<hostGood; i++) nodeStatuses.push('normal');
+    
+    // If we didn't find the host block at all, default to 3 normal nodes so the UI doesn't break
+    if (nodeStatuses.length === 0) {
+       nodeStatuses.push('normal', 'normal', 'normal');
+    }
+
     const data = {
-      nodesCount: 3,
+      nodesCount: nodeStatuses.length,
       storageUsage: storage,
       cpu: cpu,
       mem: mem,
       uptime: 'N/A',
-      nodeStatuses: ['normal', 'normal', 'normal'],
+      nodeStatuses: nodeStatuses,
       serverDisks,
       vmHealth: { good: vmGood, warning: vmWarning, critical: vmCritical }
     };
