@@ -47,6 +47,7 @@ export async function POST(req: Request) {
 
     // Apply SolarWinds Extension Data
     if (data.solarwinds) {
+      console.log('--- INCOMING SOLARWINDS PAYLOAD ---', JSON.stringify(data.solarwinds));
       if (db.configs.solarwinds) {
         db.configs.solarwinds.connected = true;
         if (data.solarwinds.status) {
@@ -118,6 +119,7 @@ export async function POST(req: Request) {
 
     // Apply Nutanix Extension Data
     if (data.nutanix) {
+      console.log('--- INCOMING NUTANIX PAYLOAD ---', JSON.stringify(data.nutanix));
       db.configs.nutanix.connected = true;
       if (data.nutanix.status) {
         db.configs.nutanix.status = data.nutanix.status;
