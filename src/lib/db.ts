@@ -44,6 +44,7 @@ export interface NutanixMetrics {
   historyCpu: number[];
   historyMem: number[];
   nodeStatuses?: string[];
+  vmHealth?: { good: number; warning: number; critical: number };
 }
 
 export interface TicketBreakdown {

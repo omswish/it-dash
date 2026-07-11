@@ -59,6 +59,19 @@ function extractNutanixData() {
        }
     });
 
+    let vmGood = 0, vmWarning = 0, vmCritical = 0;
+    const vmBlock = document.getElementById('ets-vm');
+    if (vmBlock) {
+       const critEl = vmBlock.querySelector('.count-box-critical .count-box-number');
+       if (critEl) vmCritical = parseInt(critEl.textContent.trim(), 10) || 0;
+       
+       const warnEl = vmBlock.querySelector('.count-box-warning .count-box-number');
+       if (warnEl) vmWarning = parseInt(warnEl.textContent.trim(), 10) || 0;
+       
+       const goodEl = vmBlock.querySelector('.count-box-good .count-box-number');
+       if (goodEl) vmGood = parseInt(goodEl.textContent.trim(), 10) || 0;
+    }
+
     const data = {
       nodesCount: 3,
       storageUsage: storage,
@@ -66,7 +79,8 @@ function extractNutanixData() {
       mem: mem,
       uptime: 'N/A',
       nodeStatuses: ['normal', 'normal', 'normal'],
-      serverDisks
+      serverDisks,
+      vmHealth: { good: vmGood, warning: vmWarning, critical: vmCritical }
     };
 
     const loginForm = document.querySelector('form[action*="Login"], input[type="password"]');

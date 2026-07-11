@@ -131,6 +131,7 @@ export async function POST(req: Request) {
         nodeStatuses: data.nutanix.nodeStatuses ?? db.nutanix.nodeStatuses,
         historyCpu: [...historyCpu.slice(1), data.nutanix.cpu ?? 0],
         historyMem: [...historyMem.slice(1), data.nutanix.mem ?? 0],
+        vmHealth: data.nutanix.vmHealth ?? db.nutanix.vmHealth,
       };
       
       if (data.nutanix.serverDisks && Array.isArray(data.nutanix.serverDisks)) {
