@@ -13,6 +13,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Database not found' }, { status: 500 });
     }
 
+    const round2 = (val: any) => typeof val === 'number' ? Math.round(val * 100) / 100 : val;
+
     const fileContent = fs.readFileSync(DB_PATH, 'utf-8');
     const db = JSON.parse(fileContent) as DbSchema;
 
@@ -34,10 +36,10 @@ export async function POST(req: Request) {
         workOrdersBreakdown: data.symphony.ordersBreakdown ?? db.symphony.workOrdersBreakdown,
         changeRecords: data.symphony.changes ?? db.symphony.changeRecords,
         changeRecordsBreakdown: data.symphony.changesBreakdown ?? db.symphony.changeRecordsBreakdown,
-        incidentsResponseSla: data.symphony.incidentsResponseSla ?? db.symphony.incidentsResponseSla,
-        incidentsResolutionSla: data.symphony.incidentsResolutionSla ?? db.symphony.incidentsResolutionSla,
-        requestsResponseSla: data.symphony.requestsResponseSla ?? db.symphony.requestsResponseSla,
-        requestsResolutionSla: data.symphony.requestsResolutionSla ?? db.symphony.requestsResolutionSla,
+        incidentsResponseSla: round2(data.symphony.incidentsResponseSla ?? db.symphony.incidentsResponseSla),
+        incidentsResolutionSla: round2(data.symphony.incidentsResolutionSla ?? db.symphony.incidentsResolutionSla),
+        requestsResponseSla: round2(data.symphony.requestsResponseSla ?? db.symphony.requestsResponseSla),
+        requestsResolutionSla: round2(data.symphony.requestsResolutionSla ?? db.symphony.requestsResolutionSla),
         activeIncidents: data.symphony.activeIncidents ?? db.symphony.activeIncidents,
       };
     }
@@ -60,9 +62,9 @@ export async function POST(req: Request) {
           );
           const history = oldSrv?.history && Array.isArray(oldSrv.history) ? oldSrv.history : Array.from({ length: 20 }, () => 0);
           
-          const cpu = newSrv.cpu !== null ? newSrv.cpu : (oldSrv?.cpu ?? null);
-          const memory = newSrv.memory !== null ? newSrv.memory : (oldSrv?.memory ?? null);
-          const disk = newSrv.disk !== null ? newSrv.disk : (oldSrv?.disk ?? null);
+          const cpu = round2(newSrv.cpu !== null ? newSrv.cpu : (oldSrv?.cpu ?? null));
+          const memory = round2(newSrv.memory !== null ? newSrv.memory : (oldSrv?.memory ?? null));
+          const disk = round2(newSrv.disk !== null ? newSrv.disk : (oldSrv?.disk ?? null));
           const backupStatus = newSrv.backupStatus !== null ? newSrv.backupStatus : (oldSrv?.backupStatus ?? 'N/A');
 
           const updatedHistory = [...history.slice(1), cpu || 0];
@@ -99,10 +101,11 @@ export async function POST(req: Request) {
             );
             
             const history = oldNet?.history && Array.isArray(oldNet.history) ? oldNet.history : Array.from({ length: 20 }, () => 0);
-            const updatedHistory = [...history.slice(1), newNet.utilization];
+            const updatedHistory = [...history.slice(1), round2(newNet.utilization)];
             
             uniqueNets.set(mappedProvider, {
               ...newNet,
+              utilization: round2(newNet.utilization),
               provider: mappedProvider,
               history: updatedHistory
             } as NetworkData);
@@ -127,10 +130,10 @@ export async function POST(req: Request) {
         ...db.nutanix,
         uptime: data.nutanix.uptime ?? db.nutanix.uptime,
         nodesCount: data.nutanix.nodesCount ?? db.nutanix.nodesCount,
-        storageUsage: data.nutanix.storageUsage ?? db.nutanix.storageUsage,
+        storageUsage: round2(data.nutanix.storageUsage ?? db.nutanix.storageUsage),
         nodeStatuses: data.nutanix.nodeStatuses ?? db.nutanix.nodeStatuses,
-        historyCpu: [...historyCpu.slice(1), data.nutanix.cpu ?? 0],
-        historyMem: [...historyMem.slice(1), data.nutanix.mem ?? 0],
+        historyCpu: [...historyCpu.slice(1), round2(data.nutanix.cpu ?? 0)],
+        historyMem: [...historyMem.slice(1), round2(data.nutanix.mem ?? 0)],
         vmHealth: data.nutanix.vmHealth ?? db.nutanix.vmHealth,
       };
       
@@ -138,7 +141,7 @@ export async function POST(req: Request) {
          data.nutanix.serverDisks.forEach((s: any) => {
             const srv = db.servers?.find(x => x.name.toLowerCase() === s.name.toLowerCase());
             if (srv) {
-               srv.disk = s.disk;
+               srv.disk = round2(s.disk);
             }
          });
       }
