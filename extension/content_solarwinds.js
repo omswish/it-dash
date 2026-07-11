@@ -41,7 +41,7 @@ async function extractSolarWindsData() {
       let netId = 0;
       
       textLines.forEach(line => {
-        if (line.includes('SDWAN') || line.includes('ILL') || line.includes('ISP') || line.includes('Link')) {
+        if (line.includes('SDWAN') || line.includes('ILL') || line.includes('ISP') || line.includes('Link') || line.includes('HIL-UTK-EC')) {
            if (line.length < 100 && !networks.find(n => n.provider === line.trim())) {
              networks.push({
                id: `sw-net-${++netId}`,
