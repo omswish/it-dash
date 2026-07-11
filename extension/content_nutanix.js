@@ -6,7 +6,7 @@ function extractNutanixData() {
 
 
     // Exact Nutanix Prism Element scraping
-    let cpu = 24, mem = 48, storage = 65; // Defaults
+    let cpu = null, mem = null, storage = null; 
     try { 
        const storageEl = document.querySelector('.storage-capacity-bar-wrapper .used-capacity.bar');
        if (storageEl) storage = parseFloat(storageEl.style.width); 
@@ -48,9 +48,6 @@ function extractNutanixData() {
        const text = row.textContent || '';
        const match = allServerNames.find(name => text.includes(name) || text.includes(name.split('.')[0]));
        if (match) {
-           // We assume there might be a percentage value representing storage in the row.
-           // Since we don't have the exact DOM structure, we look for anything that looks like "X %" or "X%" or "X.X %" 
-           // that might be related to storage. If we find a percentage, we use it. If not, we set 'N/A'.
            const percentMatch = text.match(/(\d+(\.\d+)?)(\s)?%/);
            serverDisks.push({
               name: match,
@@ -59,9 +56,10 @@ function extractNutanixData() {
        }
     });
 
-    let vmGood = 0, vmWarning = 0, vmCritical = 0;
+    let vmHealth = null;
     const vmBlock = document.getElementById('ets-vm');
     if (vmBlock) {
+       let vmGood = 0, vmWarning = 0, vmCritical = 0;
        const critEl = vmBlock.querySelector('.count-box-critical .count-box-number');
        if (critEl) vmCritical = parseInt(critEl.textContent.trim(), 10) || 0;
        
@@ -70,11 +68,13 @@ function extractNutanixData() {
        
        const goodEl = vmBlock.querySelector('.count-box-good .count-box-number');
        if (goodEl) vmGood = parseInt(goodEl.textContent.trim(), 10) || 0;
+       vmHealth = { good: vmGood, warning: vmWarning, critical: vmCritical };
     }
 
-    let hostGood = 3, hostWarning = 0, hostCritical = 0;
+    let nodeStatuses = null;
     const hostBlock = document.getElementById('ets-host');
     if (hostBlock) {
+       let hostGood = 3, hostWarning = 0, hostCritical = 0;
        const critEl = hostBlock.querySelector('.count-box-critical .count-box-number');
        if (critEl) hostCritical = parseInt(critEl.textContent.trim(), 10) || 0;
        
@@ -83,27 +83,23 @@ function extractNutanixData() {
        
        const goodEl = hostBlock.querySelector('.count-box-good .count-box-number');
        if (goodEl) hostGood = parseInt(goodEl.textContent.trim(), 10) || 0;
-    }
-    
-    const nodeStatuses = [];
-    for(let i=0; i<hostCritical; i++) nodeStatuses.push('down');
-    for(let i=0; i<hostWarning; i++) nodeStatuses.push('warning');
-    for(let i=0; i<hostGood; i++) nodeStatuses.push('normal');
-    
-    // If we didn't find the host block at all, default to 3 normal nodes so the UI doesn't break
-    if (nodeStatuses.length === 0) {
-       nodeStatuses.push('normal', 'normal', 'normal');
+       
+       nodeStatuses = [];
+       for(let i=0; i<hostCritical; i++) nodeStatuses.push('down');
+       for(let i=0; i<hostWarning; i++) nodeStatuses.push('warning');
+       for(let i=0; i<hostGood; i++) nodeStatuses.push('normal');
+       if (nodeStatuses.length === 0) nodeStatuses.push('normal', 'normal', 'normal');
     }
 
     const data = {
-      nodesCount: nodeStatuses.length,
+      nodesCount: nodeStatuses ? nodeStatuses.length : null,
       storageUsage: storage,
       cpu: cpu,
       mem: mem,
       uptime: 'N/A',
       nodeStatuses: nodeStatuses,
       serverDisks,
-      vmHealth: { good: vmGood, warning: vmWarning, critical: vmCritical }
+      vmHealth: vmHealth
     };
 
     const loginForm = document.querySelector('form[action*="Login"], input[type="password"]');
