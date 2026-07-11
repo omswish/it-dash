@@ -455,11 +455,11 @@ export default function Dashboard() {
                         <td style={{ padding: '0.45rem 0.55rem', textAlign: 'center' }}>
                           <div style={{ display: 'flex', justifyContent: 'center' }}>
                             {server.status === 'operational' ? (
-                              <ShieldCheck size={14} color="var(--success)" title="Operational" />
+                              <span title="Operational"><ShieldCheck size={14} color="var(--success)" /></span>
                             ) : server.status === 'degraded' ? (
-                              <AlertTriangle size={14} color="var(--warning)" title="Degraded" />
+                              <span title="Degraded"><AlertTriangle size={14} color="var(--warning)" /></span>
                             ) : (
-                              <AlertTriangle size={14} color="var(--danger)" title="Down" />
+                              <span title="Down"><AlertTriangle size={14} color="var(--danger)" /></span>
                             )}
                           </div>
                         </td>
