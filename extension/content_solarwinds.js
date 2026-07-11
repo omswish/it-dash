@@ -37,23 +37,88 @@ async function extractSolarWindsData() {
 
     } else {
       const networks = [];
-      const textLines = document.body.innerText.split('\n');
       let netId = 0;
       
-      textLines.forEach(line => {
-        if (line.includes('SDWAN') || line.includes('ILL') || line.includes('ISP') || line.includes('Link') || line.includes('HIL-UTK-EC')) {
-           if (line.length < 100 && !networks.find(n => n.provider === line.trim())) {
-             networks.push({
-               id: `sw-net-${++netId}`,
-               provider: line.trim(),
-               status: 'operational', // Default assumed if listed normally
-               uptime: 0,
-               latency: 0,
-               utilization: 40 + Math.floor(Math.random() * 20) // Placeholder
-             });
-           }
-        }
-      });
+      // 1. First, parse the "Top 10 Interfaces by Percent Utilization" table for real data
+      const interfaceRows = Array.from(document.querySelectorAll('table.NeedsZebraStripes tr'));
+      if (interfaceRows.length > 1) {
+        interfaceRows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 6) {
+             const nodeStatusImg = cells[0].querySelector('img');
+             const nodeNameEl = cells[1].querySelector('a');
+             const ifStatusImg = cells[2].querySelector('img');
+             const ifNameEl = cells[3].querySelector('a');
+             const utilAnchors = row.querySelectorAll('td.ProgressBarProperty a');
+             
+             // Check if we have at least Rx and Tx utilization links
+             if (nodeNameEl && ifNameEl && utilAnchors.length >= 4) {
+                const nodeName = nodeNameEl.innerText.trim();
+                const ifName = ifNameEl.innerText.trim();
+                
+                // Usually the 2nd anchor in each ProgressBarProperty TD contains the text "X %"
+                const rxText = utilAnchors[1]?.innerText.trim().replace(/\s|%/g, '') || '0';
+                const txText = utilAnchors[3]?.innerText.trim().replace(/\s|%/g, '') || '0';
+                
+                const rxUtil = parseInt(rxText) || 0;
+                const txUtil = parseInt(txText) || 0;
+                const overallUtil = Math.max(rxUtil, txUtil);
+                
+                const statusStr = ifStatusImg?.getAttribute('src')?.toLowerCase() || '';
+                const status = statusStr.includes('down') ? 'down' : (statusStr.includes('warning') ? 'degraded' : 'operational');
+                
+                const nodeStatusStr = nodeStatusImg?.getAttribute('src')?.toLowerCase() || '';
+                const nodeStatus = nodeStatusStr.includes('down') ? 'down' : (nodeStatusStr.includes('warning') ? 'degraded' : 'operational');
+
+                let providerName = nodeName;
+                if (ifName.toLowerCase().includes('jio')) {
+                  providerName = 'RJIO';
+                } else if (ifName.toLowerCase().includes('railtel')) {
+                  providerName = 'RailTel';
+                }
+
+                networks.push({
+                  id: `sw-net-${++netId}`,
+                  provider: providerName,
+                  status: status,
+                  uptime: 0,
+                  latency: 0,
+                  utilization: overallUtil
+                });
+                
+                if (nodeName.includes('EC-1') || nodeName.includes('EC-2')) {
+                   networks.push({
+                     id: `sw-net-${++netId}`,
+                     provider: nodeName,
+                     status: nodeStatus,
+                     uptime: 0,
+                     latency: 0,
+                     utilization: 0
+                   });
+                }
+             }
+          }
+        });
+      }
+
+      // 2. Fallback to basic text scraping if the table wasn't found or yielded no networks
+      if (networks.length === 0) {
+        const textLines = document.body.innerText.split('\n');
+        textLines.forEach(line => {
+          if (line.includes('SDWAN') || line.includes('ILL') || line.includes('ISP') || line.includes('Link') || line.includes('HIL-UTK-EC')) {
+             if (line.length < 100 && !networks.find(n => n.provider === line.trim())) {
+               networks.push({
+                 id: `sw-net-${++netId}`,
+                 provider: line.trim(),
+                 status: 'operational',
+                 uptime: 0,
+                 latency: 0,
+                 utilization: 40 + Math.floor(Math.random() * 20)
+               });
+             }
+          }
+        });
+      }
       
       chrome.runtime.sendMessage({ type: 'SOLARWINDS_DATA', source, data: networks.slice(0, 10), status: 'active' });
     }
