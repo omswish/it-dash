@@ -12,16 +12,25 @@ function extractNutanixData() {
        if (storageEl) storage = parseFloat(storageEl.style.width); 
     } catch(e) {}
     
-    document.querySelectorAll('*').forEach(el => {
-      const text = el.textContent || '';
-      if (text.includes('CPU Usage')) {
-        const m = text.match(/(\d+(\.\d+)?)%/);
-        if (m) cpu = parseFloat(m[1]);
-      }
-      if (text.includes('Memory Usage')) {
-        const m = text.match(/(\d+(\.\d+)?)%/);
-        if (m) mem = parseFloat(m[1]);
-      }
+    document.querySelectorAll('.n-vantage-point-metric-small, .n-vantage-point').forEach(el => {
+       const titleEl = el.querySelector('.lblTitle');
+       if (!titleEl) return;
+       const title = (titleEl.getAttribute('title') || titleEl.textContent || '').toLowerCase();
+       
+       const valueEl = el.querySelector('.lblValue');
+       if (!valueEl) return;
+       
+       const valStr = valueEl.textContent.replace(/[^\d.]/g, '');
+       const valFloat = parseFloat(valStr);
+       if (isNaN(valFloat)) return;
+       
+       if (title.includes('cpu')) {
+           cpu = valFloat;
+       } else if (title.includes('memory')) {
+           mem = valFloat;
+       } else if (title.includes('storage')) {
+           storage = valFloat;
+       }
     });
 
     const allServerNames = [
