@@ -202,6 +202,15 @@ export default function Dashboard() {
     return '#22c55e';
   };
 
+  const getMetricColor = (val: number | null | string, isText: boolean = false) => {
+    if (val === null || val === 'N/A') return isText ? 'var(--foreground)' : 'var(--primary)';
+    const num = typeof val === 'number' ? val : parseFloat(val as string);
+    if (isNaN(num)) return isText ? 'var(--foreground)' : 'var(--primary)';
+    if (num >= 90) return 'var(--danger)';
+    if (num >= 80) return 'var(--warning)';
+    return isText ? 'var(--foreground)' : 'var(--primary)';
+  };
+
 
 
   const sec = time.getSeconds();
@@ -501,25 +510,25 @@ export default function Dashboard() {
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.cpu !== null ? `${server.cpu}%` : 'N/A'}</span>
+                                <span style={{ fontWeight: 800, color: getMetricColor(server.cpu, true), fontSize: '0.75rem' }}>{server.cpu !== null ? `${server.cpu}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${server.cpu || 0}%`, height: '100%', background: (server.cpu || 0) > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${server.cpu || 0}%`, height: '100%', background: getMetricColor(server.cpu) }}></div>
                                 </div>
                               </div>
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.memory !== null ? `${server.memory}%` : 'N/A'}</span>
+                                <span style={{ fontWeight: 800, color: getMetricColor(server.memory, true), fontSize: '0.75rem' }}>{server.memory !== null ? `${server.memory}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${server.memory || 0}%`, height: '100%', background: (server.memory || 0) > 85 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${server.memory || 0}%`, height: '100%', background: getMetricColor(server.memory) }}></div>
                                 </div>
                               </div>
                             </td>
                             <td style={{ padding: '0.45rem 0.55rem' }}>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>{server.disk !== null && server.disk !== 'N/A' ? `${server.disk}%` : 'N/A'}</span>
+                                <span style={{ fontWeight: 800, color: getMetricColor(server.disk, true), fontSize: '0.75rem' }}>{server.disk !== null && server.disk !== 'N/A' ? `${server.disk}%` : 'N/A'}</span>
                                 <div style={{ width: '35px', height: '2px', background: 'rgba(15, 23, 42, 0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${typeof server.disk === 'number' ? server.disk : 0}%`, height: '100%', background: (typeof server.disk === 'number' ? server.disk : 0) > 90 ? 'var(--danger)' : 'var(--primary)' }}></div>
+                                  <div style={{ width: `${typeof server.disk === 'number' ? server.disk : 0}%`, height: '100%', background: getMetricColor(server.disk) }}></div>
                                 </div>
                               </div>
                             </td>
