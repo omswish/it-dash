@@ -117,10 +117,136 @@ export default function UnifiedNetworkCard({ networks }: UnifiedNetworkCardProps
         </div>
       </div>
 
-      {/* Bottom Row: ISP Sparklines */}
-      <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '0.75rem' }}>
-        {renderSparkline(isp1, 'ISP1 (RJIO) Trend', '#0d9488')}
-        {renderSparkline(isp2, 'ISP2 (RailTel) Trend', '#0284c7')}
+      {/* Bottom Section: Combined SolarWinds Orion Chart Widget */}
+      <div style={{ 
+        marginTop: 'auto', 
+        background: 'var(--card-bg)', 
+        border: '1px solid var(--card-border)', 
+        borderRadius: '8px', 
+        padding: '0.625rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.35rem',
+        fontSize: '0.7rem'
+      }}>
+        {/* Orion Chart Header & Time Picker */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(100, 116, 139, 0.1)', paddingBottom: '0.25rem' }}>
+          <span style={{ fontWeight: 800, color: 'var(--foreground)', fontSize: '0.75rem' }}>ISP Link Performance</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.6rem', color: '#297994', fontWeight: 700 }}>
+            <span>Last 12 hours</span>
+          </div>
+        </div>
+
+        {/* Chart + Legend Columns */}
+        <div style={{ display: 'flex', gap: '0.5rem', height: '100px' }}>
+          {/* Left Chart Panel */}
+          <div style={{ flex: 1.8, minWidth: 0, height: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={Array.from({ length: 20 }, (_, idx) => ({
+                time: `${20 - idx}m ago`,
+                rjio: isp1?.history?.[idx] ?? 0,
+                railtel: isp2?.history?.[idx] ?? 0,
+              }))} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRjio" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorRailtel" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0284c7" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#0284c7" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="time" hide />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#fffdf9', 
+                    border: '1px solid var(--card-border)',
+                    borderRadius: '4px',
+                    color: '#0f172a',
+                    fontSize: '0.55rem',
+                    padding: '2px 4px'
+                  }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="rjio" 
+                  name="RJIO Util"
+                  stroke="#0d9488" 
+                  strokeWidth={1.5}
+                  fillOpacity={1} 
+                  fill="url(#colorRjio)" 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="railtel" 
+                  name="RailTel Util"
+                  stroke="#0284c7" 
+                  strokeWidth={1.5}
+                  fillOpacity={1} 
+                  fill="url(#colorRailtel)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Right SolarWinds Legend Column */}
+          <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: '0.25rem', justifyContent: 'center' }}>
+            
+            {/* RJIO Legend Box */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {/* Checkbox */}
+              <div style={{ width: '10px', height: '10px', border: '1px solid #0d9488', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0d9488' }}>
+                <span style={{ fontSize: '7px', color: '#fff', fontWeight: 900 }}>✓</span>
+              </div>
+              {/* Big Number Tilebox */}
+              <div style={{ 
+                background: '#0d9488', 
+                color: '#fff', 
+                fontWeight: 800, 
+                fontSize: '0.65rem', 
+                padding: '1px 4px', 
+                borderRadius: '3px',
+                minWidth: '24px',
+                textAlign: 'center'
+              }}>
+                {(isp1?.history?.[isp1.history.length - 1] ?? 0)}%
+              </div>
+              {/* Description */}
+              <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.575rem', fontWeight: 700, color: 'var(--foreground)' }}>
+                <span>Jio (ISP1)</span>
+                {isp1?.latency ? <span style={{ opacity: 0.6, fontSize: '5px' }}>{isp1.latency}ms latency</span> : null}
+              </div>
+            </div>
+
+            {/* RailTel Legend Box */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {/* Checkbox */}
+              <div style={{ width: '10px', height: '10px', border: '1px solid #0284c7', borderRadius: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0284c7' }}>
+                <span style={{ fontSize: '7px', color: '#fff', fontWeight: 900 }}>✓</span>
+              </div>
+              {/* Big Number Tilebox */}
+              <div style={{ 
+                background: '#0284c7', 
+                color: '#fff', 
+                fontWeight: 800, 
+                fontSize: '0.65rem', 
+                padding: '1px 4px', 
+                borderRadius: '3px',
+                minWidth: '24px',
+                textAlign: 'center'
+              }}>
+                {(isp2?.history?.[isp2.history.length - 1] ?? 0)}%
+              </div>
+              {/* Description */}
+              <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.575rem', fontWeight: 700, color: 'var(--foreground)' }}>
+                <span>RailTel (ISP2)</span>
+                {isp2?.latency ? <span style={{ opacity: 0.6, fontSize: '5px' }}>{isp2.latency}ms latency</span> : null}
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
   );
